@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Unity와 C#으로 개발 중인 시너지 기반 턴제 로그라이크 포트폴리오 프로젝트 사례입니다.">
+    <title>Roguelike Project | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="../index.html#writing">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Project Case Study</p>
+            <h1>Roguelike Project</h1>
+            <p class="post-meta">Unity 6000.3.12f1 LTS · C# · ScriptableObject · TextMeshPro</p>
+            <p class="post-lead">
+              전투 중 얻는 카드, 상태이상, 유물 효과가 서로 반응하며 하나의 시너지 엔진으로 이어지는 턴제 로그라이크 프로젝트입니다.
+              단일 효과보다 잘 엮인 선택이 더 큰 보상으로 돌아오도록 전투 구조와 데이터 기반 확장성을 설계하고 있습니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#overview">프로젝트 개요</a></li>
+                <li><a href="#role">목표와 역할</a></li>
+                <li><a href="#features">현재 구현</a></li>
+                <li><a href="#architecture">시스템 설계</a></li>
+                <li><a href="#log">개발 기록</a></li>
+                <li><a href="#troubleshooting">트러블슈팅</a></li>
+                <li><a href="#next">다음 단계</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="overview" aria-labelledby="overview-title">
+                <h2 id="overview-title">프로젝트 개요</h2>
+                <p>
+                  Roguelike Project는 플레이어가 전투 중 획득한 효과를 조합해 중후반에 강력한 시너지 빌드를 완성하는 것을 핵심 재미로 삼는 게임입니다.
+                  핵심 설계 방향은 "좋은 단일 선택"보다 "잘 엮인 선택"을 보상하는 구조입니다.
+                </p>
+                <ul>
+                  <li>개별 효과는 단독으로 과도하게 강하지 않게 설계</li>
+                  <li>여러 효과가 연결되면 폭발력을 갖는 전투 흐름 구성</li>
+                  <li>상태이상, 패시브, 유물, 보상이 같은 시너지 방향을 만들도록 연결</li>
+                </ul>
+              </section>
+
+              <section id="role" aria-labelledby="role-title">
+                <h2 id="role-title">목표와 역할</h2>
+                <p>
+                  이 프로젝트의 목적은 Unity 포트폴리오에서 전투 시스템, 상태이상, 패시브, 이벤트 기반 구조를 직접 설계하고 구현할 수 있음을 보여주는 것입니다.
+                  단순한 전투 루프 구현보다 확장 가능한 구조와 시스템 간 상호작용을 코드로 표현하는 데 집중했습니다.
+                </p>
+                <ul>
+                  <li>전투 루프와 전투 상태 관리 설계</li>
+                  <li>카드 효과, 상태이상, 유물 효과의 확장 구조 구현</li>
+                  <li>ScriptableObject 기반 데이터 구조와 런타임 effect 조립 흐름 구성</li>
+                  <li>보상 선택과 빌드 방향성 선택 구조 구현</li>
+                </ul>
+              </section>
+
+              <section id="features" aria-labelledby="features-title">
+                <h2 id="features-title">현재 구현</h2>
+                <ul class="principle-list" aria-label="현재 구현 목록">
+                  <li>
+                    <h3>전투 시스템</h3>
+                    <p>턴 기반 전투 루프, 에너지 기반 행동, 플레이어/적 유닛 구조, PlayerTurn/EnemyTurn/Win/Lose 전투 상태를 구현했습니다.</p>
+                  </li>
+                  <li>
+                    <h3>카드 시스템</h3>
+                    <p>ScriptableObject 카드 데이터와 Effect 조합 구조를 사용해 조건, 동적 계산, 전용 효과를 카드별로 확장할 수 있게 했습니다.</p>
+                  </li>
+                  <li>
+                    <h3>상태이상 시스템</h3>
+                    <p>Poison, Burn, Vulnerable을 구현하고, 상태이상 간 시너지 로직을 전투 설계에 연결했습니다.</p>
+                  </li>
+                  <li>
+                    <h3>유물과 보상</h3>
+                    <p>IRelicEffect 기반 이벤트 트리거 구조, 유물 보상 선택, 중복 유물 방지, 전투 종료 후 카드 선택을 구현했습니다.</p>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="architecture" aria-labelledby="architecture-title">
+                <h2 id="architecture-title">시스템 설계</h2>
+                <p>
+                  카드와 유물은 ScriptableObject 데이터에서 런타임 effect를 조립하는 방식으로 통일했습니다.
+                  전투 시스템은 구체 카드나 유물 종류를 직접 알기보다, 공통 인터페이스를 통해 효과 실행과 이벤트 반응을 처리합니다.
+                </p>
+                <ul>
+                  <li><strong>CardDataSO</strong>: 여러 CardEffectDataSO를 보유하고 런타임 ICardEffect를 생성</li>
+                  <li><strong>UnitStatusData</strong>: Unit의 상태이상 값을 Dictionary 구조로 관리</li>
+                  <li><strong>RelicDataSO</strong>: 여러 RelicEffectDataSO를 통해 이벤트 기반 IRelicEffect를 조립</li>
+                  <li><strong>BattleManager / StatusEffectController / RelicManager</strong>: 전투 흐름, 상태 처리, 유물 반응 책임 분리</li>
+                </ul>
+                <div class="post-callout">
+                  <p>
+                    핵심 설계 포인트는 데이터 기반 구조, 이벤트 기반 상호작용, 기존 코드 수정 최소화, 상태 스냅샷 기반 조건 처리입니다.
+                    이 구조를 통해 카드 추가와 유물 효과 확장이 전투 루프 수정으로 번지지 않도록 했습니다.
+                  </p>
+                </div>
+              </section>
+
+              <section id="log" aria-labelledby="log-title">
+                <h2 id="log-title">개발 기록</h2>
+                <ul>
+                  <li>카드 효과 처리 구조를 switch 기반에서 Effect 조합 구조로 리팩터링했습니다.</li>
+                  <li>Poison, Burn, Vulnerable 상태이상을 구현하고 상태이상 기반 전투 구조로 전환했습니다.</li>
+                  <li>BattleManager, StatusEffectController, RelicManager의 책임을 분리해 결합도를 낮췄습니다.</li>
+                  <li>전투 종료 후 카드 선택, 유물 보상, 시작 패시브 선택으로 빌드 방향성 선택 구조를 만들었습니다.</li>
+                  <li>유물 시스템을 캐시 기반 구조에서 이벤트 기반 구조로 전환하고 카드 시스템과 구조를 맞췄습니다.</li>
+                </ul>
+              </section>
+
+              <section id="troubleshooting" aria-labelledby="troubleshooting-title">
+                <h2 id="troubleshooting-title">트러블슈팅</h2>
+                <p>
+                  시너지 기반 전투는 효과가 서로를 다시 호출하기 쉬워서, 트리거 시점과 조건 검사 기준을 명확히 분리하는 것이 중요했습니다.
+                  특히 유물과 상태이상 효과가 같은 이벤트에 반응할 때 중복 적용과 재귀 호출을 방지하는 처리가 필요했습니다.
+                </p>
+                <ul>
+                  <li>OnApplyPoison 루프에서 발생한 유물 재귀 호출 문제 해결</li>
+                  <li>조건 검사 시점 오류를 상태 스냅샷 구조로 수정</li>
+                  <li>PoisonCore / VenomSac 중복 적용 문제 해결</li>
+                  <li>PressurePoint 턴 제한 버그 수정</li>
+                </ul>
+              </section>
+
+              <section id="next" aria-labelledby="next-title">
+                <h2 id="next-title">다음 단계</h2>
+                <p>
+                  MVP 기준으로 상태이상, 유물, 보상 흐름은 구현되어 있으며, 앞으로는 적 행동 패턴 다양화와 시너지 빌드 분기 구조를 확장할 예정입니다.
+                  전투 로그 UI, 스킬 버튼, 현재 상태이상 표시 UI도 함께 보강해 플레이어가 시너지 흐름을 더 쉽게 읽을 수 있게 만들 계획입니다.
+                </p>
+                <p>
+                  최종 산출물은 플레이 가능한 Unity 빌드, GitHub 저장소, 시스템 설명 문서, 짧은 플레이 영상, 주요 시너지 예시 캡처 또는 GIF입니다.
+                </p>
+                <p>
+                  <a class="text-link" href="https://github.com/StaySober01/RoguelikeProject">StaySober01/RoguelikeProject</a>
+                </p>
+              </section>
+
+              <nav class="post-nav" aria-label="프로젝트 이동">
+                <a class="text-link" href="../index.html#projects">프로젝트 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../theme.js"></script>
+  </body>
+</html>
