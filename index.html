@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="게임 개발자 StaySober01의 프로젝트와 기술 학습 기록을 소개하는 포트폴리오 블로그입니다.">
     <title>StaySober01 | Game Developer Portfolio</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -14,6 +21,17 @@
         <a class="site-name" href="#top" aria-label="홈으로 이동">Home</a>
         <nav aria-label="주요 메뉴">
           <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
             <li><a href="#projects">Projects</a></li>
             <li><a href="#writing">TIL &amp; Blog</a></li>
             <li><a href="#about">About</a></li>
@@ -126,5 +144,6 @@
         <a href="https://github.com/StaySober01">GitHub</a>
       </div>
     </footer>
+    <script src="theme.js"></script>
   </body>
 </html>

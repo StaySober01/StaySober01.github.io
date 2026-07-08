@@ -7,9 +7,27 @@
   --color-muted: #a9b6ce;
   --color-accent: #64e1d2;
   --color-border: #293650;
+  --color-header: rgb(11 17 32 / 92%);
+  --color-interactive-hover: #1c2b47;
+  --color-interactive-shadow: rgb(100 225 210 / 14%);
   --content-width: 70rem;
   --radius: 0.75rem;
   --shadow: 0 1rem 2.5rem rgb(0 0 0 / 18%);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-background: #f7f1e7;
+  --color-surface: #fffaf1;
+  --color-surface-strong: #eee5d7;
+  --color-text: #171717;
+  --color-muted: #514c45;
+  --color-accent: #111111;
+  --color-border: #cfc4b4;
+  --color-header: rgb(247 241 231 / 94%);
+  --color-interactive-hover: #e3d8c8;
+  --color-interactive-shadow: rgb(17 17 17 / 12%);
+  --shadow: 0 1rem 2.5rem rgb(72 57 36 / 12%);
 }
 
 *,
@@ -70,7 +88,7 @@ a:focus-visible {
 
 .site-header {
   border-bottom: 1px solid var(--color-border);
-  background: rgb(11 17 32 / 92%);
+  background: var(--color-header);
 }
 
 .header-inner,
@@ -92,12 +110,55 @@ a:focus-visible {
 
 .nav-list {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem 1rem;
   margin: 0;
   padding: 0;
   list-style: none;
   font-size: 0.875rem;
+}
+
+.theme-toggle {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-accent);
+  background: var(--color-surface-strong);
+}
+
+.theme-toggle:focus-visible {
+  outline: 0.2rem solid var(--color-accent);
+  outline-offset: 0.2rem;
+}
+
+.theme-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.theme-icon-moon,
+:root[data-theme="light"] .theme-icon-sun {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-icon-moon {
+  display: block;
 }
 
 .nav-list a {
@@ -194,8 +255,8 @@ h1 {
 
 .role-badge:hover {
   transform: scale(1.04);
-  background: #1c2b47;
-  box-shadow: 0 0.75rem 2rem rgb(100 225 210 / 14%);
+  background: var(--color-interactive-hover);
+  box-shadow: 0 0.75rem 2rem var(--color-interactive-shadow);
 }
 
 h2 {
@@ -270,8 +331,8 @@ h3 {
 
 .tech-list li:hover {
   transform: scale(1.04);
-  background: #1c2b47;
-  box-shadow: 0 0.75rem 2rem rgb(100 225 210 / 14%);
+  background: var(--color-interactive-hover);
+  box-shadow: 0 0.75rem 2rem var(--color-interactive-shadow);
 }
 
 .section {
