@@ -14,11 +14,13 @@
 ├─ projects/
 │  └─ roguelike-project.html
 └─ til/
+   ├─ index.html
    └─ solid.html
 ```
 
 홈의 주요 콘텐츠는 `/index.html` 한 페이지에 있고 섹션 앵커(`#projects`, `#writing`, `#about`)로 이동한다.
 프로젝트 상세 사례는 `/projects/{project-slug}.html` 하위 페이지로 제공한다.
+TIL / 블로그 목록은 `/til/index.html`에서 제공하며, 홈의 TIL / 블로그 섹션은 최근 글 일부만 보여준다.
 TIL / 블로그 글은 `/til/{post-slug}.html` 하위 페이지로 제공한다.
 
 ## 확장 후보
@@ -28,6 +30,7 @@ TIL / 블로그 글은 `/til/{post-slug}.html` 하위 페이지로 제공한다.
 ├─ projects/
 │  └─ {project-slug}.html
 ├─ til/
+│  ├─ index.html
 │  └─ {post-slug}.html
 ├─ blog/
 │  └─ {post-slug}.html

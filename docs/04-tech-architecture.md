@@ -7,12 +7,13 @@ AGENTS.md             작업 규칙
 index.html            시맨틱 콘텐츠와 문서 메타데이터
 projects/             프로젝트 상세 하위 페이지
 til/                  TIL / 블로그 하위 페이지
+til/index.html        TIL / 블로그 전체 글 목록
 styles.css            디자인 토큰, 레이아웃, 반응형 스타일
 theme.js              테마 전환과 사용자 선택 저장
 docs/                 제품, 콘텐츠, 기술 의사결정 문서
 ```
 
-브라우저가 루트의 HTML, CSS와 의존성 없는 소형 JavaScript를 직접 읽는 정적 사이트다. 패키지 관리자, 빌드 단계, 런타임 의존성은 없다. 상대 경로를 사용하므로 GitHub Pages에서 단순하게 제공할 수 있다. `theme.js`는 테마 버튼의 상태와 `localStorage`에 저장한 사용자 선택을 관리한다.
+브라우저가 루트와 하위 폴더의 HTML, CSS와 의존성 없는 소형 JavaScript를 직접 읽는 정적 사이트다. 패키지 관리자, 빌드 단계, 런타임 의존성은 없다. 상대 경로를 사용하므로 GitHub Pages에서 단순하게 제공할 수 있다. `theme.js`는 테마 버튼의 상태와 `localStorage`에 저장한 사용자 선택을 관리한다.
 
 ## 변경 원칙
 
