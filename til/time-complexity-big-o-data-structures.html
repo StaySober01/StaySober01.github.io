@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="시간복잡도와 빅오 표기법의 의미, 그리고 배열, 연결 리스트, 스택, 큐, 해시 테이블, 트리, 그래프, 힙의 특징을 정리한 TIL입니다.">
+    <title>시간복잡도, 빅오 표기법, 대표 자료구조 정리 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="../index.html#writing">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes</p>
+            <h1>시간복잡도, 빅오 표기법, 대표 자료구조 정리</h1>
+            <p class="post-meta">TIL · 알고리즘과 자료구조 · 2026.07.09</p>
+            <p class="post-lead">
+              알고리즘을 비교할 때는 실행 시간이 몇 초인지보다 입력이 커질수록 연산량이 어떻게 증가하는지를 보는 것이 중요합니다.
+              시간복잡도와 빅오 표기법은 그 증가 추세를 간단히 표현하고, 자료구조 선택은 그 비용을 실제 코드에서 결정합니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#complexity">시간복잡도란</a></li>
+                <li><a href="#big-o">빅오 표기법</a></li>
+                <li><a href="#common-orders">대표 복잡도</a></li>
+                <li><a href="#structures">대표 자료구조</a></li>
+                <li><a href="#selection">자료구조 선택 기준</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="complexity" aria-labelledby="complexity-title">
+                <h2 id="complexity-title">시간복잡도란</h2>
+                <p>
+                  시간복잡도는 입력 크기 <code>n</code>이 커질 때 알고리즘의 연산 횟수가 어떤 비율로 증가하는지를 나타내는 개념입니다.
+                  같은 기능을 하는 코드라도 입력이 10개일 때는 차이가 작아 보일 수 있지만, 입력이 10만 개나 100만 개가 되면
+                  반복문 구조와 자료구조 선택에 따라 실행 시간이 크게 달라집니다.
+                </p>
+                <p>
+                  시간복잡도는 실제 초 단위 시간을 그대로 말하지 않습니다. 컴퓨터 성능, 언어, 컴파일러, 메모리 상태에 따라 실제 시간은 달라질 수 있기 때문입니다.
+                  대신 입력이 증가할 때 연산량이 상수처럼 유지되는지, 선형으로 증가하는지, 제곱으로 증가하는지 같은 성장 형태를 봅니다.
+                </p>
+                <div class="post-callout">
+                  <p>
+                    핵심 질문은 "입력 크기가 두 배가 되면 이 코드는 얼마나 더 많은 일을 하는가?"입니다.
+                    이 질문에 답하면 작은 예제에서는 보이지 않던 성능 차이를 미리 예측할 수 있습니다.
+                  </p>
+                </div>
+              </section>
+
+              <section id="big-o" aria-labelledby="big-o-title">
+                <h2 id="big-o-title">빅오 표기법</h2>
+                <p>
+                  빅오 표기법은 알고리즘의 성장률을 가장 큰 영향이 있는 항만 남겨 표현하는 방식입니다.
+                  예를 들어 어떤 코드의 연산량이 <code>3n + 10</code>이라면 입력이 커질수록 상수 <code>10</code>과 계수 <code>3</code>보다 <code>n</code>이 증가한다는 사실이 더 중요합니다.
+                  그래서 보통 <code>O(n)</code>으로 표현합니다.
+                </p>
+                <p>
+                  <code>n² + n + 1</code>처럼 여러 항이 있을 때도 입력이 커질수록 가장 빠르게 증가하는 항이 전체 성능을 지배합니다.
+                  이 경우에는 <code>O(n²)</code>로 봅니다. 빅오는 정확한 실행 시간을 계산하기 위한 도구라기보다,
+                  알고리즘이 커지는 입력을 감당할 수 있는지 판단하는 기준에 가깝습니다.
+                </p>
+              </section>
+
+              <section id="common-orders" aria-labelledby="common-orders-title">
+                <h2 id="common-orders-title">대표 복잡도</h2>
+                <ul class="principle-list" aria-label="대표 시간복잡도">
+                  <li>
+                    <h3>O(1) · 상수 시간</h3>
+                    <p>입력 크기와 상관없이 일정한 횟수로 끝납니다. 배열의 인덱스 접근, 스택의 top 확인이 대표적입니다.</p>
+                  </li>
+                  <li>
+                    <h3>O(log n) · 로그 시간</h3>
+                    <p>한 번 처리할 때마다 탐색 범위가 크게 줄어듭니다. 정렬된 배열에서의 이진 탐색이 대표적입니다.</p>
+                  </li>
+                  <li>
+                    <h3>O(n) · 선형 시간</h3>
+                    <p>입력 크기에 비례해 연산량이 증가합니다. 배열 전체 순회, 선형 탐색이 여기에 해당합니다.</p>
+                  </li>
+                  <li>
+                    <h3>O(n log n)</h3>
+                    <p>효율적인 정렬 알고리즘에서 자주 등장합니다. 병합 정렬, 힙 정렬, 평균적인 퀵 정렬을 떠올릴 수 있습니다.</p>
+                  </li>
+                  <li>
+                    <h3>O(n²) · 제곱 시간</h3>
+                    <p>중첩 반복문처럼 모든 원소 쌍을 비교할 때 자주 나옵니다. 입력이 커지면 비용이 빠르게 증가합니다.</p>
+                  </li>
+                  <li>
+                    <h3>O(2ⁿ), O(n!)</h3>
+                    <p>모든 경우의 수를 탐색하는 완전 탐색에서 등장할 수 있습니다. 작은 입력에서는 가능하지만 큰 입력에서는 금방 한계에 부딪힙니다.</p>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="structures" aria-labelledby="structures-title">
+                <h2 id="structures-title">대표 자료구조</h2>
+                <p>
+                  자료구조는 데이터를 어떤 형태로 저장하고 접근할지 정하는 방식입니다.
+                  같은 데이터라도 어떤 자료구조를 쓰느냐에 따라 탐색, 삽입, 삭제, 정렬, 우선순위 처리의 비용이 달라집니다.
+                </p>
+
+                <h3>배열 · Array</h3>
+                <p>
+                  배열은 연속된 메모리 공간에 같은 종류의 데이터를 순서대로 저장합니다.
+                  인덱스를 알고 있으면 <code>O(1)</code>에 접근할 수 있어 빠르지만, 중간에 삽입하거나 삭제하면 뒤의 원소들을 이동해야 해서 보통 <code>O(n)</code>이 듭니다.
+                  순서가 중요하고 인덱스로 자주 접근하는 데이터에 잘 맞습니다.
+                </p>
+
+                <h3>연결 리스트 · Linked List</h3>
+                <p>
+                  연결 리스트는 각 노드가 데이터와 다음 노드의 위치를 함께 들고 있는 구조입니다.
+                  노드 위치를 이미 알고 있다면 삽입과 삭제는 빠르게 처리할 수 있지만, 특정 인덱스로 바로 접근할 수 없어서 탐색은 보통 <code>O(n)</code>입니다.
+                  잦은 삽입과 삭제가 필요하고 순차 접근이 중심일 때 고려할 수 있습니다.
+                </p>
+
+                <h3>스택 · Stack</h3>
+                <p>
+                  스택은 나중에 들어온 데이터가 먼저 나가는 LIFO 구조입니다.
+                  <code>push</code>, <code>pop</code>, <code>top</code>은 보통 <code>O(1)</code>에 처리됩니다.
+                  함수 호출 관리, 되돌리기, 괄호 검사, 깊이 우선 탐색 같은 상황에서 자주 사용됩니다.
+                </p>
+
+                <h3>큐 · Queue</h3>
+                <p>
+                  큐는 먼저 들어온 데이터가 먼저 나가는 FIFO 구조입니다.
+                  삽입과 제거는 보통 <code>O(1)</code>에 처리되며, 작업 대기열, 이벤트 처리, 너비 우선 탐색에 잘 어울립니다.
+                  우선순위가 필요한 경우에는 일반 큐 대신 우선순위 큐를 사용합니다.
+                </p>
+
+                <h3>해시 테이블 · Hash Table</h3>
+                <p>
+                  해시 테이블은 키를 해시 함수로 변환해 데이터를 저장하는 구조입니다.
+                  평균적으로 탐색, 삽입, 삭제가 <code>O(1)</code>에 가깝지만, 해시 충돌이 많거나 해시 함수가 좋지 않으면 성능이 나빠질 수 있습니다.
+                  빠른 검색이 필요한 딕셔너리, 캐시, 중복 검사에 자주 사용됩니다.
+                </p>
+
+                <h3>트리 · Tree</h3>
+                <p>
+                  트리는 계층 관계를 표현하는 자료구조입니다.
+                  이진 탐색 트리는 정렬된 규칙을 이용해 탐색을 줄일 수 있지만, 한쪽으로 치우치면 <code>O(n)</code>까지 나빠질 수 있습니다.
+                  균형 잡힌 트리는 탐색, 삽입, 삭제를 보통 <code>O(log n)</code>에 처리할 수 있어 정렬된 데이터 관리에 유리합니다.
+                </p>
+
+                <h3>그래프 · Graph</h3>
+                <p>
+                  그래프는 정점과 간선으로 관계를 표현하는 구조입니다.
+                  길 찾기, 네트워크, 스킬 트리, 의존성 관계처럼 여러 대상이 복잡하게 연결된 문제에 사용됩니다.
+                  인접 리스트는 간선이 적은 그래프에 효율적이고, 인접 행렬은 두 정점의 연결 여부를 빠르게 확인하기 좋습니다.
+                </p>
+
+                <h3>힙 · Heap</h3>
+                <p>
+                  힙은 최댓값이나 최솟값을 빠르게 꺼내기 위한 완전 이진 트리 기반 구조입니다.
+                  최상위 원소 확인은 <code>O(1)</code>, 삽입과 삭제는 보통 <code>O(log n)</code>에 처리됩니다.
+                  우선순위 큐, 작업 스케줄링, 힙 정렬에서 자주 쓰입니다.
+                </p>
+              </section>
+
+              <section id="selection" aria-labelledby="selection-title">
+                <h2 id="selection-title">자료구조 선택 기준</h2>
+                <p>
+                  자료구조를 고를 때는 "가장 유명한 구조"보다 "내 코드에서 가장 자주 일어나는 연산"을 먼저 봐야 합니다.
+                  데이터를 인덱스로 자주 읽는다면 배열이 단순하고 빠릅니다. 키로 빠르게 찾는 일이 많다면 해시 테이블이 좋습니다.
+                  항상 가장 작은 값이나 큰 값을 꺼내야 한다면 힙이 자연스럽습니다.
+                </p>
+                <p>
+                  게임 개발에서도 이 기준은 그대로 적용됩니다. 매 프레임 순회해야 하는 오브젝트 목록은 연속 저장 구조가 유리할 수 있고,
+                  아이템 ID로 정보를 자주 찾는다면 해시 기반 맵이 편합니다. 길 찾기나 상태 전이처럼 관계가 중요한 문제는 그래프로 모델링하면
+                  문제를 더 명확하게 다룰 수 있습니다.
+                </p>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>시간복잡도는 입력 크기가 커질 때 연산량이 어떻게 증가하는지 보는 기준이다.</li>
+                  <li>빅오 표기법은 가장 큰 성장 항만 남겨 알고리즘의 확장성을 표현한다.</li>
+                  <li>배열은 인덱스 접근이 빠르고, 연결 리스트는 위치를 알고 있을 때 삽입과 삭제가 유리하다.</li>
+                  <li>스택과 큐는 데이터가 들어오고 나가는 순서를 제한해 문제를 단순하게 만든다.</li>
+                  <li>해시 테이블은 평균적으로 빠른 검색을 제공하고, 트리와 힙은 정렬과 우선순위 처리에 강하다.</li>
+                  <li>그래프는 복잡한 관계와 경로 문제를 표현하는 데 적합하다.</li>
+                </ul>
+                <p>
+                  결국 시간복잡도는 알고리즘의 성장 방식을 읽는 언어이고, 자료구조는 그 성능을 현실의 코드에서 만들어내는 선택입니다.
+                  둘을 함께 보면 "동작하는 코드"를 넘어 "입력이 커져도 버틸 수 있는 코드"를 설계할 수 있습니다.
+                </p>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../theme.js"></script>
+  </body>
+</html>
