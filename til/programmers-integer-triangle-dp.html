@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="프로그래머스 정수 삼각형 문제를 아래에서 위로 누적하는 동적 계획법으로 해결하고, 점화식과 C++ 구현 과정을 정리한 TIL입니다.">
+    <title>프로그래머스 정수 삼각형: 아래에서 위로 누적하는 DP | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="../index.html#writing">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes</p>
+            <h1>프로그래머스 정수 삼각형: 아래에서 위로 누적하는 DP</h1>
+            <p class="post-meta">TIL · 알고리즘과 자료구조 · 2026.07.10</p>
+            <p class="post-lead">
+              정수 삼각형의 꼭대기에서 바닥까지 이동하며 얻을 수 있는 가장 큰 합을 구하는 문제입니다.
+              위에서 아래로 경로를 만들려던 시선을 뒤집어, 마지막 행부터 각 칸에서 선택할 수 있는 최댓값을 누적하면 간단한 점화식 하나로 해결할 수 있습니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#problem">문제 이해</a></li>
+                <li><a href="#first-approach">처음 떠올린 접근</a></li>
+                <li><a href="#reverse">방향을 뒤집어 생각하기</a></li>
+                <li><a href="#recurrence">DP 상태와 점화식</a></li>
+                <li><a href="#example">누적 과정 살펴보기</a></li>
+                <li><a href="#code">최종 코드</a></li>
+                <li><a href="#complexity">복잡도와 체크포인트</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="problem" aria-labelledby="problem-title">
+                <h2 id="problem-title">문제 이해</h2>
+                <p>삼각형의 각 칸에서는 바로 아래 행에 있는 두 칸 중 하나로만 이동할 수 있습니다.</p>
+                <pre><code>          7
+       3     8
+     8   1   0
+   2   7   4   4
+ 4   5   2   6   5</code></pre>
+                <p>
+                  예를 들어 두 번째 행의 <code>3</code>에서는 다음 행의 <code>8</code> 또는 <code>1</code>로 이동할 수 있습니다.
+                  가능한 모든 경로 중 거쳐 간 숫자의 합이 가장 큰 값을 반환해야 합니다.
+                </p>
+                <div class="post-callout">
+                  <p>
+                    삼각형의 높이는 최대 500입니다. 모든 경로를 직접 탐색하면 행이 늘 때마다 경우의 수가 두 배씩 증가하므로,
+                    이미 계산한 부분 문제의 답을 재사용하는 동적 계획법이 필요합니다.
+                  </p>
+                </div>
+              </section>
+
+              <section id="first-approach" aria-labelledby="first-approach-title">
+                <h2 id="first-approach-title">처음 떠올린 접근</h2>
+                <p>
+                  처음에는 문제에 적힌 이동 방향 그대로 꼭대기에서 아래로 내려가며 값을 누적하려 했습니다.
+                  <code>triangle</code>과 같은 크기의 <code>dp</code>를 만들고, 현재 칸까지 도달한 최댓값을 저장하는 방식입니다.
+                </p>
+                <p>
+                  이 방법도 풀 수 있지만 가장자리와 내부 칸의 이전 위치가 서로 달라 조건 처리가 필요합니다.
+                  각 칸에 도착하는 경로를 계속 따라가려다 보니 상태와 인덱스가 직관적으로 정리되지 않았습니다.
+                </p>
+                <pre><code>위에서 아래로 내려갈 때
+
+왼쪽 가장자리: 바로 위 칸에서만 도착
+오른쪽 가장자리: 왼쪽 위 칸에서만 도착
+내부 칸: 왼쪽 위와 오른쪽 위 중 큰 값을 선택</code></pre>
+              </section>
+
+              <section id="reverse" aria-labelledby="reverse-title">
+                <h2 id="reverse-title">방향을 뒤집어 생각하기</h2>
+                <p>
+                  이동 경로를 위에서 아래로 만드는 대신, 마지막 바로 위 행부터 거꾸로 올라가며 생각하면 선택이 단순해집니다.
+                  현재 칸에서 다음 행으로 갈 수 있는 곳은 언제나 바로 아래의 두 칸뿐입니다.
+                </p>
+                <pre><code>현재 칸에서 얻을 수 있는 최대 합
+= max(왼쪽 아래에서 얻을 수 있는 최대 합,
+       오른쪽 아래에서 얻을 수 있는 최대 합)</code></pre>
+                <p>
+                  아래 행에 이미 그 위치에서 바닥까지 갈 때의 최대 합이 저장되어 있다고 가정하면,
+                  현재 칸은 두 값 중 큰 것만 선택해 자신의 값을 더하면 됩니다.
+                  마지막 행은 더 내려갈 곳이 없으므로 각 숫자 자체가 부분 문제의 초기값입니다.
+                </p>
+              </section>
+
+              <section id="recurrence" aria-labelledby="recurrence-title">
+                <h2 id="recurrence-title">DP 상태와 점화식</h2>
+                <p>별도의 표를 만든다면 상태는 다음처럼 정의할 수 있습니다.</p>
+                <pre><code>dp[i][j]
+= (i, j) 위치에서 출발해 바닥까지 내려갈 때 얻을 수 있는 최대 합</code></pre>
+                <p>마지막 행을 초기값으로 두고, 마지막 바로 위 행부터 첫 행까지 다음 점화식을 적용합니다.</p>
+                <pre><code>dp[i][j] = triangle[i][j]
+         + max(dp[i + 1][j], dp[i + 1][j + 1])</code></pre>
+                <p>
+                  하지만 <code>dp</code>의 모양과 초기값이 원본 <code>triangle</code>과 완전히 같습니다.
+                  함수가 배열을 값으로 전달받으므로 복사본인 <code>triangle</code> 자체를 DP 테이블로 사용하면 별도의 2차원 벡터가 필요 없습니다.
+                </p>
+              </section>
+
+              <section id="example" aria-labelledby="example-title">
+                <h2 id="example-title">누적 과정 살펴보기</h2>
+                <p>가장 아래의 두 행부터 계산하면 네 번째 행은 다음과 같이 바뀝니다.</p>
+                <pre><code>기존: 2   7   4   4
+아래: 4   5   2   6   5
+
+누적: 2 + max(4, 5) = 7
+      7 + max(5, 2) = 12
+      4 + max(2, 6) = 10
+      4 + max(6, 5) = 10
+
+결과: 7  12  10  10</code></pre>
+                <p>같은 계산을 한 행씩 위로 반복합니다.</p>
+                <pre><code>세 번째 행: 20  13  10
+두 번째 행: 23  21
+첫 번째 행: 30</code></pre>
+                <p>
+                  모든 부분 문제의 결과가 꼭대기 하나로 모이므로 최종 답은 <code>triangle[0][0]</code>의 <code>30</code>입니다.
+                </p>
+              </section>
+
+              <section id="code" aria-labelledby="code-title">
+                <h2 id="code-title">최종 코드</h2>
+                <pre><code>#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+using namespace std;
+
+int solution(vector&lt;vector&lt;int&gt;&gt; triangle) {
+    for (int i = static_cast&lt;int&gt;(triangle.size()) - 2; i &gt;= 0; i--) {
+        for (int j = 0; j &lt; static_cast&lt;int&gt;(triangle[i].size()); j++) {
+            triangle[i][j] += max(triangle[i + 1][j],
+                                  triangle[i + 1][j + 1]);
+        }
+    }
+
+    return triangle[0][0];
+}</code></pre>
+                <p>
+                  높이가 1인 삼각형은 반복문을 실행하지 않고 곧바로 유일한 값인 <code>triangle[0][0]</code>을 반환합니다.
+                  인덱스를 감소시키는 반복문에서 부호 없는 타입의 언더플로를 피하도록 행 인덱스는 <code>int</code>로 변환해 사용했습니다.
+                </p>
+              </section>
+
+              <section id="complexity" aria-labelledby="complexity-title">
+                <h2 id="complexity-title">복잡도와 체크포인트</h2>
+                <ul class="principle-list" aria-label="정수 삼각형 풀이 체크포인트">
+                  <li>
+                    <h3>시간복잡도는 <code>O(n²)</code></h3>
+                    <p>높이가 <code>n</code>일 때 삼각형의 모든 칸을 한 번씩 확인합니다. 정확히는 <code>n(n + 1) / 2</code>개에 비례합니다.</p>
+                  </li>
+                  <li>
+                    <h3>추가 공간복잡도는 <code>O(1)</code></h3>
+                    <p>매개변수로 전달된 <code>triangle</code> 복사본을 DP 테이블로 재사용하므로, 입력 저장 공간 외에 크기가 증가하는 자료구조를 만들지 않습니다.</p>
+                  </li>
+                  <li>
+                    <h3>지역 최댓값만 고르는 탐욕법과 다르다</h3>
+                    <p>위에서 당장 더 큰 자식만 선택하면 이후 경로의 합을 놓칠 수 있습니다. 아래에서 계산한 전체 최댓값을 비교해야 합니다.</p>
+                  </li>
+                  <li>
+                    <h3>순회 방향이 초기 조건을 단순하게 만든다</h3>
+                    <p>마지막 행을 그대로 초기값으로 사용할 수 있어 가장자리 예외 처리 없이 모든 칸에 같은 점화식을 적용할 수 있습니다.</p>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>모든 경로를 직접 만들지 않고, 각 위치에서 바닥까지 얻을 수 있는 최대 합을 저장한다.</li>
+                  <li>마지막 행을 초기값으로 두고 마지막 바로 위 행부터 꼭대기까지 올라간다.</li>
+                  <li>현재 값에 두 자식의 누적값 중 큰 값을 더한다.</li>
+                  <li>원본 배열의 복사본을 갱신하면 별도의 DP 테이블이 필요 없다.</li>
+                  <li>모든 계산이 끝난 뒤 꼭대기 값이 전체 경로의 최댓값이다.</li>
+                </ul>
+                <p>
+                  이 문제에서 가장 오래 막힌 이유는 문제에 제시된 이동 방향만 따라 생각했기 때문입니다.
+                  아래에서 위로 시선을 바꾸자 초기값과 점화식이 동시에 단순해졌습니다.
+                  DP에서는 무엇을 저장할지뿐 아니라 어느 방향으로 계산해야 이미 구한 답을 자연스럽게 사용할 수 있는지도 중요하다는 점을 배웠습니다.
+                </p>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js"
+                        data-repo="StaySober01/StaySober01.github.io"
+                        data-repo-id="R_kgDOTQFJZA"
+                        data-category="Comments"
+                        data-category-id="DIC_kwDOTQFJZM4DA3to"
+                        data-mapping="pathname"
+                        data-strict="0"
+                        data-reactions-enabled="1"
+                        data-emit-metadata="0"
+                        data-input-position="bottom"
+                        data-theme="preferred_color_scheme"
+                        data-lang="ko"
+                        data-loading="lazy"
+                        crossorigin="anonymous"
+                        async>
+                </script>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>

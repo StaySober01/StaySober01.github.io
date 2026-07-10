@@ -488,9 +488,11 @@ h3 {
 .post-layout {
   display: grid;
   gap: 2rem;
+  min-width: 0;
 }
 
 .post-toc {
+  min-width: 0;
   padding: 1.25rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -523,10 +525,12 @@ h3 {
 .post-content {
   display: grid;
   gap: 2rem;
+  min-width: 0;
   max-width: 48rem;
 }
 
 .post-content section {
+  min-width: 0;
   padding-top: 2rem;
   border-top: 1px solid var(--color-border);
 }

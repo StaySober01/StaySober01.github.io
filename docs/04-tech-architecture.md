@@ -6,7 +6,7 @@
 AGENTS.md             작업 규칙
 index.html            시맨틱 콘텐츠와 문서 메타데이터
 projects/             프로젝트 상세 하위 페이지
-til/                  TIL / 블로그 하위 페이지
+til/                  문제 풀이와 기술 학습을 정리한 TIL / 블로그 하위 페이지
 til/index.html        TIL / 블로그 전체 글 목록
 styles.css            디자인 토큰, 레이아웃, 반응형 스타일
 theme.js              테마 전환과 사용자 선택 저장
