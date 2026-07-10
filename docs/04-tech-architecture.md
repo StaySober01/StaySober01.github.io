@@ -11,10 +11,11 @@ til/index.html        TIL / 블로그 전체 글 목록
 styles.css            디자인 토큰, 레이아웃, 반응형 스타일
 theme.js              테마 전환과 사용자 선택 저장
 code-highlight.js     TIL 코드블록 구문 강조
+til-filter.js         TIL 목록 카테고리 필터링과 결과 수 안내
 docs/                 제품, 콘텐츠, 기술 의사결정 문서
 ```
 
-브라우저가 루트와 하위 폴더의 HTML, CSS와 소형 JavaScript를 직접 읽는 정적 사이트다. 패키지 관리자, 빌드 단계, 런타임 의존성은 없다. 상대 경로를 사용하므로 GitHub Pages에서 단순하게 제공할 수 있다. `theme.js`는 테마 버튼의 상태와 `localStorage`에 저장한 사용자 선택을 관리한다. `code-highlight.js`는 TIL 코드블록의 C++ 중심 키워드, 타입, 문자열, 숫자, 주석, 연산자 색상을 적용한다. TIL 글의 댓글은 giscus 임베드 스크립트를 사용하며, 글별 댓글 데이터는 GitHub Discussions의 `Comments` 카테고리에 저장한다.
+브라우저가 루트와 하위 폴더의 HTML, CSS와 소형 JavaScript를 직접 읽는 정적 사이트다. 패키지 관리자, 빌드 단계, 런타임 의존성은 없다. 상대 경로를 사용하므로 GitHub Pages에서 단순하게 제공할 수 있다. `theme.js`는 테마 버튼의 상태와 `localStorage`에 저장한 사용자 선택을 관리한다. `code-highlight.js`는 TIL 코드블록의 C++ 중심 키워드, 타입, 문자열, 숫자, 주석, 연산자 색상을 적용한다. `til-filter.js`는 `/til/index.html` 카드의 `data-post-category` 값을 기준으로 선택한 카테고리만 표시하며, JavaScript를 사용할 수 없을 때는 전체 목록을 그대로 제공한다. TIL 글의 댓글은 giscus 임베드 스크립트를 사용하며, 글별 댓글 데이터는 GitHub Discussions의 `Comments` 카테고리에 저장한다.
 
 ## 변경 원칙
 

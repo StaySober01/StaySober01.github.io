@@ -686,6 +686,78 @@ h3 {
   gap: 1rem;
 }
 
+.category-filter {
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.category-filter-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.category-filter-header h2,
+.category-filter-status {
+  margin: 0;
+}
+
+.category-filter-header h2 {
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.category-filter-status {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.category-filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.category-filter-button {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.category-filter-button span {
+  margin-left: 0.25rem;
+  color: inherit;
+  font-size: 0.8rem;
+}
+
+.category-filter-button:hover,
+.category-filter-button[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-background);
+}
+
+.category-filter-button:focus-visible {
+  outline: 0.2rem solid var(--color-accent);
+  outline-offset: 0.2rem;
+}
+
+.post-list-card[hidden] {
+  display: none;
+}
+
 .post-list-card {
   display: flex;
   align-items: flex-start;

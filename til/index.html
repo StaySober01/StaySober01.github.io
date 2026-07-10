@@ -33,7 +33,7 @@
               </button>
             </li>
             <li><a href="../index.html#projects">Projects</a></li>
-            <li><a href="../index.html#writing">TIL &amp; Blog</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
             <li><a href="../index.html#about">About</a></li>
           </ul>
         </nav>
@@ -51,24 +51,38 @@
             </p>
           </header>
 
+          <div class="category-filter" data-category-filter hidden>
+            <div class="category-filter-header">
+              <h2>카테고리</h2>
+              <p class="category-filter-status" data-filter-status aria-live="polite">전체 글 6개</p>
+            </div>
+            <div class="category-filter-options" role="group" aria-label="TIL 카테고리 필터">
+              <button class="category-filter-button" type="button" data-category="all" aria-pressed="true">전체 <span>6</span></button>
+              <button class="category-filter-button" type="button" data-category="프로그래머스 문제 풀이" aria-pressed="false">프로그래머스 문제 풀이 <span>2</span></button>
+              <button class="category-filter-button" type="button" data-category="알고리즘과 자료구조" aria-pressed="false">알고리즘과 자료구조 <span>2</span></button>
+              <button class="category-filter-button" type="button" data-category="컴퓨터 구조" aria-pressed="false">컴퓨터 구조 <span>1</span></button>
+              <button class="category-filter-button" type="button" data-category="객체지향 설계" aria-pressed="false">객체지향 설계 <span>1</span></button>
+            </div>
+          </div>
+
           <div class="post-list" aria-label="전체 글 목록">
-            <article class="card post-list-card">
+            <article class="card post-list-card" data-post-category="프로그래머스 문제 풀이">
               <div>
-                <p class="card-meta">TIL · 알고리즘과 자료구조 · 2026.07.10</p>
+                <p class="card-meta">TIL · 프로그래머스 문제 풀이 · 2026.07.10</p>
                 <h2>프로그래머스 정수 삼각형: 아래에서 위로 누적하는 DP</h2>
                 <p>마지막 행부터 두 자식의 최댓값을 현재 칸에 누적해, 모든 경로를 탐색하지 않고 꼭대기부터 바닥까지의 최대 합을 구하는 과정을 정리했습니다.</p>
               </div>
               <a class="card-action" href="programmers-integer-triangle-dp.html">글 읽기</a>
             </article>
-            <article class="card post-list-card">
+            <article class="card post-list-card" data-post-category="프로그래머스 문제 풀이">
               <div>
-                <p class="card-meta">TIL · 알고리즘과 자료구조 · 2026.07.10</p>
+                <p class="card-meta">TIL · 프로그래머스 문제 풀이 · 2026.07.10</p>
                 <h2>프로그래머스 N으로 표현: DP로 가능한 값 쌓기</h2>
                 <p>N을 사용한 횟수별로 만들 수 있는 모든 값을 집합에 저장하고, 작은 집합을 사칙연산으로 조합해 목표값의 최소 사용 횟수를 찾는 과정을 정리했습니다.</p>
               </div>
               <a class="card-action" href="programmers-n-expression-dp.html">글 읽기</a>
             </article>
-            <article class="card post-list-card">
+            <article class="card post-list-card" data-post-category="알고리즘과 자료구조">
               <div>
                 <p class="card-meta">TIL · 알고리즘과 자료구조 · 2026.07.10</p>
                 <h2>동적 계획법으로 중복 계산 줄이기</h2>
@@ -76,7 +90,7 @@
               </div>
               <a class="card-action" href="dynamic-programming.html">글 읽기</a>
             </article>
-            <article class="card post-list-card">
+            <article class="card post-list-card" data-post-category="컴퓨터 구조">
               <div>
                 <p class="card-meta">TIL · 컴퓨터 구조 · 2026.07.09</p>
                 <h2>분기 예측으로 이해하는 CPU 파이프라인 최적화</h2>
@@ -84,7 +98,7 @@
               </div>
               <a class="card-action" href="branch-prediction.html">글 읽기</a>
             </article>
-            <article class="card post-list-card">
+            <article class="card post-list-card" data-post-category="알고리즘과 자료구조">
               <div>
                 <p class="card-meta">TIL · 알고리즘과 자료구조 · 2026.07.09</p>
                 <h2>시간복잡도, 빅오 표기법, 대표 자료구조 정리</h2>
@@ -92,7 +106,7 @@
               </div>
               <a class="card-action" href="time-complexity-big-o-data-structures.html">글 읽기</a>
             </article>
-            <article class="card post-list-card">
+            <article class="card post-list-card" data-post-category="객체지향 설계">
               <div>
                 <p class="card-meta">TIL · 객체지향 설계 · 2026.07.08</p>
                 <h2>SOLID 원칙으로 설계 책임 나누기</h2>
@@ -111,6 +125,7 @@
         <a href="https://github.com/StaySober01">GitHub</a>
       </div>
     </footer>
+    <script src="../til-filter.js"></script>
     <script src="../theme.js"></script>
   </body>
 </html>
