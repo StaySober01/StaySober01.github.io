@@ -611,6 +611,10 @@ h3 {
   background: var(--color-surface);
 }
 
+.comments-section {
+  min-width: 0;
+}
+
 .post-nav {
   margin-top: 3rem;
 }
