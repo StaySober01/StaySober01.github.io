@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="프로그래머스 N으로 표현 문제를 동적 계획법으로 풀기 위해 dp 집합의 의미, 조합 방식, C++ 구현 과정을 정리한 TIL입니다.">
+    <title>프로그래머스 N으로 표현: DP로 가능한 값 쌓기 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="../index.html#writing">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes</p>
+            <h1>프로그래머스 N으로 표현: DP로 가능한 값 쌓기</h1>
+            <p class="post-meta">TIL · 알고리즘과 자료구조 · 2026.07.10</p>
+            <p class="post-lead">
+              프로그래머스의 N으로 표현 문제는 숫자 <code>N</code>과 사칙연산만으로 목표 숫자를 만드는 최소 사용 횟수를 구하는 문제입니다.
+              핵심은 <code>N</code>을 몇 번 사용했는지에 따라 만들 수 있는 모든 값을 집합으로 저장하고, 작은 사용 횟수의 결과를 조합해 더 큰 사용 횟수의 결과를 만드는 것입니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#problem">문제 이해</a></li>
+                <li><a href="#state">DP 상태 정의</a></li>
+                <li><a href="#repeat-number">반복 숫자 넣기</a></li>
+                <li><a href="#combine">작은 집합 조합하기</a></li>
+                <li><a href="#code">최종 코드</a></li>
+                <li><a href="#checks">풀이 체크포인트</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="problem" aria-labelledby="problem-title">
+                <h2 id="problem-title">문제 이해</h2>
+                <p>
+                  예를 들어 <code>N = 5</code>, <code>number = 12</code>라면 다음처럼 5와 사칙연산만 사용해 12를 만들 수 있습니다.
+                </p>
+                <pre><code>12 = 5 + 5 + (5 / 5) + (5 / 5)
+12 = 55 / 5 + 5 / 5
+12 = (55 + 5) / 5</code></pre>
+                <p>
+                  각각 5를 6번, 5번, 4번 사용합니다. 이 중 최소 사용 횟수는 4이므로 답은 <code>4</code>입니다.
+                  문제는 이 최소 사용 횟수를 구하되, 8번을 넘겨야 만들 수 있다면 <code>-1</code>을 반환하라고 합니다.
+                </p>
+                <div class="post-callout">
+                  <p>
+                    제한이 "최솟값이 8보다 크면 -1"로 작게 잡혀 있기 때문에,
+                    1번부터 8번까지 만들 수 있는 값을 전부 모아보는 방식이 가능합니다.
+                  </p>
+                </div>
+              </section>
+
+              <section id="state" aria-labelledby="state-title">
+                <h2 id="state-title">DP 상태 정의</h2>
+                <p>
+                  이 문제에서 가장 중요한 문장은 다음입니다.
+                </p>
+                <pre><code>dp[i] = 숫자 N을 i번 사용해서 만들 수 있는 모든 숫자의 집합</code></pre>
+                <p>
+                  <code>vector&lt;set&lt;int&gt;&gt; dp(9)</code>를 사용하면 <code>dp[1]</code>부터 <code>dp[8]</code>까지 관리할 수 있습니다.
+                  <code>set</code>을 쓰는 이유는 같은 값이 여러 식에서 반복해서 만들어져도 한 번만 저장하기 위해서입니다.
+                </p>
+                <p>
+                  <code>N = 5</code>일 때 예시는 이렇게 볼 수 있습니다.
+                </p>
+                <pre><code>dp[1] = { 5 }
+
+dp[2] = {
+    55,
+    5 + 5,
+    5 - 5,
+    5 * 5,
+    5 / 5
+}</code></pre>
+                <p>
+                  <code>dp[3]</code>, <code>dp[4]</code>도 같은 방식입니다.
+                  이미 만들어둔 작은 집합들을 조합하면 더 큰 사용 횟수의 집합을 만들 수 있습니다.
+                </p>
+              </section>
+
+              <section id="repeat-number" aria-labelledby="repeat-number-title">
+                <h2 id="repeat-number-title">반복 숫자 넣기</h2>
+                <p>
+                  사칙연산 조합만 생각하면 <code>55</code>, <code>555</code> 같은 숫자를 놓치기 쉽습니다.
+                  그래서 각 <code>i</code>마다 <code>N</code>을 <code>i</code>번 이어 붙인 값을 먼저 넣어야 합니다.
+                </p>
+                <pre><code>int repeatNum = 0;
+
+for (int j = 0; j &lt; i; j++)
+{
+    repeatNum = repeatNum * 10 + N;
+}
+
+dp[i].insert(repeatNum);</code></pre>
+                <p>
+                  <code>N = 5</code>라면 <code>i = 1</code>일 때 5, <code>i = 2</code>일 때 55,
+                  <code>i = 3</code>일 때 555가 만들어집니다.
+                </p>
+              </section>
+
+              <section id="combine" aria-labelledby="combine-title">
+                <h2 id="combine-title">작은 집합 조합하기</h2>
+                <p>
+                  <code>dp[i]</code>는 <code>i</code>번을 둘로 나눈 조합에서 만들 수 있습니다.
+                  예를 들어 <code>dp[4]</code>는 <code>dp[1] + dp[3]</code>,
+                  <code>dp[2] + dp[2]</code>, <code>dp[3] + dp[1]</code> 조합에서 나옵니다.
+                </p>
+                <pre><code>for (int j = 1; j &lt; i; j++)
+{
+    int leftCount = j;
+    int rightCount = i - j;
+
+    for (int a : dp[leftCount])
+    {
+        for (int b : dp[rightCount])
+        {
+            dp[i].insert(a + b);
+            dp[i].insert(a - b);
+            dp[i].insert(a * b);
+
+            if (b != 0)
+                dp[i].insert(a / b);
+        }
+    }
+}</code></pre>
+                <p>
+                  여기서 <code>a - b</code>와 <code>a / b</code>는 순서가 중요합니다.
+                  그래서 <code>j</code>를 <code>1</code>부터 <code>i - 1</code>까지 모두 돌며
+                  <code>dp[1] + dp[3]</code>과 <code>dp[3] + dp[1]</code>을 각각 확인합니다.
+                  나눗셈은 0으로 나눌 수 없으므로 <code>b != 0</code> 조건을 반드시 둡니다.
+                </p>
+              </section>
+
+              <section id="code" aria-labelledby="code-title">
+                <h2 id="code-title">최종 코드</h2>
+                <p>
+                  각 사용 횟수 <code>i</code>에 대해 가능한 값을 모두 만든 뒤, 그 집합 안에 <code>number</code>가 있으면 바로 <code>i</code>를 반환합니다.
+                  작은 <code>i</code>부터 확인하기 때문에 처음 발견한 순간이 최소 사용 횟수입니다.
+                </p>
+                <pre><code>#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;set&gt;
+
+using namespace std;
+
+int solution(int N, int number) {
+    vector&lt;set&lt;int&gt;&gt; dp(9);
+
+    for (int i = 1; i &lt;= 8; i++) {
+        int repeatNum = 0;
+
+        for (int j = 0; j &lt; i; j++)
+        {
+            repeatNum = repeatNum * 10 + N;
+        }
+
+        dp[i].insert(repeatNum);
+
+        for (int j = 1; j &lt; i; j++) {
+            int leftCount = j;
+            int rightCount = i - j;
+
+            for (int a : dp[leftCount])
+            {
+                for (int b : dp[rightCount])
+                {
+                    dp[i].insert(a + b);
+                    dp[i].insert(a - b);
+                    dp[i].insert(a * b);
+
+                    if (b != 0)
+                        dp[i].insert(a / b);
+                }
+            }
+        }
+
+        if (dp[i].count(number)) return i;
+    }
+
+    return -1;
+}</code></pre>
+              </section>
+
+              <section id="checks" aria-labelledby="checks-title">
+                <h2 id="checks-title">풀이 체크포인트</h2>
+                <ul class="principle-list" aria-label="N으로 표현 풀이 체크포인트">
+                  <li>
+                    <h3><code>dp[i]</code>의 의미를 먼저 고정한다</h3>
+                    <p><code>i</code>번째 값이 아니라, <code>N</code>을 <code>i</code>번 사용해서 만들 수 있는 모든 값의 집합입니다.</p>
+                  </li>
+                  <li>
+                    <h3>이어 붙인 숫자를 별도로 넣는다</h3>
+                    <p><code>55</code>, <code>555</code>는 사칙연산 조합에서 자동으로 나오지 않으므로 각 단계에서 직접 추가합니다.</p>
+                  </li>
+                  <li>
+                    <h3>뺄셈과 나눗셈은 순서를 놓치지 않는다</h3>
+                    <p><code>a - b</code>와 <code>b - a</code>는 다르고, <code>a / b</code>와 <code>b / a</code>도 다릅니다. 모든 분할을 순서대로 확인해야 합니다.</p>
+                  </li>
+                  <li>
+                    <h3>최소 횟수는 조기 반환으로 처리한다</h3>
+                    <p><code>i = 1</code>부터 증가시키며 검사하므로, 목표값을 처음 찾은 순간의 <code>i</code>가 곧 정답입니다.</p>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li><code>dp[i]</code>는 <code>N</code>을 <code>i</code>번 사용해서 만들 수 있는 값들의 집합이다.</li>
+                  <li>각 단계마다 <code>N</code>, <code>NN</code>, <code>NNN</code>처럼 이어 붙인 값을 먼저 넣는다.</li>
+                  <li><code>dp[j]</code>와 <code>dp[i - j]</code>의 모든 값을 사칙연산으로 조합해 <code>dp[i]</code>를 채운다.</li>
+                  <li>나눗셈은 0으로 나누지 않도록 조건을 둔다.</li>
+                  <li>1번부터 8번까지 확인하면서 목표값을 처음 찾으면 그 횟수를 반환하고, 끝까지 없으면 <code>-1</code>을 반환한다.</li>
+                </ul>
+                <p>
+                  이 문제는 DP를 "최적값 하나를 저장하는 배열"로만 보지 않고,
+                  "현재 사용 횟수로 만들 수 있는 상태 전체를 저장하는 집합"으로 확장해서 생각하는 연습이 됩니다.
+                  가능한 값을 차곡차곡 쌓아두면, 완전탐색처럼 보이는 문제도 제한 안에서 깔끔하게 정리할 수 있습니다.
+                </p>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js"
+                        data-repo="StaySober01/StaySober01.github.io"
+                        data-repo-id="R_kgDOTQFJZA"
+                        data-category="Comments"
+                        data-category-id="DIC_kwDOTQFJZM4DA3to"
+                        data-mapping="pathname"
+                        data-strict="0"
+                        data-reactions-enabled="1"
+                        data-emit-metadata="0"
+                        data-input-position="bottom"
+                        data-theme="preferred_color_scheme"
+                        data-lang="ko"
+                        data-loading="lazy"
+                        crossorigin="anonymous"
+                        async>
+                </script>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>

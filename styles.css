@@ -577,6 +577,64 @@ h3 {
   background: transparent;
 }
 
+.code-token-keyword {
+  color: #ff8fb3;
+  font-weight: 700;
+}
+
+.code-token-type {
+  color: #86e1fc;
+}
+
+.code-token-string {
+  color: #f5d06f;
+}
+
+.code-token-number {
+  color: #b8f28b;
+}
+
+.code-token-comment {
+  color: #7f8da6;
+  font-style: italic;
+}
+
+.code-token-preprocessor {
+  color: #c5a3ff;
+}
+
+.code-token-operator {
+  color: #f2a65a;
+}
+
+:root[data-theme="light"] .code-token-keyword {
+  color: #b42360;
+}
+
+:root[data-theme="light"] .code-token-type {
+  color: #0369a1;
+}
+
+:root[data-theme="light"] .code-token-string {
+  color: #925f00;
+}
+
+:root[data-theme="light"] .code-token-number {
+  color: #2f7d32;
+}
+
+:root[data-theme="light"] .code-token-comment {
+  color: #667085;
+}
+
+:root[data-theme="light"] .code-token-preprocessor {
+  color: #6d28d9;
+}
+
+:root[data-theme="light"] .code-token-operator {
+  color: #b45309;
+}
+
 .post-content ul {
   display: grid;
   gap: 0.55rem;
