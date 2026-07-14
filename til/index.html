@@ -54,10 +54,11 @@
           <div class="category-filter" data-category-filter hidden>
             <div class="category-filter-header">
               <h2>카테고리</h2>
-              <p class="category-filter-status" data-filter-status aria-live="polite">전체 글 7개</p>
+              <p class="category-filter-status" data-filter-status aria-live="polite">전체 글 8개</p>
             </div>
             <div class="category-filter-options" role="group" aria-label="TIL 카테고리 필터">
-              <button class="category-filter-button" type="button" data-category="all" aria-pressed="true">전체 <span>7</span></button>
+              <button class="category-filter-button" type="button" data-category="all" aria-pressed="true">전체 <span>8</span></button>
+              <button class="category-filter-button" type="button" data-category="메모리 관리" aria-pressed="false">메모리 관리 <span>1</span></button>
               <button class="category-filter-button" type="button" data-category="프로그래머스 문제 풀이" aria-pressed="false">프로그래머스 문제 풀이 <span>2</span></button>
               <button class="category-filter-button" type="button" data-category="알고리즘과 자료구조" aria-pressed="false">알고리즘과 자료구조 <span>2</span></button>
               <button class="category-filter-button" type="button" data-category="컴퓨터 구조" aria-pressed="false">컴퓨터 구조 <span>2</span></button>
@@ -66,6 +67,14 @@
           </div>
 
           <div class="post-list" aria-label="전체 글 목록">
+            <article class="card post-list-card" data-post-category="메모리 관리">
+              <div>
+                <p class="card-meta">TIL · 메모리 관리 · 2026.07.14</p>
+                <h2>C#과 언리얼로 이해하는 가비지 컬렉션</h2>
+                <p>도달 가능성 기반 GC와 C# 세대별 수집, IDisposable, 언리얼 UObject의 UPROPERTY와 강한·약한·소프트 참조를 비교해 정리했습니다.</p>
+              </div>
+              <a class="card-action" href="garbage-collection-csharp-unreal.html">글 읽기</a>
+            </article>
             <article class="card post-list-card" data-post-category="컴퓨터 구조">
               <div>
                 <p class="card-meta">TIL · 컴퓨터 구조 · 2026.07.13</p>
