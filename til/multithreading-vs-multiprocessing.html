@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="프로세스와 스레드의 메모리 구조, IPC, 문맥 교환, 데이터 레이스와 교착 상태, 동시성과 병렬성, 게임 개발에서의 활용 기준을 비교한 TIL입니다.">
+    <title>멀티프로세스와 멀티스레드: 메모리 공유부터 동기화까지 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes</p>
+            <h1>멀티프로세스와 멀티스레드: 메모리 공유부터 동기화까지</h1>
+            <p class="post-meta">TIL · 운영체제 · 2026.07.15</p>
+            <p class="post-lead">
+              멀티프로세스는 독립된 실행 단위를 여러 개 사용하고, 멀티스레드는 한 프로세스 안의 실행 흐름을 여러 개 사용합니다.
+              둘의 가장 중요한 차이인 메모리 격리와 공유를 출발점으로 비용, 안정성, 동기화 문제와 게임 개발에서의 활용 기준을 정리했습니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#overview">한눈에 비교하기</a></li>
+                <li><a href="#process">프로세스와 IPC</a></li>
+                <li><a href="#thread">스레드와 공유 메모리</a></li>
+                <li><a href="#cost">생성과 문맥 교환 비용</a></li>
+                <li><a href="#synchronization">데이터 레이스와 동기화</a></li>
+                <li><a href="#deadlock">교착 상태</a></li>
+                <li><a href="#concurrency">동시성과 병렬성</a></li>
+                <li><a href="#workload">작업 유형에 따른 선택</a></li>
+                <li><a href="#game">게임 개발에서의 활용</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="overview" aria-labelledby="overview-title">
+                <h2 id="overview-title">한눈에 비교하기</h2>
+                <p>
+                  프로세스는 실행 중인 프로그램의 인스턴스이며 운영체제가 자원과 주소 공간을 관리하는 단위입니다.
+                  스레드는 그 프로세스 안에서 명령을 실행하는 흐름입니다. 하나의 프로세스는 적어도 하나의 메인 스레드로 실행됩니다.
+                </p>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">구분</th>
+                        <th scope="col">멀티프로세스</th>
+                        <th scope="col">멀티스레드</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row">메모리 공간</th><td>프로세스마다 격리</td><td>같은 프로세스의 주소 공간 공유</td></tr>
+                      <tr><th scope="row">데이터 교환</th><td>IPC가 필요</td><td>공유 데이터에 직접 접근 가능</td></tr>
+                      <tr><th scope="row">생성·전환 비용</th><td>일반적으로 더 큼</td><td>일반적으로 더 작음</td></tr>
+                      <tr><th scope="row">장애 격리</th><td>한 프로세스의 오류를 격리하기 쉬움</td><td>치명적인 오류가 프로세스 전체에 영향</td></tr>
+                      <tr><th scope="row">주요 설계 문제</th><td>IPC와 데이터 직렬화</td><td>데이터 레이스와 교착 상태</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="post-callout">
+                  <p>
+                    핵심은 메모리 공유 여부입니다. 격리는 안정성을 높이지만 통신 비용을 만들고,
+                    공유는 빠른 협업을 가능하게 하지만 올바른 동기화를 요구합니다.
+                  </p>
+                </div>
+              </section>
+
+              <section id="process" aria-labelledby="process-title">
+                <h2 id="process-title">프로세스와 IPC</h2>
+                <p>
+                  각 프로세스는 자신의 가상 주소 공간을 가집니다. 보통 코드, 전역·정적 데이터, 힙, 스택 같은 영역으로 나누어 설명하며,
+                  한 프로세스의 일반 포인터로 다른 프로세스의 변수를 직접 읽거나 쓸 수 없습니다.
+                </p>
+                <pre><code>Process A                  Process B
+├── Code                   ├── Code
+├── Data                   ├── Data
+├── Heap                   ├── Heap
+└── Stack                  └── Stack
+
+          직접 접근 불가</code></pre>
+                <p>
+                  서로 다른 프로세스가 데이터를 주고받으려면 운영체제가 제공하는 프로세스 간 통신(IPC, Inter-Process Communication)을 사용합니다.
+                  파이프, 소켓, 메시지 큐, 공유 메모리, 파일 등이 대표적입니다. 방식에 따라 데이터 복사, 직렬화, 시스템 호출과 동기화 비용이 달라집니다.
+                </p>
+                <p>
+                  대신 주소 공간이 분리되어 한 프로세스의 충돌이나 잘못된 메모리 접근이 다른 프로세스에 바로 전파될 가능성이 낮습니다.
+                  브라우저가 탭이나 렌더러를 별도 프로세스로 나누고, 서버가 여러 워커 프로세스를 두는 이유 중 하나가 이런 장애 격리입니다.
+                </p>
+              </section>
+
+              <section id="thread" aria-labelledby="thread-title">
+                <h2 id="thread-title">스레드와 공유 메모리</h2>
+                <p>
+                  같은 프로세스의 스레드는 코드, 전역·정적 데이터와 힙, 열린 파일 같은 프로세스 자원을 공유합니다.
+                  반면 각 스레드는 독립적인 스택, CPU 레지스터 상태, 프로그램 카운터와 실행 상태를 가집니다.
+                </p>
+                <pre><code>Process
+├── Shared: Code, Data, Heap
+├── Thread 1
+│   └── Stack, Registers, Program Counter
+├── Thread 2
+│   └── Stack, Registers, Program Counter
+└── Thread 3
+    └── Stack, Registers, Program Counter</code></pre>
+                <p>
+                  공유 힙의 객체나 전역 변수에 곧바로 접근할 수 있어 별도의 IPC 없이 빠르게 데이터를 교환할 수 있습니다.
+                  하지만 접근할 수 있다는 사실이 동시에 접근해도 안전하다는 뜻은 아닙니다. 공유 데이터를 수정할 때는 소유권과 접근 순서를 설계해야 합니다.
+                </p>
+              </section>
+
+              <section id="cost" aria-labelledby="cost-title">
+                <h2 id="cost-title">생성과 문맥 교환 비용</h2>
+                <p>
+                  스레드는 기존 프로세스의 주소 공간과 자원을 재사용하므로 일반적으로 새 프로세스보다 생성 비용과 메모리 사용량이 작습니다.
+                  실행 대상을 바꾸는 문맥 교환에서도 현재 레지스터와 실행 상태를 저장하고 다음 작업의 상태를 복구해야 하지만,
+                  프로세스 전환은 주소 공간과 관련된 상태까지 바뀔 수 있어 보통 더 무겁습니다.
+                </p>
+                <pre><code>Thread A 실행
+    ↓ 현재 상태 저장
+Thread B 상태 복구
+    ↓
+Thread B 실행</code></pre>
+                <p>
+                  다만 실제 비용은 운영체제, 하드웨어, 캐시 상태와 작업 특성에 따라 달라집니다.
+                  스레드가 항상 압도적으로 빠르다고 단정하기보다 측정 결과와 장애 격리, 통신 구조를 함께 판단해야 합니다.
+                  작업을 지나치게 잘게 나누면 스케줄링과 동기화 비용이 실제 작업 시간보다 커질 수도 있습니다.
+                </p>
+              </section>
+
+              <section id="synchronization" aria-labelledby="synchronization-title">
+                <h2 id="synchronization-title">데이터 레이스와 동기화</h2>
+                <p>
+                  여러 스레드가 적절한 동기화 없이 같은 메모리에 접근하고 그중 하나 이상이 값을 쓰면 데이터 레이스가 발생할 수 있습니다.
+                  C++에서 이런 데이터 레이스는 정의되지 않은 동작이므로 단순히 계산 결과 하나가 틀리는 데서 끝난다고 보장할 수 없습니다.
+                </p>
+                <pre><code>int counter = 0;
+
+// 읽기, 증가, 저장이 하나의 원자적 연산은 아니다.
+++counter;</code></pre>
+                <p>
+                  두 스레드가 모두 0을 읽고 각각 1을 저장하면 두 번 증가시켰는데도 최종값이 1이 되는 갱신 손실이 나타날 수 있습니다.
+                  공유 가변 상태를 줄이는 것이 첫 번째 방법이고, 공유가 필요하다면 목적에 맞는 동기화 도구를 사용해야 합니다.
+                </p>
+                <ul>
+                  <li><strong>Mutex:</strong> 임계 구역에 한 번에 하나의 스레드만 진입하게 합니다.</li>
+                  <li><strong>Atomic:</strong> 단순한 값의 읽기·쓰기·증가 등을 원자적으로 수행합니다.</li>
+                  <li><strong>Semaphore:</strong> 동시에 자원을 사용할 수 있는 작업 수를 제한합니다.</li>
+                  <li><strong>Condition Variable:</strong> 특정 조건이 충족될 때까지 스레드를 효율적으로 대기시킵니다.</li>
+                </ul>
+                <pre><code>#include &lt;mutex&gt;
+
+int counter = 0;
+std::mutex counterMutex;
+
+void Increase()
+{
+    std::lock_guard&lt;std::mutex&gt; lock(counterMutex);
+    ++counter;
+}</code></pre>
+                <p>
+                  <code>std::lock_guard</code>는 범위를 벗어날 때 자동으로 뮤텍스를 해제합니다.
+                  예외나 조기 반환이 있어도 잠금 해제를 빠뜨리지 않는 RAII 방식이므로 수동 <code>lock()</code>과 <code>unlock()</code> 호출보다 안전합니다.
+                </p>
+              </section>
+
+              <section id="deadlock" aria-labelledby="deadlock-title">
+                <h2 id="deadlock-title">교착 상태</h2>
+                <p>
+                  동기화 도구 자체가 올바른 실행을 자동으로 보장하지는 않습니다.
+                  두 스레드가 서로 상대방이 보유한 잠금을 기다리면 어느 쪽도 진행하지 못하는 교착 상태(Deadlock)가 생깁니다.
+                </p>
+                <pre><code>Thread A: Lock 1 획득 → Lock 2 대기
+Thread B: Lock 2 획득 → Lock 1 대기</code></pre>
+                <p>
+                  여러 잠금이 필요하다면 모든 코드에서 잠금 획득 순서를 통일하고, 잠금 범위를 작게 유지해야 합니다.
+                  C++에서는 여러 뮤텍스를 함께 획득해야 할 때 <code>std::scoped_lock</code> 같은 도구도 검토할 수 있습니다.
+                  긴 I/O나 다른 스레드의 완료를 기다리는 동안 잠금을 계속 보유하지 않는지도 확인해야 합니다.
+                </p>
+              </section>
+
+              <section id="concurrency" aria-labelledby="concurrency-title">
+                <h2 id="concurrency-title">동시성과 병렬성</h2>
+                <p>
+                  멀티스레드라고 해서 모든 스레드가 물리적으로 동시에 실행되는 것은 아닙니다.
+                  동시성(Concurrency)은 여러 작업이 겹치는 시간 동안 진행되도록 구조화한 것이고,
+                  병렬성(Parallelism)은 여러 CPU 코어에서 작업이 실제로 같은 순간에 실행되는 것입니다.
+                </p>
+                <pre><code>// 단일 코어: 빠르게 번갈아 실행
+Core 1: Thread A → Thread B → Thread A
+
+// 여러 코어: 실제 병렬 실행 가능
+Core 1: Thread A
+Core 2: Thread B
+Core 3: Thread C</code></pre>
+                <p>
+                  단일 코어에서도 한 작업이 I/O를 기다리는 동안 다른 작업을 진행해 동시성의 이점을 얻을 수 있습니다.
+                  여러 코어가 있어도 공유 자원에 대한 경합이 심하거나 순차 실행 구간이 크면 기대한 만큼 빨라지지 않습니다.
+                </p>
+              </section>
+
+              <section id="workload" aria-labelledby="workload-title">
+                <h2 id="workload-title">작업 유형에 따른 선택</h2>
+                <h3>CPU-bound 작업</h3>
+                <p>
+                  이미지 처리, 물리 계산, 압축, 암호화, AI 연산, 경로 탐색처럼 계산량이 많은 작업입니다.
+                  서로 독립적인 단위로 나눌 수 있다면 여러 코어에서 멀티스레드나 멀티프로세스로 병렬 처리할 수 있습니다.
+                  다만 분할, 결과 병합, 캐시 미스와 동기화 비용까지 포함해 실제 성능을 측정해야 합니다.
+                </p>
+                <h3>I/O-bound 작업</h3>
+                <p>
+                  파일, 네트워크, 데이터베이스처럼 외부 응답을 기다리는 시간이 긴 작업입니다.
+                  한 작업이 대기하는 동안 다른 작업을 처리할 수 있어 스레드나 비동기 I/O가 효과적입니다.
+                  많은 연결을 다룰 때는 요청마다 스레드를 무제한 생성하기보다 스레드 풀이나 이벤트 기반 비동기 구조를 고려합니다.
+                </p>
+                <ul class="principle-list" aria-label="선택 기준">
+                  <li><h3>멀티스레드</h3><p>데이터 공유와 빠른 통신이 많고 하나의 프로그램 내부 기능을 병렬화할 때 적합합니다.</p></li>
+                  <li><h3>멀티프로세스</h3><p>작업의 독립성과 장애 격리, 서로 다른 런타임이나 권한 경계가 중요할 때 적합합니다.</p></li>
+                  <li><h3>혼합 구조</h3><p>여러 워커 프로세스를 띄우고 각 프로세스에서 스레드 풀을 사용하는 방식도 흔합니다.</p></li>
+                </ul>
+              </section>
+
+              <section id="game" aria-labelledby="game-title">
+                <h2 id="game-title">게임 개발에서의 활용</h2>
+                <p>하나의 게임 프로세스에서도 역할이 다른 여러 실행 흐름을 둘 수 있습니다.</p>
+                <pre><code>Game Process
+├── Game Thread
+├── Render Thread
+├── Audio Thread
+├── Physics Worker Threads
+└── Asset Loading Thread</code></pre>
+                <p>
+                  게임 로직과 엔진 객체 상태는 주로 게임 스레드가 관리하고, 렌더링 준비, 물리 계산, 애셋 읽기처럼 분리 가능한 작업은 다른 스레드나 워커가 맡을 수 있습니다.
+                  그러나 엔진 객체가 모두 스레드 안전한 것은 아닙니다. 예를 들어 언리얼 엔진의 많은 <code>UObject</code> 작업은 임의의 백그라운드 스레드에서 수행하면 안 됩니다.
+                </p>
+                <ol>
+                  <li>백그라운드 작업은 엔진 객체를 직접 수정하지 않고 순수 계산이나 파일 읽기를 수행합니다.</li>
+                  <li>계산 결과를 스레드 안전한 방식으로 게임 스레드에 전달합니다.</li>
+                  <li>게임 스레드가 결과를 검증한 뒤 엔진 객체와 실제 게임 상태에 반영합니다.</li>
+                </ol>
+                <p>
+                  멀티스레딩의 목표는 스레드 수를 늘리는 것이 아니라 프레임의 긴 작업을 분산하면서도 상태의 소유권을 명확하게 유지하는 것입니다.
+                  공유 데이터, 작업 의존성, 완료 시점과 게임 스레드 복귀 경로를 먼저 설계해야 합니다.
+                </p>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>프로세스는 독립된 주소 공간을 가지며, 프로세스 간 데이터 교환에는 IPC가 필요하다.</li>
+                  <li>같은 프로세스의 스레드는 코드·데이터·힙을 공유하지만 스택과 실행 상태는 개별적으로 가진다.</li>
+                  <li>스레드는 일반적으로 생성과 문맥 교환이 가볍지만 공유 가변 상태 때문에 동기화가 필요하다.</li>
+                  <li>동기화되지 않은 공유 메모리 접근은 데이터 레이스를 만들고, 잘못된 잠금 순서는 교착 상태를 만들 수 있다.</li>
+                  <li>동시성은 여러 작업을 함께 진행하는 구조이고, 병렬성은 여러 코어에서 실제로 동시에 실행하는 것이다.</li>
+                  <li>실무에서는 성능뿐 아니라 데이터 공유량, 장애 격리, 작업 크기와 유지보수 비용을 함께 고려한다.</li>
+                </ul>
+                <p>
+                  멀티프로세스와 멀티스레드는 어느 한쪽이 항상 우수한 선택지가 아닙니다.
+                  메모리를 공유할 것인지 격리할 것인지, 작업 사이에 어떤 데이터를 얼마나 자주 주고받는지를 먼저 정하면 적절한 구조와 동기화 전략을 고르기 쉬워집니다.
+                </p>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js"
+                        data-repo="StaySober01/StaySober01.github.io"
+                        data-repo-id="R_kgDOTQFJZA"
+                        data-category="Comments"
+                        data-category-id="DIC_kwDOTQFJZM4DA3to"
+                        data-mapping="pathname"
+                        data-strict="0"
+                        data-reactions-enabled="1"
+                        data-emit-metadata="0"
+                        data-input-position="bottom"
+                        data-theme="preferred_color_scheme"
+                        data-lang="ko"
+                        data-loading="lazy"
+                        crossorigin="anonymous"
+                        async>
+                </script>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
