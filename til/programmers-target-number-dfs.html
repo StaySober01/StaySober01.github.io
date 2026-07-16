@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="프로그래머스 타겟 넘버 문제를 이진 선택 트리와 DFS로 모델링하고, 잘못된 종료 조건과 중복 집계 원인을 고쳐 가는 과정을 정리한 TIL입니다.">
+    <title>프로그래머스 타겟 넘버: DFS 분기와 종료 조건 설계 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes</p>
+            <h1>프로그래머스 타겟 넘버: DFS 분기와 종료 조건 설계</h1>
+            <p class="post-meta">TIL · 프로그래머스 문제 풀이 · 2026.07.16</p>
+            <p class="post-lead">
+              각 숫자 앞에 더하기 또는 빼기를 붙이는 모든 경우를 이진 트리로 바라보고 DFS로 탐색했습니다.
+              정답이 두 배로 집계되던 시행착오를 따라가며, 재귀 함수의 상태·분기·종료 조건을 어디에 두어야 하는지 정리합니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#problem">문제 이해</a></li>
+                <li><a href="#tree">이진 선택 트리로 모델링</a></li>
+                <li><a href="#first-code">첫 구현과 첫 번째 오류</a></li>
+                <li><a href="#double-count">정답이 두 배가 된 이유</a></li>
+                <li><a href="#state">상태와 분기 다시 설계하기</a></li>
+                <li><a href="#trace">예제로 호출 흐름 확인하기</a></li>
+                <li><a href="#code">최종 코드</a></li>
+                <li><a href="#return-count">반환값으로 경우의 수 세기</a></li>
+                <li><a href="#complexity">복잡도와 체크포인트</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="problem" aria-labelledby="problem-title">
+                <h2 id="problem-title">문제 이해</h2>
+                <p>
+                  순서를 바꾸지 않은 <code>numbers</code>의 각 숫자 앞에 <code>+</code> 또는 <code>-</code>를 붙여 합을 만들고,
+                  최종 합이 <code>target</code>과 같은 경우의 수를 구하는 문제입니다.
+                </p>
+                <pre><code>numbers = [1, 1, 1, 1, 1]
+target = 3
+
+-1 +1 +1 +1 +1 = 3
++1 -1 +1 +1 +1 = 3
++1 +1 -1 +1 +1 = 3
++1 +1 +1 -1 +1 = 3
++1 +1 +1 +1 -1 = 3</code></pre>
+                <p>숫자 다섯 개 가운데 하나만 빼기로 선택하는 다섯 경로가 있으므로 답은 <code>5</code>입니다.</p>
+              </section>
+
+              <section id="tree" aria-labelledby="tree-title">
+                <h2 id="tree-title">이진 선택 트리로 모델링</h2>
+                <p>
+                  각 위치에서 할 일은 현재 숫자를 더하거나 빼는 두 가지뿐입니다. 따라서 깊이가 <code>numbers.size()</code>인
+                  이진 트리로 모든 선택을 표현할 수 있습니다.
+                </p>
+                <pre><code>                    (index 0, sum 0)
+                    /              \
+              +numbers[0]      -numbers[0]
+                 /   \             /   \
+               +       -         +       -
+                       ...
+
+깊이: 지금까지 부호를 결정한 숫자의 개수
+노드: 현재까지 계산한 합
+리프: 모든 숫자의 부호를 결정한 하나의 완성된 식</code></pre>
+                <p>
+                  DFS는 한 경로를 끝까지 내려간 뒤 이전 선택 지점으로 돌아와 다른 부호를 탐색합니다.
+                  이 문제에서는 별도의 방문 배열이 필요하지 않습니다. 같은 인덱스와 합에 다시 도달할 수는 있지만,
+                  각각 서로 다른 부호 선택 경로이므로 모두 독립적인 경우로 세어야 하기 때문입니다.
+                </p>
+              </section>
+
+              <section id="first-code" aria-labelledby="first-code-title">
+                <h2 id="first-code-title">첫 구현과 첫 번째 오류</h2>
+                <p>처음에는 <code>isPositive</code>로 현재 숫자의 부호를 전달하고, 함수 안에서 합을 갱신했습니다.</p>
+                <pre><code>void Dfs(vector&lt;int&gt; numbers, int&amp; count,
+         int current, int result, int target,
+         bool isPositive) {
+    if (current &gt;= numbers.size()) return;
+
+    if (isPositive) {
+        result += numbers[current];
+    } else {
+        result -= numbers[current];
+    }
+
+    if (result == target) count++;
+    current++;
+
+    Dfs(numbers, count, current, result, target, true);
+    Dfs(numbers, count, current, result, target, false);
+}</code></pre>
+                <p>
+                  문제는 아직 사용하지 않은 숫자가 남았는데도 중간 합이 <code>target</code>과 같으면 정답으로 세었다는 점입니다.
+                  예를 들어 앞의 세 숫자로 <code>+1 +1 +1 = 3</code>을 만들었어도 뒤의 두 숫자에 부호를 붙이면 최종 합은 달라질 수 있습니다.
+                </p>
+                <div class="post-callout">
+                  <p>
+                    이 문제의 정답은 중간 상태가 아니라 모든 숫자의 부호가 정해진 완성된 식입니다.
+                    따라서 <code>result == target</code> 검사는 반드시 리프 노드에서만 해야 합니다.
+                  </p>
+                </div>
+              </section>
+
+              <section id="double-count" aria-labelledby="double-count-title">
+                <h2 id="double-count-title">종료 조건을 옮겼는데 정답이 두 배가 된 이유</h2>
+                <p>검사를 종료 조건 안으로 옮긴 뒤에는 결과가 정확히 두 배가 되었습니다.</p>
+                <pre><code>if (current &gt;= numbers.size()) {
+    if (result == target) {
+        count++;
+    }
+    return;
+}</code></pre>
+                <p>
+                  원인은 마지막 숫자의 부호를 적용한 뒤에도 자식 함수를 두 번 호출하는 구조에 있었습니다.
+                  <code>current</code>는 이미 배열 크기와 같고 <code>result</code>도 완성되어 있는데,
+                  <code>true</code>와 <code>false</code>를 전달한 두 호출 모두 함수 시작과 동시에 같은 종료 조건을 만납니다.
+                  종료 조건이 부호를 적용하는 코드보다 앞에 있으므로 두 호출의 <code>isPositive</code>는 사용되지도 않습니다.
+                </p>
+                <pre><code>마지막 숫자를 적용한 상태: (current = size, result = target)
+
+├─ Dfs(..., true)  → 종료 조건 → count++
+└─ Dfs(..., false) → 종료 조건 → count++
+
+하나의 완성된 경로를 두 개의 동일한 리프처럼 검사한 셈이다.</code></pre>
+                <p>
+                  <code>[1]</code>처럼 숫자가 하나뿐인 입력을 가정해 호출 흐름을 줄여 보니 중복 집계가 선명하게 드러났습니다.
+                  작은 입력으로 재귀 트리를 직접 펼쳐 보는 것이 오류를 찾는 데 도움이 됐습니다.
+                </p>
+              </section>
+
+              <section id="state" aria-labelledby="state-title">
+                <h2 id="state-title">상태와 분기 다시 설계하기</h2>
+                <p>
+                  <code>isPositive</code>를 별도 상태로 넘기지 않고, 자식 함수를 호출하는 순간 더하기와 빼기를 계산하도록 바꿨습니다.
+                  이제 함수에 들어왔을 때의 상태는 의미가 분명합니다.
+                </p>
+                <pre><code>Dfs(numbers, count, current, result, target)
+
+current: 다음에 부호를 결정할 숫자의 인덱스
+result:  [0, current) 범위의 숫자를 모두 계산한 합</code></pre>
+                <p>이 불변 조건을 유지하면 재귀의 세 부분이 자연스럽게 맞물립니다.</p>
+                <ol>
+                  <li><code>current == numbers.size()</code>이면 모든 숫자를 사용했으므로 정답 여부를 검사한다.</li>
+                  <li>더하기 경로는 <code>current + 1</code>, <code>result + numbers[current]</code>로 내려간다.</li>
+                  <li>빼기 경로는 <code>current + 1</code>, <code>result - numbers[current]</code>로 내려간다.</li>
+                </ol>
+                <p>
+                  부모 호출은 자신의 <code>result</code>를 변경하지 않고 계산된 값을 자식에게 복사해 전달합니다.
+                  따라서 첫 번째 재귀가 끝난 뒤 합을 원상 복구하는 별도의 백트래킹 코드도 필요 없습니다.
+                </p>
+              </section>
+
+              <section id="trace" aria-labelledby="trace-title">
+                <h2 id="trace-title">예제로 호출 흐름 확인하기</h2>
+                <p><code>numbers = [1, 2]</code>, <code>target = 1</code>이라면 네 개의 리프가 만들어집니다.</p>
+                <pre><code>dfs(index=0, sum=0)
+├─ +1 → dfs(index=1, sum=1)
+│  ├─ +2 → dfs(index=2, sum=3)  실패
+│  └─ -2 → dfs(index=2, sum=-1) 실패
+└─ -1 → dfs(index=1, sum=-1)
+   ├─ +2 → dfs(index=2, sum=1)  성공 1개
+   └─ -2 → dfs(index=2, sum=-3) 실패</code></pre>
+                <p>
+                  인덱스가 <code>2</code>가 된 리프에서만 목표값을 비교하고, 성공한 경로 하나만 셉니다.
+                  각 재귀 호출이 “다음 숫자를 선택하기 전 상태”를 나타내므로 리프의 수와 완성된 식의 수가 정확히 일치합니다.
+                </p>
+              </section>
+
+              <section id="code" aria-labelledby="code-title">
+                <h2 id="code-title">최종 코드</h2>
+                <pre><code>#include &lt;vector&gt;
+
+using namespace std;
+
+void Dfs(
+    const vector&lt;int&gt;&amp; numbers,
+    int&amp; count,
+    int current,
+    int result,
+    int target)
+{
+    if (current &gt;= static_cast&lt;int&gt;(numbers.size())) {
+        if (result == target) {
+            count++;
+        }
+        return;
+    }
+
+    Dfs(numbers, count, current + 1,
+        result + numbers[current], target);
+
+    Dfs(numbers, count, current + 1,
+        result - numbers[current], target);
+}
+
+int solution(vector&lt;int&gt; numbers, int target)
+{
+    int answer = 0;
+    Dfs(numbers, answer, 0, 0, target);
+    return answer;
+}</code></pre>
+                <p>
+                  <code>numbers</code>는 탐색 중 바뀌지 않으므로 재귀 호출마다 복사하지 않고 <code>const vector&lt;int&gt;&amp;</code>로 받습니다.
+                  <code>current</code>와 <code>result</code>는 각 경로가 독립적인 값을 가져야 하므로 값으로 전달합니다.
+                  <code>count</code>만 모든 경로가 공유해야 하므로 참조로 전달합니다.
+                </p>
+              </section>
+
+              <section id="return-count" aria-labelledby="return-count-title">
+                <h2 id="return-count-title">반환값으로 경우의 수 세기</h2>
+                <p>
+                  공유하는 <code>count</code>를 없애고, 각 호출이 자신의 서브트리에서 찾은 정답 수를 반환하도록 만들 수도 있습니다.
+                  리프는 성공하면 <code>1</code>, 실패하면 <code>0</code>을 반환합니다. 내부 노드는 더하기 서브트리와 빼기 서브트리의 답을 합칩니다.
+                </p>
+                <pre><code>#include &lt;vector&gt;
+
+using namespace std;
+
+int dfs(
+    const vector&lt;int&gt;&amp; numbers,
+    int target,
+    int index,
+    int sum)
+{
+    if (index == static_cast&lt;int&gt;(numbers.size())) {
+        return sum == target ? 1 : 0;
+    }
+
+    return dfs(numbers, target, index + 1,
+               sum + numbers[index])
+         + dfs(numbers, target, index + 1,
+               sum - numbers[index]);
+}
+
+int solution(vector&lt;int&gt; numbers, int target)
+{
+    return dfs(numbers, target, 0, 0);
+}</code></pre>
+                <p>
+                  두 구현의 시간복잡도는 같지만 반환형 구현은 함수의 의미가 “이 상태에서 만들 수 있는 정답의 수”로 완결됩니다.
+                  외부 상태를 수정하지 않아 호출 간 관계를 식으로 읽기 쉽고 테스트하기도 편합니다.
+                </p>
+              </section>
+
+              <section id="complexity" aria-labelledby="complexity-title">
+                <h2 id="complexity-title">복잡도와 체크포인트</h2>
+                <ul class="principle-list" aria-label="타겟 넘버 풀이 체크포인트">
+                  <li>
+                    <h3>시간복잡도는 <code>O(2ⁿ)</code></h3>
+                    <p>숫자마다 두 가지 부호를 선택하므로 길이가 <code>n</code>일 때 <code>2ⁿ</code>개의 완성된 경로를 확인합니다. <code>n ≤ 20</code>이므로 완전 탐색이 가능합니다.</p>
+                  </li>
+                  <li>
+                    <h3>공간복잡도는 <code>O(n)</code></h3>
+                    <p>탐색 트리 전체를 저장하지 않고 한 경로의 재귀 호출만 스택에 쌓습니다. 최대 재귀 깊이는 숫자의 개수와 같습니다.</p>
+                  </li>
+                  <li>
+                    <h3>정답 검사는 리프에서만 한다</h3>
+                    <p>중간 합이 목표와 같아도 남은 숫자를 반드시 사용해야 하므로 아직 완성된 경우가 아닙니다.</p>
+                  </li>
+                  <li>
+                    <h3>인덱스의 의미를 한 문장으로 정의한다</h3>
+                    <p><code>index</code>를 “다음에 사용할 숫자”로 정하면 종료 조건과 자식 호출의 <code>index + 1</code>이 일관됩니다.</p>
+                  </li>
+                  <li>
+                    <h3>분기는 선택이 발생하는 위치에 둔다</h3>
+                    <p>부호를 다음 호출의 플래그로 미루기보다, 자식 호출 인자에 계산 결과를 넣으면 각 간선이 하나의 선택을 정확히 나타냅니다.</p>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>각 숫자의 더하기·빼기 선택을 깊이 <code>n</code>의 이진 트리로 표현한다.</li>
+                  <li>재귀 상태는 다음에 처리할 인덱스와 지금까지의 합만 있으면 충분하다.</li>
+                  <li>모든 숫자를 사용한 리프에서만 합과 목표값을 비교한다.</li>
+                  <li>자식 호출 인자에서 더하기와 빼기를 적용해 한 호출이 한 상태를 정확히 나타내게 한다.</li>
+                  <li>각 서브트리의 정답 수를 반환하면 공유 카운터 없이 더 선언적인 코드가 된다.</li>
+                </ul>
+                <p>
+                  이번 풀이에서 핵심은 DFS 자체보다 재귀 호출 하나가 무엇을 의미하는지 정확히 정하는 일이었습니다.
+                  상태의 의미가 흔들리면 종료 조건과 분기 위치도 어긋나고, 작은 중복 호출이 정답을 두 배로 만들 수 있습니다.
+                  앞으로 재귀 문제를 풀 때는 코드를 쓰기 전에 매개변수의 의미, 리프의 조건, 부모에서 자식으로 넘어갈 때 변하는 값을 먼저 문장으로 정의해야겠습니다.
+                </p>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js"
+                        data-repo="StaySober01/StaySober01.github.io"
+                        data-repo-id="R_kgDOTQFJZA"
+                        data-category="Comments"
+                        data-category-id="DIC_kwDOTQFJZM4DA3to"
+                        data-mapping="pathname"
+                        data-strict="0"
+                        data-reactions-enabled="1"
+                        data-emit-metadata="0"
+                        data-input-position="bottom"
+                        data-theme="preferred_color_scheme"
+                        data-lang="ko"
+                        data-loading="lazy"
+                        crossorigin="anonymous"
+                        async>
+                </script>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
