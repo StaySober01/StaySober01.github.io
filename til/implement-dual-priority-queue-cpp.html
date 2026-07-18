@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="직접 구현한 최소 힙과 최대 힙을 값별 유효 개수와 지연 삭제로 동기화해 C++ 이중 우선순위 큐를 만드는 과정을 정리한 힙 구현 3부작의 마지막 글입니다.">
+    <title>C++로 이중 우선순위 큐 구현하기 | StaySober01</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; }
+      catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path></svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes · Heap Series 3/3</p>
+            <h1>C++로 이중 우선순위 큐 구현하기</h1>
+            <p class="post-meta">TIL · 알고리즘과 자료구조 · 2026.07.18</p>
+            <p class="post-lead">
+              직접 만든 최소 힙과 최대 힙을 함께 사용해 양쪽 끝을 빠르게 다루는 이중 우선순위 큐를 구현합니다.
+              <strong>최소 힙 → 최대 힙 → 이중 우선순위 큐</strong> 3부작의 마지막 글로, 두 힙의 동기화 문제를 지연 삭제로 해결합니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#problem">두 힙만 합치면 안 되는 이유</a></li>
+                <li><a href="#lazy-deletion">지연 삭제로 동기화하기</a></li>
+                <li><a href="#identity">고유 ID와 값별 개수</a></li>
+                <li><a href="#operations">연산 흐름</a></li>
+                <li><a href="#code">최종 구현</a></li>
+                <li><a href="#complexity">시간 복잡도</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="problem" aria-labelledby="problem-title">
+                <h2 id="problem-title">두 힙만 합치면 안 되는 이유</h2>
+                <p>
+                  <a href="implement-min-heap-cpp.html">최소 힙</a>은 최솟값을, <a href="implement-max-heap-cpp.html">최대 힙</a>은 최댓값을 루트에서 바로 찾습니다.
+                  같은 값을 두 힙에 모두 넣으면 삽입과 양 끝 조회까지는 간단하지만, 한쪽에서 삭제한 원소가 다른 쪽에도 남는 동기화 문제가 생깁니다.
+                </p>
+                <pre><code>유효한 값: 10, 20, 30
+minHeap.top(): 10
+maxHeap.top(): 30
+
+popMin() 실행
+→ 최소 힙의 10은 루트라서 바로 삭제 가능
+→ 최대 힙의 10은 중간에 있어 바로 찾기 어려움</code></pre>
+                <p>
+                  이진 힙은 루트 삽입·삭제가 아니라 <strong>루트 조회와 끝 삽입, 루트 삭제</strong>에 최적화된 구조입니다.
+                  중간 원소의 위치를 알 수 없으므로 다른 힙에서 같은 원소를 찾고 삭제하면 최악의 경우 <code>O(N)</code>이 걸립니다.
+                </p>
+              </section>
+
+              <section id="lazy-deletion" aria-labelledby="lazy-deletion-title">
+                <h2 id="lazy-deletion-title">지연 삭제로 두 힙 동기화하기</h2>
+                <p>
+                  다른 힙의 중간 원소를 즉시 찾는 대신, 삭제된 원소라는 사실만 기록해 둡니다. 그 원소가 나중에 루트까지 올라왔을 때 실제로 버리는 방식을
+                  <strong>지연 삭제(lazy deletion)</strong>라고 합니다.
+                </p>
+                <ol>
+                  <li>삭제하려는 쪽의 루트가 이미 무효라면 계속 <code>pop()</code>한다.</li>
+                  <li>유효한 루트를 찾으면 그 원소의 유효 상태를 제거한다.</li>
+                  <li>반대쪽 힙에 남은 복사본은 당장 건드리지 않는다.</li>
+                  <li>그 복사본이 반대쪽 루트가 되는 시점에 정리한다.</li>
+                </ol>
+                <div class="table-wrap" tabindex="0" role="region" aria-label="지연 삭제 상태 변화표">
+                  <table>
+                    <thead><tr><th>연산</th><th>논리적으로 유효한 값</th><th>실제 정리</th></tr></thead>
+                    <tbody>
+                      <tr><th><code>I 10, I 20, I 30</code></th><td>10, 20, 30</td><td>두 힙에 모두 삽입</td></tr>
+                      <tr><th><code>D -1</code></th><td>20, 30</td><td>최소 힙의 10만 즉시 제거</td></tr>
+                      <tr><th><code>D 1</code></th><td>20</td><td>최대 힙의 30 제거, 10은 아직 남을 수 있음</td></tr>
+                      <tr><th>최댓값 조회</th><td>20</td><td>루트에 도달한 무효 원소를 먼저 제거</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section id="identity" aria-labelledby="identity-title">
+                <h2 id="identity-title">고유 ID와 값별 개수 중 무엇을 기록할까?</h2>
+                <p>
+                  가장 일반적인 방법은 삽입할 때마다 고유 ID를 붙여 두 힙에 <code>(value, id)</code>를 저장하고,
+                  <code>valid[id]</code>로 각 원소의 생존 여부를 관리하는 것입니다. 삽입 순서처럼 같은 값의 개별 원소를 구분해야 한다면 이 방식이 필요합니다.
+                </p>
+                <pre><code>minHeap.push({value, id});
+maxHeap.push({value, id});
+valid[id] = true;</code></pre>
+                <p>
+                  이번 큐는 같은 값끼리 구분할 필요가 없습니다. <code>5, 5, 5</code> 중 어느 5가 삭제되어도 결과가 같기 때문에,
+                  <code>unordered_map&lt;int, int&gt;</code>에 값별 유효 개수만 기록할 수 있습니다.
+                </p>
+                <pre><code>counts[value]++;  // 삽입
+counts[value]--;  // 최소 또는 최대 원소 하나 삭제</code></pre>
+                <div class="post-callout">
+                  <p>
+                    <code>counts</code>는 힙 내부에 그 값이 몇 개 저장되어 있는지가 아니라, 현재 큐에서 <strong>논리적으로 살아 있는 개수</strong>입니다.
+                    힙에 남은 개수가 더 많다면 그 차이가 아직 물리적으로 제거되지 않은 낡은 원소입니다.
+                  </p>
+                </div>
+              </section>
+
+              <section id="operations" aria-labelledby="operations-title">
+                <h2 id="operations-title">삽입과 삭제 연산의 흐름</h2>
+                <ul class="principle-list" aria-label="이중 우선순위 큐 연산 흐름">
+                  <li><h3>삽입 <code>I value</code></h3><p>값을 두 힙에 모두 넣고 <code>counts[value]</code>와 전체 유효 개수를 1씩 늘립니다.</p></li>
+                  <li><h3>최솟값 삭제 <code>D -1</code></h3><p>최소 힙의 무효 루트를 정리한 뒤 유효한 루트를 제거하고 그 값의 개수를 1 줄입니다.</p></li>
+                  <li><h3>최댓값 삭제 <code>D 1</code></h3><p>최대 힙에서도 같은 순서로 무효 루트를 정리한 뒤 유효한 최댓값 하나를 제거합니다.</p></li>
+                  <li><h3>최종 조회</h3><p>두 힙을 각각 한 번 더 정리한 뒤 최소 힙과 최대 힙의 루트를 읽습니다.</p></li>
+                </ul>
+                <p>
+                  빈 큐에서 삭제 명령이 들어오면 무시합니다. 반면 <code>min()</code>과 <code>max()</code>는 반환할 값이 없으므로 예외를 던지도록 계약을 분명히 했습니다.
+                </p>
+              </section>
+
+              <section id="code" aria-labelledby="code-title">
+                <h2 id="code-title">최종 구현</h2>
+                <pre><code>#include "MaxHeap.h"
+#include "MinHeap.h"
+
+#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;unordered_map&gt;
+
+class DualPriorityQueue {
+private:
+    MinHeap minHeap;
+    MaxHeap maxHeap;
+
+    // 큐에서 논리적으로 살아 있는 값별 개수
+    std::unordered_map&lt;int, int&gt; counts;
+    int activeSize = 0;
+
+    void cleanMinHeap() {
+        while (!minHeap.empty()) {
+            int value = minHeap.top();
+            auto it = counts.find(value);
+
+            if (it != counts.end() &amp;&amp; it-&gt;second &gt; 0) {
+                break;
+            }
+
+            minHeap.pop();
+        }
+    }
+
+    void cleanMaxHeap() {
+        while (!maxHeap.empty()) {
+            int value = maxHeap.top();
+            auto it = counts.find(value);
+
+            if (it != counts.end() &amp;&amp; it-&gt;second &gt; 0) {
+                break;
+            }
+
+            maxHeap.pop();
+        }
+    }
+
+    void removeCount(int value) {
+        auto it = counts.find(value);
+
+        if (it == counts.end()) {
+            return;
+        }
+
+        if (--it-&gt;second == 0) {
+            counts.erase(it);
+        }
+
+        --activeSize;
+    }
+
+public:
+    void push(int value) {
+        minHeap.push(value);
+        maxHeap.push(value);
+        ++counts[value];
+        ++activeSize;
+    }
+
+    void popMin() {
+        if (empty()) {
+            return;
+        }
+
+        cleanMinHeap();
+        int value = minHeap.top();
+        minHeap.pop();
+        removeCount(value);
+    }
+
+    void popMax() {
+        if (empty()) {
+            return;
+        }
+
+        cleanMaxHeap();
+        int value = maxHeap.top();
+        maxHeap.pop();
+        removeCount(value);
+    }
+
+    int min() {
+        if (empty()) {
+            throw std::runtime_error("Queue is empty");
+        }
+
+        cleanMinHeap();
+        return minHeap.top();
+    }
+
+    int max() {
+        if (empty()) {
+            throw std::runtime_error("Queue is empty");
+        }
+
+        cleanMaxHeap();
+        return maxHeap.top();
+    }
+
+    bool empty() const {
+        return activeSize == 0;
+    }
+
+    int size() const {
+        return activeSize;
+    }
+};
+
+int main() {
+    DualPriorityQueue queue;
+
+    queue.push(30);
+    queue.push(10);
+    queue.push(20);
+
+    std::cout &lt;&lt; "Min: " &lt;&lt; queue.min() &lt;&lt; '\n';
+    std::cout &lt;&lt; "Max: " &lt;&lt; queue.max() &lt;&lt; '\n';
+
+    queue.popMin();
+    queue.popMax();
+
+    std::cout &lt;&lt; "Remaining: " &lt;&lt; queue.min() &lt;&lt; '\n';
+
+    queue.popMin();
+    std::cout &lt;&lt; std::boolalpha
+              &lt;&lt; "Queue empty: " &lt;&lt; queue.empty()
+              &lt;&lt; '\n';
+}</code></pre>
+                <p>
+                  이 구현은 앞선 두 글의 <code>MinHeap</code>과 <code>MaxHeap</code>이 <code>push</code>, <code>pop</code>, <code>top</code>, <code>empty</code>를 제공한다는 전제입니다.
+                  프로그래머스 형식의 <code>I n</code>, <code>D 1</code>, <code>D -1</code> 문자열은 파싱한 뒤 각각 <code>push(n)</code>, <code>popMax()</code>, <code>popMin()</code>에 연결하면 됩니다.
+                </p>
+              </section>
+
+              <section id="complexity" aria-labelledby="complexity-title">
+                <h2 id="complexity-title">시간 복잡도와 분할 상환 분석</h2>
+                <div class="table-wrap" tabindex="0" role="region" aria-label="이중 우선순위 큐 시간 복잡도 표">
+                  <table>
+                    <thead><tr><th>연산</th><th>시간 복잡도</th><th>이유</th></tr></thead>
+                    <tbody>
+                      <tr><th>삽입</th><td><code>O(log N)</code></td><td>두 힙에 삽입</td></tr>
+                      <tr><th>최솟값 삭제</th><td><code>O(log N)</code> 분할 상환</td><td>최소 힙 삭제와 무효 원소 정리</td></tr>
+                      <tr><th>최댓값 삭제</th><td><code>O(log N)</code> 분할 상환</td><td>최대 힙 삭제와 무효 원소 정리</td></tr>
+                      <tr><th>최솟값·최댓값 조회</th><td><code>O(log N)</code> 분할 상환</td><td>루트 조회 전 무효 원소 정리 가능</td></tr>
+                      <tr><th>논리적 크기 확인</th><td><code>O(1)</code></td><td><code>activeSize</code> 조회</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  한 번의 정리에서 여러 낡은 원소가 연속으로 빠지면 그 연산만 보면 <code>O(N log N)</code>처럼 보일 수 있습니다.
+                  하지만 각 복사본은 힙에 한 번 삽입되고 최대 한 번 제거됩니다. 여러 연산에 걸친 전체 정리 비용이 제한되므로 연산당 비용은 분할 상환 기준 <code>O(log N)</code>입니다.
+                </p>
+                <p>
+                  두 힙에는 아직 정리되지 않은 복사본이 남을 수 있어 물리적 저장 공간은 현재 <code>activeSize</code>보다 큽니다.
+                  그래도 삽입된 원소마다 두 복사본만 만들기 때문에 전체 공간 복잡도는 <code>O(N)</code>입니다.
+                </p>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>최소 힙과 최대 힙을 함께 쓰면 양 끝값을 빠르게 찾을 수 있다.</li>
+                  <li>한쪽 힙의 중간 원소를 즉시 지우지 않고 무효 상태만 기록한다.</li>
+                  <li>무효 원소가 루트에 도달했을 때 제거하는 방식을 지연 삭제라고 한다.</li>
+                  <li>같은 값을 개별적으로 구분할 필요가 없다면 고유 ID 대신 값별 유효 개수를 사용할 수 있다.</li>
+                  <li>각 낡은 원소는 최대 한 번 정리되므로 삽입과 양 끝 삭제는 분할 상환 <code>O(log N)</code>이다.</li>
+                </ul>
+                <p>
+                  이번 구현으로 힙 3부작을 마쳤습니다. 최소 힙과 최대 힙의 개별 동작에서 한 걸음 더 나아가,
+                  각 자료구조가 잘하는 연산은 유지하면서 동기화 비용을 별도의 상태와 지연 처리로 해결하는 방법을 확인했습니다.
+                </p>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js" data-repo="StaySober01/StaySober01.github.io" data-repo-id="R_kgDOTQFJZA" data-category="Comments" data-category-id="DIC_kwDOTQFJZM4DA3to" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="preferred_color_scheme" data-lang="ko" data-loading="lazy" crossorigin="anonymous" async></script>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="implement-max-heap-cpp.html"><span aria-hidden="true">←</span> 2편: 최대 힙</a>
+                <a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer"><div class="container footer-inner"><p>© 2026 StaySober01</p><a href="https://github.com/StaySober01">GitHub</a></div></footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>

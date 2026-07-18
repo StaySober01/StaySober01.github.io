@@ -19,6 +19,9 @@
    ├─ dfs-bfs-graph-traversal.html
    ├─ multithreading-vs-multiprocessing.html
    ├─ garbage-collection-csharp-unreal.html
+   ├─ implement-min-heap-cpp.html
+   ├─ implement-max-heap-cpp.html
+   ├─ implement-dual-priority-queue-cpp.html
    ├─ locality-of-reference.html
    ├─ programmers-integer-triangle-dp.html
    ├─ programmers-n-expression-dp.html
