@@ -15,6 +15,7 @@
 │  └─ roguelike-project.html
 └─ til/
    ├─ index.html
+   ├─ a-star-pathfinding-cpp.html
    ├─ dijkstra-shortest-path-cpp.html
    ├─ programmers-target-number-dfs.html
    ├─ dfs-bfs-graph-traversal.html
