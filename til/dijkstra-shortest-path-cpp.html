@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="다익스트라 알고리즘의 완화, 그리디 선택이 성립하는 이유, 음수 간선의 한계와 오래된 우선순위 큐 항목 처리부터 C++ 구현과 경로 복원까지 정리합니다.">
+    <title>다익스트라 알고리즘: 최단 거리와 C++ 구현 | StaySober01</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; }
+      catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li><button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false"><svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg><svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path></svg></button></li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes · Shortest Path</p>
+            <h1>다익스트라 알고리즘: 최단 거리와 C++ 구현</h1>
+            <p class="post-meta">TIL · 알고리즘과 자료구조 · 2026.07.18</p>
+            <p class="post-lead">음수가 아닌 가중치 그래프에서 한 시작점으로부터 모든 정점까지의 최단 거리를 구하는 다익스트라 알고리즘을 정리합니다. 단순히 코드를 외우기보다 <strong>왜 가까운 정점을 먼저 확정해도 되는지</strong>, 최소 힙에는 왜 오래된 정보가 남는지까지 따라가 봅니다.</p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#conditions">언제 사용하는가</a></li>
+                <li><a href="#relaxation">핵심 연산: 완화</a></li>
+                <li><a href="#example">예제로 따라가기</a></li>
+                <li><a href="#proof">가까운 정점을 먼저 고르는 이유</a></li>
+                <li><a href="#negative">음수 간선에서는 왜 실패하는가</a></li>
+                <li><a href="#queue">최소 힙과 오래된 항목</a></li>
+                <li><a href="#implementation">C++ 구현</a></li>
+                <li><a href="#path">최단 경로 복원</a></li>
+                <li><a href="#complexity">복잡도와 선택 기준</a></li>
+                <li><a href="#checklist">실전 체크리스트</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="conditions" aria-labelledby="conditions-title">
+                <h2 id="conditions-title">다익스트라는 언제 사용하는가</h2>
+                <p>다익스트라 알고리즘은 가중치 그래프에서 <strong>하나의 시작 정점으로부터 다른 모든 정점까지</strong>의 최단 거리를 구하는 단일 시작점 최단 경로 알고리즘입니다. 도로 비용, 게임 맵의 이동 비용, 네트워크 라우팅처럼 이동마다 비용이 다른 문제에 사용할 수 있습니다.</p>
+                <div class="post-callout"><p><strong>필수 조건:</strong> 모든 간선의 가중치가 0 이상이어야 합니다. 방향 그래프와 무방향 그래프 모두 가능하지만, 무방향 간선은 인접 리스트에 양방향으로 추가해야 합니다.</p></div>
+                <p>가중치가 모두 같다면 BFS가 더 단순하고 빠릅니다. 음수 간선이 있다면 벨만-포드를, 모든 정점 쌍의 최단 거리가 필요하다면 그래프 크기에 따라 플로이드-워셜 등을 검토합니다.</p>
+              </section>
+
+              <section id="relaxation" aria-labelledby="relaxation-title">
+                <h2 id="relaxation-title">핵심 연산: 완화</h2>
+                <p><code>distance[v]</code>는 지금까지 발견한 시작점에서 <code>v</code>까지의 최단 거리 후보입니다. 현재 정점 <code>u</code>를 거쳐 <code>v</code>로 가는 편이 더 짧다면 값을 바꿉니다. 이 갱신을 <strong>완화(Relaxation)</strong>라고 합니다.</p>
+                <pre><code>if (distance[next] &gt; distance[current] + weight) {
+    distance[next] = distance[current] + weight;
+}</code></pre>
+                <p>처음에는 시작점만 <code>0</code>, 나머지는 도달하지 못했다는 뜻의 <code>INF</code>로 둡니다. 이후 아직 처리하지 않은 후보 중 거리가 가장 짧은 정점을 고르고, 그 정점에서 나가는 모든 간선을 완화하는 과정을 반복합니다.</p>
+              </section>
+
+              <section id="example" aria-labelledby="example-title">
+                <h2 id="example-title">예제로 따라가기</h2>
+                <pre><code>A --2--&gt; B
+A --5--&gt; C
+B --1--&gt; C
+B --4--&gt; D
+C --1--&gt; D</code></pre>
+                <p>A에서 시작하면 초기 거리는 <code>A=0, B=INF, C=INF, D=INF</code>입니다.</p>
+                <div class="table-wrap" tabindex="0" role="region" aria-label="다익스트라 알고리즘 거리 갱신 과정">
+                  <table>
+                    <thead><tr><th>처리 정점</th><th>완화 결과</th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                    <tbody>
+                      <tr><th>초기</th><td>시작점 설정</td><td>0</td><td>INF</td><td>INF</td><td>INF</td></tr>
+                      <tr><th>A</th><td>B=2, C=5</td><td>0</td><td>2</td><td>5</td><td>INF</td></tr>
+                      <tr><th>B</th><td>C=min(5, 2+1), D=2+4</td><td>0</td><td>2</td><td>3</td><td>6</td></tr>
+                      <tr><th>C</th><td>D=min(6, 3+1)</td><td>0</td><td>2</td><td>3</td><td>4</td></tr>
+                      <tr><th>D</th><td>갱신 없음</td><td>0</td><td>2</td><td>3</td><td>4</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>최종 최단 거리는 <code>A=0, B=2, C=3, D=4</code>입니다. A에서 C로 직접 가는 비용 5보다 <code>A → B → C</code>의 비용 3이, B에서 D로 바로 가는 누적 비용 6보다 <code>A → B → C → D</code>의 비용 4가 더 작습니다.</p>
+              </section>
+
+              <section id="proof" aria-labelledby="proof-title">
+                <h2 id="proof-title">가까운 정점을 먼저 고르는 이유</h2>
+                <p>아직 확정하지 않은 정점 중 거리가 가장 짧은 <code>current</code>를 생각해 봅시다. 다른 미확정 정점을 우회해 <code>current</code>에 도달하려면 현재 알고 있는 거리 이상에서 출발해 0 이상의 간선 비용을 더해야 합니다. 따라서 더 짧은 경로가 나중에 나타날 수 없습니다.</p>
+                <p>이 때문에 최소 거리 후보를 꺼내는 순간 그 거리를 확정할 수 있습니다. 다익스트라는 이 <strong>그리디 선택</strong>과, 선택한 정점의 이웃을 완화하는 과정을 결합한 알고리즘입니다.</p>
+              </section>
+
+              <section id="negative" aria-labelledby="negative-title">
+                <h2 id="negative-title">음수 간선에서는 왜 실패하는가</h2>
+                <pre><code>A --2--&gt; B
+A --5--&gt; C
+C ---10-&gt; B</code></pre>
+                <p>다익스트라는 A에서 가까운 B의 거리 2를 먼저 확정하려 합니다. 그러나 실제 최단 경로는 <code>A → C → B</code>이고 비용은 <code>5 + (-10) = -5</code>입니다. 음수 간선 때문에 먼 정점을 우회한 경로가 오히려 더 짧아져 앞의 논리가 깨집니다.</p>
+                <p>음수 간선이 하나라도 존재할 수 있다면 다익스트라를 사용하면 안 됩니다. 보통 벨만-포드로 전환하며, 음수 사이클이 있으면 최단 거리 자체가 정의되지 않을 수 있다는 점도 확인해야 합니다.</p>
+              </section>
+
+              <section id="queue" aria-labelledby="queue-title">
+                <h2 id="queue-title">최소 힙과 오래된 항목</h2>
+                <p>매 단계마다 모든 정점을 훑어 최솟값을 찾으면 <code>O(V²)</code>이 걸립니다. 인접 리스트와 최소 힙 기반 <code>priority_queue</code>를 사용하면 발견된 후보를 <code>(거리, 정점)</code>으로 넣고 가장 짧은 후보부터 꺼낼 수 있습니다.</p>
+                <p>C의 거리가 처음 10이었다가 더 짧은 경로를 발견해 4가 되면 큐에는 <code>(10, C)</code>와 <code>(4, C)</code>가 함께 남습니다. C를 찾아 기존 항목의 우선순위를 직접 낮추는 대신 새 후보를 추가하고, 나중에 꺼낸 값이 현재 최단 거리와 다르면 버리는 방식이 단순합니다.</p>
+                <pre><code>if (currentDistance != distances[currentVertex]) {
+    continue; // 이미 더 짧은 경로가 발견된 오래된 항목
+}</code></pre>
+              </section>
+
+              <section id="implementation" aria-labelledby="implementation-title">
+                <h2 id="implementation-title">C++ 구현</h2>
+                <pre><code>#include &lt;functional&gt;
+#include &lt;limits&gt;
+#include &lt;queue&gt;
+#include &lt;stdexcept&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+struct Edge {
+    int to;
+    int weight;
+};
+
+using Graph = std::vector&lt;std::vector&lt;Edge&gt;&gt;;
+
+std::vector&lt;int&gt; Dijkstra(const Graph&amp; graph, int start) {
+    if (start &lt; 0 || start &gt;= static_cast&lt;int&gt;(graph.size())) {
+        throw std::out_of_range("Start vertex is out of range");
+    }
+
+    const int INF = std::numeric_limits&lt;int&gt;::max();
+    std::vector&lt;int&gt; distances(graph.size(), INF);
+
+    using State = std::pair&lt;int, int&gt;; // {거리, 정점}
+    std::priority_queue&lt;State, std::vector&lt;State&gt;, std::greater&lt;State&gt;&gt; minQueue;
+
+    distances[start] = 0;
+    minQueue.push({0, start});
+
+    while (!minQueue.empty()) {
+        const auto [currentDistance, currentVertex] = minQueue.top();
+        minQueue.pop();
+
+        if (currentDistance != distances[currentVertex]) {
+            continue;
+        }
+
+        for (const Edge&amp; edge : graph[currentVertex]) {
+            if (edge.to &lt; 0 || edge.to &gt;= static_cast&lt;int&gt;(graph.size())) {
+                throw std::out_of_range("Edge vertex is out of range");
+            }
+            if (edge.weight &lt; 0) {
+                throw std::invalid_argument("Dijkstra requires non-negative weights");
+            }
+            if (currentDistance &gt; INF - edge.weight) {
+                continue; // int 덧셈 오버플로 방지
+            }
+
+            const int newDistance = currentDistance + edge.weight;
+            if (newDistance &lt; distances[edge.to]) {
+                distances[edge.to] = newDistance;
+                minQueue.push({newDistance, edge.to});
+            }
+        }
+    }
+
+    return distances;
+}</code></pre>
+                <p>이 함수는 인접 리스트로 방향 그래프를 표현합니다. 무방향 간선이라면 <code>graph[from]</code>과 <code>graph[to]</code>에 각각 반대 방향 간선을 넣습니다. 실제 비용 합이 <code>int</code> 범위를 넘을 수 있는 문제라면 거리와 가중치 타입을 <code>long long</code>로 바꾸고 충분히 안전한 <code>INF</code>를 사용해야 합니다.</p>
+              </section>
+
+              <section id="path" aria-labelledby="path-title">
+                <h2 id="path-title">거리뿐 아니라 최단 경로 복원하기</h2>
+                <p>거리만 반환하면 비용은 알 수 있지만 어떤 정점을 거쳤는지는 알 수 없습니다. 완화에 성공할 때 직전 정점을 기록하면 도착점에서 시작점까지 역추적할 수 있습니다.</p>
+                <pre><code>std::vector&lt;int&gt; previous(graph.size(), -1);
+
+if (newDistance &lt; distances[edge.to]) {
+    distances[edge.to] = newDistance;
+    previous[edge.to] = currentVertex;
+    minQueue.push({newDistance, edge.to});
+}
+
+// target부터 previous를 따라가며 모은 뒤 순서를 뒤집는다.</code></pre>
+                <p><code>distance[target] == INF</code>라면 시작점에서 도착점으로 가는 경로가 없으므로 복원을 시도하지 않습니다. 최단 경로가 여러 개라면 이 기본 구현은 완화 과정에서 먼저 선택된 경로 하나를 기록합니다.</p>
+              </section>
+
+              <section id="complexity" aria-labelledby="complexity-title">
+                <h2 id="complexity-title">복잡도와 구현 선택 기준</h2>
+                <div class="table-wrap" tabindex="0" role="region" aria-label="다익스트라 구현 방식별 복잡도 비교표">
+                  <table>
+                    <thead><tr><th>구현</th><th>시간 복잡도</th><th>적합한 경우</th></tr></thead>
+                    <tbody>
+                      <tr><th>인접 행렬 + 선형 탐색</th><td><code>O(V²)</code></td><td>정점이 적거나 간선이 매우 조밀한 그래프</td></tr>
+                      <tr><th>인접 리스트 + 최소 힙</th><td><code>O((V+E) log V)</code></td><td>정점이 많고 간선이 비교적 적은 그래프</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>연결 그래프에서는 보통 <code>E ≥ V-1</code>이므로 최소 힙 구현을 간단히 <code>O(E log V)</code>라고도 표현합니다. 공간 복잡도는 그래프와 거리·큐 저장을 포함해 대체로 <code>O(V+E)</code>입니다.</p>
+              </section>
+
+              <section id="checklist" aria-labelledby="checklist-title">
+                <h2 id="checklist-title">실전 체크리스트</h2>
+                <ul class="principle-list">
+                  <li><h3>가중치가 모두 0 이상인지 확인한다</h3><p>음수 간선이 가능하다면 다른 알고리즘을 선택합니다.</p></li>
+                  <li><h3>방향성을 입력에 정확히 반영한다</h3><p>무방향 그래프는 두 방향 간선을 모두 추가합니다.</p></li>
+                  <li><h3>오래된 큐 항목을 건너뛴다</h3><p>큐에서 꺼낸 거리와 현재 저장된 최단 거리가 다르면 처리하지 않습니다.</p></li>
+                  <li><h3>거리 타입과 INF를 안전하게 잡는다</h3><p>최대 경로 비용을 계산해 필요하면 <code>long long</code>를 사용합니다.</p></li>
+                  <li><h3>도달 불가능한 정점을 구분한다</h3><p>끝까지 <code>INF</code>인 정점은 경로가 없는 경우입니다.</p></li>
+                </ul>
+                <p>다익스트라의 핵심은 최소 힙 자체가 아니라, <strong>음수가 아닌 간선이라는 조건 아래 가장 가까운 정점을 확정하고 이웃을 완화한다</strong>는 흐름입니다. 이 전제를 먼저 확인하면 구현의 각 줄이 왜 필요한지도 자연스럽게 이해할 수 있습니다.</p>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js" data-repo="StaySober01/StaySober01.github.io" data-repo-id="R_kgDOTQFJZA" data-category="Comments" data-category-id="DIC_kwDOTQFJZM4DA3to" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="preferred_color_scheme" data-lang="ko" data-loading="lazy" crossorigin="anonymous" async></script>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="implement-dual-priority-queue-cpp.html"><span aria-hidden="true">←</span> 이전 글: 이중 우선순위 큐</a>
+                <a class="text-link" href="index.html">전체 글 보기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer"><div class="container footer-inner"><p>© 2026 StaySober01</p><a href="https://github.com/StaySober01">GitHub</a></div></footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
