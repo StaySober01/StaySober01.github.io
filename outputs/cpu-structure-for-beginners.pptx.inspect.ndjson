@@ -1,0 +1,451 @@
+{"kind":"deck","id":"pr/q7md2y","name":"Deck"}
+{"kind":"layout","layoutId":"c9b11ee2-d92f-4414-b85a-91c1cc63d7a6","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"ce5febf9-b78e-4465-aeac-3129ab5c0420","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/1z858x","slide":1,"title":"CPU 기초","textShapes":4}
+{"kind":"textbox","id":"sh/mlcfupk3","slide":1,"name":"text-42-38","text":"CPU 기초","textPreview":"CPU 기초","textChars":6,"textLines":1,"bbox":[42,38,300,34]}
+{"kind":"textbox","id":"sh/9o3yp4je","slide":1,"name":"text-42-190","text":"컴퓨터의 ‘생각하는 과정’을\n한 시간에 이해하기","textPreview":"컴퓨터의 ‘생각하는 과정’을 | 한 시간에 이해하기","textChars":26,"textLines":2,"bbox":[42,190,950,190]}
+{"kind":"textbox","id":"sh/8nuxwz2t","slide":1,"name":"text-42-435","text":"명령어를 가져오고 → 해석하고 → 실행하는 장치","textPreview":"명령어를 가져오고 → 해석하고 → 실행하는 장치","textChars":26,"textLines":1,"bbox":[42,435,900,60]}
+{"kind":"shape","id":"sh/zi1gzu1c","slide":1,"name":"box-1010-180","bbox":[1010,180,170,170]}
+{"kind":"textbox","id":"sh/yhsfqpkr","slide":1,"name":"text-1010-232","text":"CPU","textPreview":"CPU","textChars":3,"textLines":1,"bbox":[1010,232,170,55]}
+{"kind":"notes","id":"nt/1z858x","slide":1,"text":"[2분] 오늘 목표를 소개합니다. CPU 부품 이름을 외우는 시간이 아니라, 코드 한 줄이 어떤 과정을 거쳐 실행되는지 이해하는 시간이라고 안내합니다. 청중에게 “CPU를 한 문장으로 설명할 수 있나요?”라고 물어봅니다."}
+{"kind":"slide","id":"sl/si0zes","slide":2,"title":"학습 목표","textShapes":11}
+{"kind":"textbox","id":"sh/0365s3ad","slide":2,"name":"text-42-34","text":"학습 목표","textPreview":"학습 목표","textChars":5,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/z2d4jy9s","slide":2,"name":"text-42-75","text":"오늘 답할 네 가지 질문","textPreview":"오늘 답할 네 가지 질문","textChars":13,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/e143qts7","slide":2,"name":"text-1180-664","text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/9sfmp8ru","slide":2,"name":"box-42-180","bbox":[42,180,560,170]}
+{"kind":"textbox","id":"sh/or65w3ap","slide":2,"name":"text-66-204","text":"1. CPU는 무슨 일을 할까요?","textPreview":"1. CPU는 무슨 일을 할까요?","textChars":18,"textLines":1,"bbox":[66,204,512,44]}
+{"kind":"textbox","id":"sh/nqx4ny94","slide":2,"name":"text-66-262","text":"명령어를 가져오고, 뜻을 해석하고, 실제 작업을 수행합니다.","textPreview":"명령어를 가져오고, 뜻을 해석하고, 실제 작업을 수행합니다.","textChars":33,"textLines":1,"bbox":[66,262,512,65]}
+{"kind":"shape","id":"sh/m5onutsj","slide":2,"name":"box-638-180","bbox":[638,180,560,170]}
+{"kind":"textbox","id":"sh/xwzmt8r6","slide":2,"name":"text-662-204","text":"2. CPU 안에는 무엇이 있을까요?","textPreview":"2. CPU 안에는 무엇이 있을까요?","textChars":20,"textLines":1,"bbox":[662,204,512,44]}
+{"kind":"textbox","id":"sh/wvq50nal","slide":2,"name":"text-662-262","text":"제어 장치, 레지스터, 실행 유닛, 캐시가 협력합니다.","textPreview":"제어 장치, 레지스터, 실행 유닛, 캐시가 협력합니다.","textChars":30,"textLines":1,"bbox":[662,262,512,65]}
+{"kind":"shape","id":"sh/u10vaxor","slide":2,"name":"box-42-390","bbox":[42,390,560,170]}
+{"kind":"textbox","id":"sh/v29w32pc","slide":2,"name":"text-66-414","text":"3. 왜 같은 CPU도 속도가 달라질까요?","textPreview":"3. 왜 같은 CPU도 속도가 달라질까요?","textChars":23,"textLines":1,"bbox":[66,414,512,44]}
+{"kind":"textbox","id":"sh/w3idc76x","slide":2,"name":"text-66-472","text":"클럭뿐 아니라 IPC, 캐시, 분기와 코어 활용이 영향을 줍니다.","textPreview":"클럭뿐 아니라 IPC, 캐시, 분기와 코어 활용이 영향을 줍니다.","textChars":36,"textLines":1,"bbox":[66,472,512,65]}
+{"kind":"shape","id":"sh/h4re5c7i","slide":2,"name":"box-638-390","bbox":[638,390,560,170]}
+{"kind":"textbox","id":"sh/i50veho3","slide":2,"name":"text-662-414","text":"4. 코드와 어떤 관계가 있을까요?","textPreview":"4. 코드와 어떤 관계가 있을까요?","textChars":19,"textLines":1,"bbox":[662,414,512,44]}
+{"kind":"textbox","id":"sh/j69w7mpo","slide":2,"name":"text-662-472","text":"데이터 배치와 작업 분할이 실제 실행 속도를 바꿉니다.","textPreview":"데이터 배치와 작업 분할이 실제 실행 속도를 바꿉니다.","textChars":30,"textLines":1,"bbox":[662,472,512,65]}
+{"kind":"notes","id":"nt/si0zes","slide":2,"text":"[2분] 네 질문을 오늘의 지도처럼 사용합니다. 각 질문은 뒤 슬라이드에서 하나씩 해결됩니다. 세부 명칭을 모두 암기할 필요는 없다고 안심시킵니다."}
+{"kind":"slide","id":"sl/7ijnr1","slide":3,"title":"첫 번째 비유","textShapes":9}
+{"kind":"textbox","id":"sh/5s7utgn2","slide":3,"name":"text-42-34","text":"첫 번째 비유","textPreview":"첫 번째 비유","textChars":7,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/ipwvilob","slide":3,"name":"text-42-75","text":"CPU는 주방의 요리사와 닮았습니다","textPreview":"CPU는 주방의 요리사와 닮았습니다","textChars":19,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/jq5cr65w","slide":3,"name":"text-1180-664","text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/wnedgb65","slide":3,"name":"box-42-190","bbox":[42,190,350,330]}
+{"kind":"textbox","id":"sh/honupgnq","slide":3,"name":"text-66-214","text":"주문서","textPreview":"주문서","textChars":3,"textLines":1,"bbox":[66,214,302,44]}
+{"kind":"textbox","id":"sh/ulwbe1of","slide":3,"name":"text-66-272","text":"프로그램의 명령어\n예: 재료를 더한다","textPreview":"프로그램의 명령어 | 예: 재료를 더한다","textChars":20,"textLines":2,"bbox":[66,272,302,225]}
+{"kind":"shape","id":"sh/vm5cn650","slide":3,"name":"box-465-190","bbox":[465,190,350,330]}
+{"kind":"textbox","id":"sh/0jidsv6p","slide":3,"name":"text-489-214","text":"작업대","textPreview":"작업대","textChars":3,"textLines":1,"bbox":[489,214,302,44]}
+{"kind":"textbox","id":"sh/1kru10na","slide":3,"name":"text-489-272","text":"레지스터와 실행 유닛\n값을 준비하고 계산한다","textPreview":"레지스터와 실행 유닛 | 값을 준비하고 계산한다","textChars":24,"textLines":2,"bbox":[489,272,302,225]}
+{"kind":"shape","id":"sh/9gri9s3i","slide":3,"name":"box-888-190","bbox":[888,190,310,330]}
+{"kind":"textbox","id":"sh/8fih0nmx","slide":3,"name":"text-912-214","text":"창고","textPreview":"창고","textChars":2,"textLines":1,"bbox":[912,214,262,44]}
+{"kind":"textbox","id":"sh/7u907ils","slide":3,"name":"text-912-272","text":"캐시와 RAM\n재료를 보관한다","textPreview":"캐시와 RAM | 재료를 보관한다","textChars":16,"textLines":2,"bbox":[912,272,262,225]}
+{"kind":"shape","id":"sh/mtgzyd47","slide":3,"name":"line-395-355","bbox":[395,355,60,2]}
+{"kind":"shape","id":"sh/ls7i5s3m","slide":3,"name":"line-818-355","bbox":[818,355,60,2]}
+{"kind":"notes","id":"nt/7ijnr1","slide":3,"text":"[3분] 주방 비유를 설명합니다. 주문서는 명령어, 작업대는 레지스터와 실행 유닛, 가까운 찬장은 캐시, 멀리 있는 창고는 RAM입니다. 비유는 완벽한 대응이 아니라 큰 흐름을 잡는 도구라고 말합니다."}
+{"kind":"slide","id":"sl/gegrv5","slide":4,"title":"가장 중요한 흐름","textShapes":9}
+{"kind":"textbox","id":"sh/i5ozy5wj","slide":4,"name":"text-42-34","text":"가장 중요한 흐름","textPreview":"가장 중요한 흐름","textChars":9,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/58fi9kvu","slide":4,"name":"text-42-75","text":"CPU의 기본 동작은 세 단어로 끝납니다","textPreview":"CPU의 기본 동작은 세 단어로 끝납니다","textChars":22,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/476h0fep","slide":4,"name":"text-1180-664","text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/vid03ads","slide":4,"name":"line-250-350","bbox":[250,350,780,2]}
+{"kind":"shape","id":"sh/uh4zu5w7","slide":4,"name":"box-80-230","bbox":[80,230,300,250]}
+{"kind":"textbox","id":"sh/h4fi50vy","slide":4,"name":"text-104-254","text":"① Fetch","textPreview":"① Fetch","textChars":7,"textLines":1,"bbox":[104,254,252,44]}
+{"kind":"textbox","id":"sh/w3mhwved","slide":4,"name":"text-104-312","text":"다음 명령어를\n가져옵니다.","textPreview":"다음 명령어를 | 가져옵니다.","textChars":14,"textLines":2,"bbox":[104,312,252,145]}
+{"kind":"shape","id":"sh/7edgzqdw","slide":4,"name":"box-490-230","bbox":[490,230,300,250]}
+{"kind":"textbox","id":"sh/md4zqlwb","slide":4,"name":"text-514-254","text":"② Decode","textPreview":"② Decode","textChars":8,"textLines":1,"bbox":[514,254,252,44]}
+{"kind":"textbox","id":"sh/krmh8zyp","slide":4,"name":"text-514-312","text":"명령어의 뜻을\n해석합니다.","textPreview":"명령어의 뜻을 | 해석합니다.","textChars":14,"textLines":2,"bbox":[514,312,252,145]}
+{"kind":"shape","id":"sh/5svyh4za","slide":4,"name":"box-900-230","bbox":[900,230,300,250]}
+{"kind":"textbox","id":"sh/ip4z69gj","slide":4,"name":"text-924-254","text":"③ Execute","textPreview":"③ Execute","textChars":9,"textLines":1,"bbox":[924,254,252,44]}
+{"kind":"textbox","id":"sh/jqdgfeh4","slide":4,"name":"text-924-312","text":"계산하거나 데이터를\n옮깁니다.","textPreview":"계산하거나 데이터를 | 옮깁니다.","textChars":16,"textLines":2,"bbox":[924,312,252,145]}
+{"kind":"notes","id":"nt/gegrv5","slide":4,"text":"[2분] Fetch, Decode, Execute를 함께 읽습니다. 모든 세부 구조는 이 세 단계 중 어디에 도움을 주는지로 연결해서 보면 쉽다고 강조합니다."}
+{"kind":"slide","id":"sl/11glwz","slide":5,"title":"코드에서 기계어까지","textShapes":9}
+{"kind":"textbox","id":"sh/u98vexcz","slide":5,"name":"text-42-34","text":"코드에서 기계어까지","textPreview":"코드에서 기계어까지","textChars":10,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/hczu9cva","slide":5,"name":"text-42-75","text":"프로그램은 결국 작은 명령어들의 줄입니다","textPreview":"프로그램은 결국 작은 명령어들의 줄입니다","textChars":22,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/gbqdg7up","slide":5,"name":"text-1180-664","text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/76hc32d8","slide":5,"name":"box-42-190","bbox":[42,190,350,340]}
+{"kind":"textbox","id":"sh/65ovaxcn","slide":5,"name":"text-66-214","text":"우리가 쓰는 코드","textPreview":"우리가 쓰는 코드","textChars":9,"textLines":1,"bbox":[66,214,302,44]}
+{"kind":"textbox","id":"sh/t8zu5sve","slide":5,"name":"text-66-272","text":"result = a + b;","textPreview":"result = a + b;","textChars":15,"textLines":1,"bbox":[66,272,302,235]}
+{"kind":"shape","id":"sh/s7qdcnut","slide":5,"name":"box-465-190","bbox":[465,190,350,340]}
+{"kind":"textbox","id":"sh/r21wfmdc","slide":5,"name":"text-489-214","text":"CPU가 보는 명령","textPreview":"CPU가 보는 명령","textChars":10,"textLines":1,"bbox":[489,214,302,44]}
+{"kind":"textbox","id":"sh/q1sv6hc7","slide":5,"name":"text-489-272","text":"LOAD a\nLOAD b\nADD\nSTORE result","textPreview":"LOAD a | LOAD b | ADD | STORE result","textChars":30,"textLines":4,"bbox":[489,272,302,235]}
+{"kind":"shape","id":"sh/sjy90721","slide":5,"name":"box-888-190","bbox":[888,190,310,340]}
+{"kind":"textbox","id":"sh/tk7atc3m","slide":5,"name":"text-912-214","text":"실제 저장 형태","textPreview":"실제 저장 형태","textChars":8,"textLines":1,"bbox":[912,214,262,44]}
+{"kind":"textbox","id":"sh/6xwryhkv","slide":5,"name":"text-912-272","text":"0과 1로 된\n명령어 바이트","textPreview":"0과 1로 된 | 명령어 바이트","textChars":15,"textLines":2,"bbox":[912,272,262,235]}
+{"kind":"shape","id":"sh/7i58r2lg","slide":5,"name":"line-395-360","bbox":[395,360,60,2]}
+{"kind":"shape","id":"sh/kve9w72p","slide":5,"name":"line-818-360","bbox":[818,360,60,2]}
+{"kind":"notes","id":"nt/11glwz","slide":5,"text":"[2분] 고급 언어의 한 줄이 여러 기계 명령어로 바뀔 수 있음을 설명합니다. 실제 명령어 모양은 CPU 종류와 컴파일러에 따라 달라진다고 덧붙입니다."}
+{"kind":"slide","id":"sl/6f1nyl","slide":6,"title":"CPU 코어","textShapes":10}
+{"kind":"textbox","id":"sh/0fihknyd","slide":6,"name":"text-42-34","text":"CPU 코어","textPreview":"CPU 코어","textChars":6,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/ze90bixs","slide":6,"name":"text-42-75","text":"코어는 독립적으로 명령어를 처리하는 작업자입니다","textPreview":"코어는 독립적으로 명령어를 처리하는 작업자입니다","textChars":26,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/ed0zidg7","slide":6,"name":"text-1180-664","text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/94rihsfu","slide":6,"name":"box-42-180","bbox":[42,180,350,360]}
+{"kind":"textbox","id":"sh/o3ihonyp","slide":6,"name":"text-66-204","text":"Core 0","textPreview":"Core 0","textChars":6,"textLines":1,"bbox":[66,204,302,44]}
+{"kind":"textbox","id":"sh/n290fix4","slide":6,"name":"text-66-262","text":"게임 로직\n입력 처리\nAI 업데이트","textPreview":"게임 로직 | 입력 처리 | AI 업데이트","textChars":19,"textLines":3,"bbox":[66,262,302,255]}
+{"kind":"shape","id":"sh/m10zmdgj","slide":6,"name":"box-465-180","bbox":[465,180,350,360]}
+{"kind":"textbox","id":"sh/x8bilsf6","slide":6,"name":"text-489-204","text":"Core 1","textPreview":"Core 1","textChars":6,"textLines":1,"bbox":[489,204,302,44]}
+{"kind":"textbox","id":"sh/w72hs7yl","slide":6,"name":"text-489-262","text":"물리 계산\n애니메이션\n작업 처리","textPreview":"물리 계산 | 애니메이션 | 작업 처리","textChars":17,"textLines":3,"bbox":[489,262,302,255]}
+{"kind":"shape","id":"sh/yhk32h8b","slide":6,"name":"box-888-180","bbox":[888,180,310,360]}
+{"kind":"textbox","id":"sh/zitkbmpw","slide":6,"name":"text-912-204","text":"공유 자원","textPreview":"공유 자원","textChars":5,"textLines":1,"bbox":[912,204,262,44]}
+{"kind":"textbox","id":"sh/0j2l4rqh","slide":6,"name":"text-912-262","text":"L3 캐시\n메모리 대역폭\nRAM","textPreview":"L3 캐시 | 메모리 대역폭 | RAM","textChars":17,"textLines":3,"bbox":[912,262,262,255]}
+{"kind":"textbox","id":"sh/lkbmdw72","slide":6,"name":"text-42-585","text":"코어가 많아도 일을 나눌 수 있어야 빨라집니다.","textPreview":"코어가 많아도 일을 나눌 수 있어야 빨라집니다.","textChars":26,"textLines":1,"bbox":[42,585,1050,44]}
+{"kind":"notes","id":"nt/6f1nyl","slide":6,"text":"[3분] 코어를 여러 작업자에 비유합니다. 한 사람이 해야 하는 일을 작업자 수만 늘린다고 자동으로 나눌 수는 없다고 설명합니다. 게임 예시는 가능한 분할의 예일 뿐 엔진마다 다릅니다."}
+{"kind":"slide","id":"sl/v3n6df","slide":7,"title":"제어 장치","textShapes":11}
+{"kind":"textbox","id":"sh/l03at8jm","slide":7,"name":"text-42-34","text":"제어 장치","textPreview":"제어 장치","textChars":5,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/yxcridkb","slide":7,"name":"text-42-75","text":"제어 장치는 작업 순서를 지휘합니다","textPreview":"제어 장치는 작업 순서를 지휘합니다","textChars":19,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/zylsri1w","slide":7,"name":"text-1180-664","text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/cvu9g325","slide":7,"name":"box-42-190","bbox":[42,190,270,330]}
+{"kind":"textbox","id":"sh/dw3ap8jq","slide":7,"name":"text-66-214","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[66,214,222,44]}
+{"kind":"textbox","id":"sh/qtsretkz","slide":7,"name":"text-66-272","text":"다음 명령어 주소를 확인","textPreview":"다음 명령어 주소를 확인","textChars":13,"textLines":1,"bbox":[66,272,222,225]}
+{"kind":"shape","id":"sh/bulsny1k","slide":7,"name":"box-344-190","bbox":[344,190,270,330]}
+{"kind":"textbox","id":"sh/wretsni9","slide":7,"name":"text-368-214","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[368,214,222,44]}
+{"kind":"textbox","id":"sh/xs7a1sju","slide":7,"name":"text-368-272","text":"캐시나 메모리에서 명령어를 인출","textPreview":"캐시나 메모리에서 명령어를 인출","textChars":17,"textLines":1,"bbox":[368,272,222,225]}
+{"kind":"shape","id":"sh/xonqxsf6","slide":7,"name":"box-646-190","bbox":[646,190,270,330]}
+{"kind":"textbox","id":"sh/wne94nyl","slide":7,"name":"text-670-214","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[670,214,222,44]}
+{"kind":"textbox","id":"sh/vm58vix0","slide":7,"name":"text-670-272","text":"디코더가 뜻을 해석","textPreview":"디코더가 뜻을 해석","textChars":10,"textLines":1,"bbox":[670,272,222,225]}
+{"kind":"shape","id":"sh/a1w72dgf","slide":7,"name":"box-948-190","bbox":[948,190,250,330]}
+{"kind":"textbox","id":"sh/90nqt8fu","slide":7,"name":"text-972-214","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[972,214,202,44]}
+{"kind":"textbox","id":"sh/8zep03y9","slide":7,"name":"text-972-272","text":"실행 유닛에 신호를 전달","textPreview":"실행 유닛에 신호를 전달","textChars":13,"textLines":1,"bbox":[972,272,202,225]}
+{"kind":"notes","id":"nt/v3n6df","slide":7,"text":"[2분] 제어 장치는 직접 모든 계산을 하기보다 필요한 장치에 일을 배분하는 지휘자에 가깝다고 설명합니다. PC와 디코더가 이 흐름에 참여합니다."}
+{"kind":"slide","id":"sl/91om6a","slide":8,"title":"레지스터","textShapes":11}
+{"kind":"textbox","id":"sh/ne54fadg","slide":8,"name":"text-42-34","text":"레지스터","textPreview":"레지스터","textChars":4,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/ofe5ove1","slide":8,"name":"text-42-75","text":"레지스터는 CPU 바로 옆의 초고속 메모장입니다","textPreview":"레지스터는 CPU 바로 옆의 초고속 메모장입니다","textChars":26,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/9gnmh0vm","slide":8,"name":"text-1180-664","text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"textbox","id":"sh/ahwna5w7","slide":8,"name":"text-42-190","text":"작고 빠르다","textPreview":"작고 빠르다","textChars":6,"textLines":1,"bbox":[42,190,520,70]}
+{"kind":"textbox","id":"sh/bi5ojads","slide":8,"name":"text-42-300","text":"• 계산할 값을 잠깐 보관합니다.","textPreview":"• 계산할 값을 잠깐 보관합니다.","textChars":18,"textLines":1,"bbox":[42,300,560,60]}
+{"kind":"textbox","id":"sh/wje5cfex","slide":8,"name":"text-42-368","text":"• 중간 결과를 즉시 다시 사용합니다.","textPreview":"• 중간 결과를 즉시 다시 사용합니다.","textChars":21,"textLines":1,"bbox":[42,368,560,60]}
+{"kind":"textbox","id":"sh/xk76lkvi","slide":8,"name":"text-42-436","text":"• RAM까지 왕복하는 횟수를 줄입니다.","textPreview":"• RAM까지 왕복하는 횟수를 줄입니다.","textChars":22,"textLines":1,"bbox":[42,436,560,60]}
+{"kind":"shape","id":"sh/qlcnelwn","slide":8,"name":"box-700-185","bbox":[700,185,460,360]}
+{"kind":"textbox","id":"sh/rml47qd8","slide":8,"name":"text-745-235","text":"R1   10","textPreview":"R1   10","textChars":7,"textLines":1,"bbox":[745,235,360,55]}
+{"kind":"textbox","id":"sh/felwvihs","slide":8,"name":"text-745-320","text":"R2   20","textPreview":"R2   20","textChars":7,"textLines":1,"bbox":[745,320,360,55]}
+{"kind":"textbox","id":"sh/udsvmdg7","slide":8,"name":"text-745-405","text":"R3   30","textPreview":"R3   30","textChars":7,"textLines":1,"bbox":[745,405,360,55]}
+{"kind":"textbox","id":"sh/hg3ex8zy","slide":8,"name":"text-715-570","text":"10 + 20 = 30","textPreview":"10 + 20 = 30","textChars":12,"textLines":1,"bbox":[715,570,430,45]}
+{"kind":"notes","id":"nt/91om6a","slide":8,"text":"[2분] 레지스터를 메모장에 비유합니다. 값 10과 20을 R1, R2에 놓고 결과 30을 R3에 쓰는 과정을 보여줍니다. 실제 레지스터 이름은 ISA마다 다릅니다."}
+{"kind":"slide","id":"sl/q50k2o","slide":9,"title":"PC · SP · 상태 레지스터","textShapes":10}
+{"kind":"textbox","id":"sh/yt8zql0v","slide":9,"name":"text-42-34","text":"PC · SP · 상태 레지스터","textPreview":"PC · SP · 상태 레지스터","textChars":17,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/lwzil0j6","slide":9,"name":"text-42-75","text":"특별한 레지스터는 실행 흐름을 기억합니다","textPreview":"특별한 레지스터는 실행 흐름을 기억합니다","textChars":22,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/kvqhsvil","slide":9,"name":"text-1180-664","text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/7ih0nq1c","slide":9,"name":"box-42-190","bbox":[42,190,350,340]}
+{"kind":"textbox","id":"sh/6x8zul0r","slide":9,"name":"text-66-214","text":"PC","textPreview":"PC","textChars":2,"textLines":1,"bbox":[66,214,302,44]}
+{"kind":"textbox","id":"sh/tkjip0ji","slide":9,"name":"text-66-272","text":"다음에 실행할\n명령어 주소","textPreview":"다음에 실행할 | 명령어 주소","textChars":14,"textLines":2,"bbox":[66,272,302,235]}
+{"kind":"shape","id":"sh/8jahwvix","slide":9,"name":"box-465-190","bbox":[465,190,350,340]}
+{"kind":"textbox","id":"sh/nmxgb618","slide":9,"name":"text-489-214","text":"SP","textPreview":"SP","textChars":2,"textLines":1,"bbox":[489,214,302,44]}
+{"kind":"textbox","id":"sh/m1ozi1kn","slide":9,"name":"text-489-272","text":"현재 스택의\n위치","textPreview":"현재 스택의 | 위치","textChars":9,"textLines":2,"bbox":[489,272,302,235]}
+{"kind":"shape","id":"sh/4ve1sz2l","slide":9,"name":"box-888-190","bbox":[888,190,310,340]}
+{"kind":"textbox","id":"sh/5wn2l43q","slide":9,"name":"text-912-214","text":"Flags","textPreview":"Flags","textChars":5,"textLines":1,"bbox":[912,214,262,44]}
+{"kind":"textbox","id":"sh/itwjqpkf","slide":9,"name":"text-912-272","text":"0인가?\n음수인가?\n넘쳤는가?","textPreview":"0인가? | 음수인가? | 넘쳤는가?","textChars":16,"textLines":3,"bbox":[912,272,262,235]}
+{"kind":"textbox","id":"sh/3u50jul0","slide":9,"name":"text-42-580","text":"분기와 함수 호출도 결국 ‘다음 위치’를 바꾸는 일입니다.","textPreview":"분기와 함수 호출도 결국 ‘다음 위치’를 바꾸는 일입니다.","textChars":32,"textLines":1,"bbox":[42,580,1130,44]}
+{"kind":"notes","id":"nt/q50k2o","slide":9,"text":"[3분] PC는 책갈피, SP는 쌓아 둔 접시의 맨 위, 상태 플래그는 계산 결과에 붙인 메모로 비유합니다. if문은 플래그를 보고 PC가 다른 위치로 이동하는 흐름으로 설명할 수 있습니다."}
+{"kind":"slide","id":"sl/js315w","slide":10,"title":"실행 유닛","textShapes":11}
+{"kind":"textbox","id":"sh/fupg7apk","slide":10,"name":"text-42-34","text":"실행 유닛","textPreview":"실행 유닛","textChars":5,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/gvyh0fq5","slide":10,"name":"text-42-75","text":"실행 유닛마다 잘하는 일이 다릅니다","textPreview":"실행 유닛마다 잘하는 일이 다릅니다","textChars":19,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/hw7y9k7q","slide":10,"name":"text-1180-664","text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/65wzu583","slide":10,"name":"box-42-175","bbox":[42,175,270,360]}
+{"kind":"textbox","id":"sh/7q5g3apo","slide":10,"name":"text-66-199","text":"ALU","textPreview":"ALU","textChars":3,"textLines":1,"bbox":[66,199,222,44]}
+{"kind":"textbox","id":"sh/sryhwfq9","slide":10,"name":"text-66-257","text":"정수 계산\n비교\n논리·비트 연산","textPreview":"정수 계산 | 비교 | 논리·비트 연산","textChars":17,"textLines":3,"bbox":[66,257,222,255]}
+{"kind":"shape","id":"sh/ts7y5k7u","slide":10,"name":"box-338-175","bbox":[338,175,270,360]}
+{"kind":"textbox","id":"sh/i1wfq58r","slide":10,"name":"text-362-199","text":"FPU","textPreview":"FPU","textChars":3,"textLines":1,"bbox":[362,199,222,44]}
+{"kind":"textbox","id":"sh/j25gzq9c","slide":10,"name":"text-362-257","text":"소수 계산\n위치·회전\n물리 연산","textPreview":"소수 계산 | 위치·회전 | 물리 연산","textChars":17,"textLines":3,"bbox":[362,257,222,255]}
+{"kind":"shape","id":"sh/rup0rit0","slide":10,"name":"box-634-175","bbox":[634,175,270,360]}
+{"kind":"textbox","id":"sh/qtgjixcf","slide":10,"name":"text-658-199","text":"SIMD","textPreview":"SIMD","textChars":4,"textLines":1,"bbox":[658,199,222,44]}
+{"kind":"textbox","id":"sh/dw72tsb6","slide":10,"name":"text-658-257","text":"여러 값을\n한 번에 계산","textPreview":"여러 값을 | 한 번에 계산","textChars":13,"textLines":2,"bbox":[658,257,222,255]}
+{"kind":"shape","id":"sh/svy1knul","slide":10,"name":"box-930-175","bbox":[930,175,270,360]}
+{"kind":"textbox","id":"sh/fy9kv2tc","slide":10,"name":"text-954-199","text":"Load / Store","textPreview":"Load / Store","textChars":12,"textLines":1,"bbox":[954,199,222,44]}
+{"kind":"textbox","id":"sh/ex0jmxcr","slide":10,"name":"text-954-257","text":"메모리에서 읽고\n다시 저장","textPreview":"메모리에서 읽고 | 다시 저장","textChars":14,"textLines":2,"bbox":[954,257,222,255]}
+{"kind":"notes","id":"nt/js315w","slide":10,"text":"[3분] 네 실행 유닛의 역할을 설명합니다. CPU마다 유닛 수와 구조는 다르며, 명령어가 준비되어 있어야 유닛을 활용할 수 있다고 말합니다."}
+{"kind":"slide","id":"sl/q2oyqf","slide":11,"title":"한 명령어 · 여러 데이터","textShapes":9}
+{"kind":"textbox","id":"sh/65obq9gb","slide":11,"name":"text-42-34","text":"한 명령어 · 여러 데이터","textPreview":"한 명령어 · 여러 데이터","textChars":14,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/t8zu14fm","slide":11,"name":"text-42-75","text":"SIMD는 같은 일을 여러 데이터에 동시에 합니다","textPreview":"SIMD는 같은 일을 여러 데이터에 동시에 합니다","textChars":27,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/s76tszyh","slide":11,"name":"text-1180-664","text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"textbox","id":"sh/j2xcvuhk","slide":11,"name":"text-42-190","text":"일반 계산","textPreview":"일반 계산","textChars":5,"textLines":1,"bbox":[42,190,300,45]}
+{"kind":"textbox","id":"sh/i1obmpgz","slide":11,"name":"text-42-255","text":"a1+b1\na2+b2\na3+b3\na4+b4","textPreview":"a1+b1 | a2+b2 | a3+b3 | a4+b4","textChars":23,"textLines":4,"bbox":[42,255,350,240]}
+{"kind":"textbox","id":"sh/54fux4zq","slide":11,"name":"text-520-190","text":"SIMD","textPreview":"SIMD","textChars":4,"textLines":1,"bbox":[520,190,300,45]}
+{"kind":"shape","id":"sh/k36tozy5","slide":11,"name":"box-520-255","bbox":[520,255,650,120]}
+{"kind":"textbox","id":"sh/vedcraho","slide":11,"name":"text-550-286","text":"[ a1  a2  a3  a4 ]","textPreview":"[ a1  a2  a3  a4 ]","textChars":18,"textLines":1,"bbox":[550,286,590,45]}
+{"kind":"shape","id":"sh/ad4bipg3","slide":11,"name":"box-520-410","bbox":[520,410,650,120]}
+{"kind":"textbox","id":"sh/ojmd8n2l","slide":11,"name":"text-550-441","text":"[ b1  b2  b3  b4 ]","textPreview":"[ b1  b2  b3  b4 ]","textChars":18,"textLines":1,"bbox":[550,441,590,45]}
+{"kind":"textbox","id":"sh/9kvehsj6","slide":11,"name":"text-700-555","text":"↓ 한 번에 더하기","textPreview":"↓ 한 번에 더하기","textChars":10,"textLines":1,"bbox":[700,555,300,40]}
+{"kind":"notes","id":"nt/q2oyqf","slide":11,"text":"[2분] SIMD의 개념만 설명합니다. 벡터, 행렬, 파티클처럼 같은 계산을 반복할 때 유리하지만 자동으로 항상 적용되는 것은 아니라고 말합니다."}
+{"kind":"slide","id":"sl/crtgup","slide":12,"title":"메모리 병목","textShapes":9}
+{"kind":"textbox","id":"sh/9oji98bm","slide":12,"name":"text-42-34","text":"메모리 병목","textPreview":"메모리 병목","textChars":6,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/ml8jydsv","slide":12,"name":"text-42-75","text":"CPU가 기다리는 가장 흔한 이유는 메모리입니다","textPreview":"CPU가 기다리는 가장 흔한 이유는 메모리입니다","textChars":26,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/nmh07itg","slide":12,"name":"text-1180-664","text":"12","textPreview":"12","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"textbox","id":"sh/wba14nax","slide":12,"name":"text-42-205","text":"계산","textPreview":"계산","textChars":2,"textLines":1,"bbox":[42,205,330,70]}
+{"kind":"textbox","id":"sh/xcjidsbi","slide":12,"name":"text-42-290","text":"빠름","textPreview":"빠름","textChars":2,"textLines":1,"bbox":[42,290,330,48]}
+{"kind":"textbox","id":"sh/a9sj2ds7","slide":12,"name":"text-505-205","text":"데이터 가져오기","textPreview":"데이터 가져오기","textChars":8,"textLines":1,"bbox":[505,205,500,70]}
+{"kind":"textbox","id":"sh/va10bits","slide":12,"name":"text-505-290","text":"상대적으로 느림","textPreview":"상대적으로 느림","textChars":8,"textLines":1,"bbox":[505,290,430,48]}
+{"kind":"shape","id":"sh/cf6hsjat","slide":12,"name":"box-42-400","bbox":[42,400,1120,120]}
+{"kind":"textbox","id":"sh/dgfi1obe","slide":12,"name":"text-75-436","text":"CPU: ‘계산은 끝났는데, 데이터가 아직 안 왔어요.’","textPreview":"CPU: ‘계산은 끝났는데, 데이터가 아직 안 왔어요.’","textChars":31,"textLines":1,"bbox":[75,436,1060,50]}
+{"kind":"textbox","id":"sh/90jytkbq","slide":12,"name":"text-42-570","text":"그래서 CPU 가까이에 캐시를 둡니다.","textPreview":"그래서 CPU 가까이에 캐시를 둡니다.","textChars":21,"textLines":1,"bbox":[42,570,900,45]}
+{"kind":"notes","id":"nt/crtgup","slide":12,"text":"[2분] 계산 자체보다 데이터를 기다리는 시간이 병목이 될 수 있음을 강조합니다. 이 문제를 완화하기 위해 캐시가 등장한다고 다음 슬라이드로 연결합니다."}
+{"kind":"slide","id":"sl/awlu2l","slide":13,"title":"메모리 계층","textShapes":15}
+{"kind":"textbox","id":"sh/907ytwj2","slide":13,"name":"text-42-34","text":"메모리 계층","textPreview":"메모리 계층","textChars":6,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/mxwzih0b","slide":13,"name":"text-42-75","text":"메모리는 빠를수록 작고 비쌉니다","textPreview":"메모리는 빠를수록 작고 비쌉니다","textChars":17,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/ny5grm1w","slide":13,"name":"text-1180-664","text":"13","textPreview":"13","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/0vehg7il","slide":13,"name":"box-60-170","bbox":[60,170,210,150]}
+{"kind":"textbox","id":"sh/1wnypcj6","slide":13,"name":"text-84-194","text":"레지스터","textPreview":"레지스터","textChars":4,"textLines":1,"bbox":[84,194,162,44]}
+{"kind":"textbox","id":"sh/etwzex0f","slide":13,"name":"text-84-252","text":"가장 빠름","textPreview":"가장 빠름","textChars":5,"textLines":1,"bbox":[84,252,162,45]}
+{"kind":"shape","id":"sh/zu5gn210","slide":13,"name":"box-285-215","bbox":[285,215,210,150]}
+{"kind":"textbox","id":"sh/krihsbip","slide":13,"name":"text-309-239","text":"L1 캐시","textPreview":"L1 캐시","textChars":5,"textLines":1,"bbox":[309,239,162,44]}
+{"kind":"textbox","id":"sh/lsri1gja","slide":13,"name":"text-309-297","text":"매우 빠름","textPreview":"매우 빠름","textChars":5,"textLines":1,"bbox":[309,297,162,45]}
+{"kind":"shape","id":"sh/xsvqhkvy","slide":13,"name":"box-510-260","bbox":[510,260,210,150]}
+{"kind":"textbox","id":"sh/wrm9ofud","slide":13,"name":"text-534-284","text":"L2 캐시","textPreview":"L2 캐시","textChars":5,"textLines":1,"bbox":[534,284,162,44]}
+{"kind":"textbox","id":"sh/bqt8fads","slide":13,"name":"text-534-342","text":"빠름","textPreview":"빠름","textChars":2,"textLines":1,"bbox":[534,342,162,45]}
+{"kind":"shape","id":"sh/apkrm5c7","slide":13,"name":"box-735-305","bbox":[735,305,210,150]}
+{"kind":"textbox","id":"sh/9obqd0vm","slide":13,"name":"text-759-329","text":"L3 캐시","textPreview":"L3 캐시","textChars":5,"textLines":1,"bbox":[759,329,162,44]}
+{"kind":"textbox","id":"sh/o329kvu1","slide":13,"name":"text-759-387","text":"여러 코어 공유","textPreview":"여러 코어 공유","textChars":8,"textLines":1,"bbox":[759,387,162,45]}
+{"kind":"shape","id":"sh/n2t8bqdw","slide":13,"name":"box-960-350","bbox":[960,350,210,150]}
+{"kind":"textbox","id":"sh/m1kri5wb","slide":13,"name":"text-984-374","text":"RAM","textPreview":"RAM","textChars":3,"textLines":1,"bbox":[984,374,162,44]}
+{"kind":"textbox","id":"sh/tkfap4v6","slide":13,"name":"text-984-432","text":"크지만 느림","textPreview":"크지만 느림","textChars":6,"textLines":1,"bbox":[984,432,162,45]}
+{"kind":"textbox","id":"sh/8j69wzul","slide":13,"name":"text-60-500","text":"← 빠르고 작음","textPreview":"← 빠르고 작음","textChars":8,"textLines":1,"bbox":[60,500,300,40]}
+{"kind":"textbox","id":"sh/s3ets32h","slide":13,"name":"text-900-500","text":"크고 느림 →","textPreview":"크고 느림 →","textChars":7,"textLines":1,"bbox":[900,500,270,40]}
+{"kind":"notes","id":"nt/awlu2l","slide":13,"text":"[3분] 레지스터부터 RAM까지 순서를 함께 읽습니다. 캐시에 데이터가 있으면 hit, 없으면 miss라고 설명합니다. 정확한 속도 숫자는 CPU마다 다르므로 순서와 원리만 이해하도록 합니다."}
+{"kind":"slide","id":"sl/o5u58u","slide":14,"title":"캐시 라인","textShapes":22}
+{"kind":"textbox","id":"sh/dcj25cna","slide":14,"name":"text-42-34","text":"캐시 라인","textPreview":"캐시 라인","textChars":5,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/q9s3axoj","slide":14,"name":"text-42-75","text":"캐시는 한 변수보다 주변을 함께 가져옵니다","textPreview":"캐시는 한 변수보다 주변을 함께 가져옵니다","textChars":23,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/ra1k3254","slide":14,"name":"text-1180-664","text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"textbox","id":"sh/0falg76l","slide":14,"name":"text-42-180","text":"int values[16]","textPreview":"int values[16]","textChars":14,"textLines":1,"bbox":[42,180,420,50]}
+{"kind":"shape","id":"sh/1g329cn6","slide":14,"name":"box-42-285","bbox":[42,285,60,70]}
+{"kind":"shape","id":"sh/eds3ehof","slide":14,"name":"box-112-285","bbox":[112,285,60,70]}
+{"kind":"shape","id":"sh/fe1k7m50","slide":14,"name":"box-182-285","bbox":[182,285,60,70]}
+{"kind":"shape","id":"sh/o3ulkrmx","slide":14,"name":"box-252-285","bbox":[252,285,60,70]}
+{"kind":"shape","id":"sh/p43mdwn2","slide":14,"name":"box-322-285","bbox":[322,285,60,70]}
+{"kind":"shape","id":"sh/lgzylc3e","slide":14,"name":"box-392-285","bbox":[392,285,60,70]}
+{"kind":"shape","id":"sh/kf6hs7mt","slide":14,"name":"box-462-285","bbox":[462,285,60,70]}
+{"kind":"shape","id":"sh/jexgj258","slide":14,"name":"box-532-285","bbox":[532,285,60,70]}
+{"kind":"shape","id":"sh/ytozqx4n","slide":14,"name":"box-602-285","bbox":[602,285,60,70]}
+{"kind":"shape","id":"sh/tkzypw3a","slide":14,"name":"box-672-285","bbox":[672,285,60,70]}
+{"kind":"shape","id":"sh/8jqhwrm5","slide":14,"name":"box-742-285","bbox":[742,285,60,70]}
+{"kind":"shape","id":"sh/7ihgnmlk","slide":14,"name":"box-812-285","bbox":[812,285,60,70]}
+{"kind":"shape","id":"sh/6h8zuh4z","slide":14,"name":"box-882-285","bbox":[882,285,60,70]}
+{"kind":"shape","id":"sh/9ovydsn6","slide":14,"name":"box-952-285","bbox":[952,285,60,70]}
+{"kind":"shape","id":"sh/onmxknml","slide":14,"name":"box-1022-285","bbox":[1022,285,60,70]}
+{"kind":"shape","id":"sh/07qh0nuh","slide":14,"name":"box-1092-285","bbox":[1092,285,60,70]}
+{"kind":"textbox","id":"sh/18zy9sv2","slide":14,"name":"text-42-307","text":"0","textPreview":"0","textChars":1,"textLines":1,"bbox":[42,307,60,26]}
+{"kind":"textbox","id":"sh/e58zyxcb","slide":14,"name":"text-112-307","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[112,307,60,26]}
+{"kind":"textbox","id":"sh/f6hg7idw","slide":14,"name":"text-182-307","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[182,307,60,26]}
+{"kind":"textbox","id":"sh/ovah47ut","slide":14,"name":"text-252-307","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[252,307,60,26]}
+{"kind":"textbox","id":"sh/pwjydcvy","slide":14,"name":"text-322-307","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[322,307,60,26]}
+{"kind":"textbox","id":"sh/2t8z2xcn","slide":14,"name":"text-392-307","text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[392,307,60,26]}
+{"kind":"textbox","id":"sh/nu1gb2d8","slide":14,"name":"text-462-307","text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[462,307,60,26]}
+{"kind":"textbox","id":"sh/czah87up","slide":14,"name":"text-532-307","text":"7","textPreview":"7","textChars":1,"textLines":1,"bbox":[532,307,60,26]}
+{"kind":"textbox","id":"sh/x0jihcva","slide":14,"name":"text-602-307","text":"8","textPreview":"8","textChars":1,"textLines":1,"bbox":[602,307,60,26]}
+{"kind":"textbox","id":"sh/76psna1o","slide":14,"name":"text-672-307","text":"9","textPreview":"9","textChars":1,"textLines":1,"bbox":[672,307,60,26]}
+{"kind":"textbox","id":"sh/65wbu503","slide":14,"name":"text-742-307","text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[742,307,60,26]}
+{"kind":"textbox","id":"sh/t87apkju","slide":14,"name":"text-812-307","text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[812,307,60,26]}
+{"kind":"textbox","id":"sh/87ytwfi9","slide":14,"name":"text-882-307","text":"12","textPreview":"12","textChars":2,"textLines":1,"bbox":[882,307,60,26]}
+{"kind":"textbox","id":"sh/j25sjq1c","slide":14,"name":"text-952-307","text":"13","textPreview":"13","textChars":2,"textLines":1,"bbox":[952,307,60,26]}
+{"kind":"textbox","id":"sh/y1wbq507","slide":14,"name":"text-1022-307","text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[1022,307,60,26]}
+{"kind":"textbox","id":"sh/l4nal0ji","slide":14,"name":"text-1092-307","text":"15","textPreview":"15","textChars":2,"textLines":1,"bbox":[1092,307,60,26]}
+{"kind":"textbox","id":"sh/k3etsvix","slide":14,"name":"text-42-420","text":"values[0]을 읽을 때 주변 값도 같은 캐시 라인에 들어올 수 있습니다.","textPreview":"values[0]을 읽을 때 주변 값도 같은 캐시 라인에 들어올 수 있습니다.","textChars":43,"textLines":1,"bbox":[42,420,1120,60]}
+{"kind":"textbox","id":"sh/3y9cvu1w","slide":14,"name":"text-42-520","text":"연속된 배열을 순서대로 읽으면 가져온 데이터를 낭비하지 않습니다.","textPreview":"연속된 배열을 순서대로 읽으면 가져온 데이터를 낭비하지 않습니다.","textChars":36,"textLines":1,"bbox":[42,520,1120,50]}
+{"kind":"notes","id":"nt/o5u58u","slide":14,"text":"[3분] 캐시 라인을 설명합니다. 64바이트가 흔하지만 시스템마다 다르다고 주의합니다. int 4바이트라면 한 라인에 16개가 들어갈 수 있다는 단순 예시임을 밝힙니다."}
+{"kind":"slide","id":"sl/08x5xc","slide":15,"title":"퀴즈 1","textShapes":8}
+{"kind":"textbox","id":"sh/0j69gfmx","slide":15,"name":"text-42-34","text":"퀴즈 1","textPreview":"퀴즈 1","textChars":4,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/zixs7a5s","slide":15,"name":"text-42-75","text":"잠깐 확인: 가장 가까운 저장 공간은?","textPreview":"잠깐 확인: 가장 가까운 저장 공간은?","textChars":21,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/yh4re547","slide":15,"name":"text-1180-664","text":"15","textPreview":"15","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"textbox","id":"sh/dgva50nm","slide":15,"name":"text-80-220","text":"A. RAM","textPreview":"A. RAM","textChars":6,"textLines":1,"bbox":[80,220,480,80]}
+{"kind":"textbox","id":"sh/cfm9cvm1","slide":15,"name":"text-680-220","text":"B. L3 캐시","textPreview":"B. L3 캐시","textChars":8,"textLines":1,"bbox":[680,220,480,80]}
+{"kind":"textbox","id":"sh/beds3q5g","slide":15,"name":"text-80-390","text":"C. 레지스터","textPreview":"C. 레지스터","textChars":7,"textLines":1,"bbox":[80,390,480,80]}
+{"kind":"textbox","id":"sh/qd4ra54v","slide":15,"name":"text-680-390","text":"D. SSD","textPreview":"D. SSD","textChars":6,"textLines":1,"bbox":[680,390,480,80]}
+{"kind":"textbox","id":"sh/xczah43q","slide":15,"name":"text-80-570","text":"정답을 고르고, 이유를 한 문장으로 말해 보세요.","textPreview":"정답을 고르고, 이유를 한 문장으로 말해 보세요.","textChars":27,"textLines":1,"bbox":[80,570,1080,48]}
+{"kind":"notes","id":"nt/08x5xc","slide":15,"text":"[2분] 정답은 C 레지스터입니다. 20초 정도 생각하게 한 뒤 이유를 받습니다. 저장 공간의 계층 순서를 다시 한번 확인합니다."}
+{"kind":"slide","id":"sl/z0d2mp","slide":16,"title":"파이프라인","textShapes":27}
+{"kind":"textbox","id":"sh/94vadsve","slide":16,"name":"text-42-34","text":"파이프라인","textPreview":"파이프라인","textChars":5,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/m14b2dw3","slide":16,"name":"text-42-75","text":"파이프라인은 여러 명령어의 단계를 겹칩니다","textPreview":"파이프라인은 여러 명령어의 단계를 겹칩니다","textChars":23,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/n2dsbido","slide":16,"name":"text-1180-664","text":"16","textPreview":"16","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"textbox","id":"sh/w76t8ne5","slide":16,"name":"text-42-180","text":"Cycle","textPreview":"Cycle","textChars":5,"textLines":1,"bbox":[42,180,120,40]}
+{"kind":"textbox","id":"sh/x8fahsvq","slide":16,"name":"text-220-180","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[220,180,80,40]}
+{"kind":"textbox","id":"sh/a54b6dwz","slide":16,"name":"text-390-180","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[390,180,80,40]}
+{"kind":"textbox","id":"sh/v6dsfidk","slide":16,"name":"text-560-180","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[560,180,80,40]}
+{"kind":"textbox","id":"sh/cb29w3el","slide":16,"name":"text-730-180","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[730,180,80,40]}
+{"kind":"textbox","id":"sh/dcba58f6","slide":16,"name":"text-900-180","text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[900,180,80,40]}
+{"kind":"textbox","id":"sh/xobe10f6","slide":16,"name":"text-42-260","text":"명령 A","textPreview":"명령 A","textChars":4,"textLines":1,"bbox":[42,260,130,40]}
+{"kind":"shape","id":"sh/cn2x8fel","slide":16,"name":"box-220-250","bbox":[220,250,140,62]}
+{"kind":"textbox","id":"sh/bmtwzax0","slide":16,"name":"text-220-268","text":"Fetch","textPreview":"Fetch","textChars":5,"textLines":1,"bbox":[220,268,140,28]}
+{"kind":"shape","id":"sh/alkf65wv","slide":16,"name":"box-390-250","bbox":[390,250,140,62]}
+{"kind":"textbox","id":"sh/lcve5kfi","slide":16,"name":"text-390-268","text":"Decode","textPreview":"Decode","textChars":6,"textLines":1,"bbox":[390,268,140,28]}
+{"kind":"shape","id":"sh/kbmxcfex","slide":16,"name":"box-560-250","bbox":[560,250,140,62]}
+{"kind":"textbox","id":"sh/zatw3axc","slide":16,"name":"text-560-268","text":"Execute","textPreview":"Execute","textChars":7,"textLines":1,"bbox":[560,268,140,28]}
+{"kind":"shape","id":"sh/ypkfa5wr","slide":16,"name":"box-730-250","bbox":[730,250,140,62]}
+{"kind":"textbox","id":"sh/9gve9kfe","slide":16,"name":"text-730-268","text":"Memory","textPreview":"Memory","textChars":6,"textLines":1,"bbox":[730,268,140,28]}
+{"kind":"shape","id":"sh/8fmxgzet","slide":16,"name":"box-900-250","bbox":[900,250,140,62]}
+{"kind":"textbox","id":"sh/sjuhc3m5","slide":16,"name":"text-900-268","text":"Write","textPreview":"Write","textChars":5,"textLines":1,"bbox":[900,268,140,28]}
+{"kind":"textbox","id":"sh/tk3y583q","slide":16,"name":"text-42-350","text":"명령 B","textPreview":"명령 B","textChars":4,"textLines":1,"bbox":[42,350,130,40]}
+{"kind":"shape","id":"sh/6hczat4z","slide":16,"name":"box-390-340","bbox":[390,340,140,62]}
+{"kind":"textbox","id":"sh/rilg3y5k","slide":16,"name":"text-390-358","text":"Fetch","textPreview":"Fetch","textChars":5,"textLines":1,"bbox":[390,358,140,28]}
+{"kind":"shape","id":"sh/gnehg3m1","slide":16,"name":"box-560-340","bbox":[560,340,140,62]}
+{"kind":"textbox","id":"sh/1oni983m","slide":16,"name":"text-560-358","text":"Decode","textPreview":"Decode","textChars":6,"textLines":1,"bbox":[560,358,140,28]}
+{"kind":"shape","id":"sh/elczed4b","slide":16,"name":"box-730-340","bbox":[730,340,140,62]}
+{"kind":"textbox","id":"sh/fmlg7ylg","slide":16,"name":"text-730-358","text":"Execute","textPreview":"Execute","textChars":7,"textLines":1,"bbox":[730,358,140,28]}
+{"kind":"shape","id":"sh/wrah4jmx","slide":16,"name":"box-900-340","bbox":[900,340,140,62]}
+{"kind":"textbox","id":"sh/xsjyxoni","slide":16,"name":"text-900-358","text":"Memory","textPreview":"Memory","textChars":6,"textLines":1,"bbox":[900,358,140,28]}
+{"kind":"shape","id":"sh/zm9kjm50","slide":16,"name":"box-1070-340","bbox":[1070,340,140,62]}
+{"kind":"textbox","id":"sh/ylgjahof","slide":16,"name":"text-1070-358","text":"Write","textPreview":"Write","textChars":5,"textLines":1,"bbox":[1070,358,140,28]}
+{"kind":"textbox","id":"sh/l8r2lwn6","slide":16,"name":"text-42-440","text":"명령 C","textPreview":"명령 C","textChars":4,"textLines":1,"bbox":[42,440,130,40]}
+{"kind":"shape","id":"sh/07i1cr6l","slide":16,"name":"box-560-430","bbox":[560,430,140,62]}
+{"kind":"textbox","id":"sh/bipkf25o","slide":16,"name":"text-560-448","text":"Fetch","textPreview":"Fetch","textChars":5,"textLines":1,"bbox":[560,448,140,28]}
+{"kind":"shape","id":"sh/qhgj6xoj","slide":16,"name":"box-730-430","bbox":[730,430,140,62]}
+{"kind":"textbox","id":"sh/dk72hcnu","slide":16,"name":"text-730-448","text":"Decode","textPreview":"Decode","textChars":6,"textLines":1,"bbox":[730,448,140,28]}
+{"kind":"shape","id":"sh/cjy18769","slide":16,"name":"box-900-430","bbox":[900,430,140,62]}
+{"kind":"textbox","id":"sh/3e5kb2ps","slide":16,"name":"text-900-448","text":"Execute","textPreview":"Execute","textChars":7,"textLines":1,"bbox":[900,448,140,28]}
+{"kind":"shape","id":"sh/2dwj2xo7","slide":16,"name":"box-1070-430","bbox":[1070,430,140,62]}
+{"kind":"textbox","id":"sh/il0n65kr","slide":16,"name":"text-1070-448","text":"Memory","textPreview":"Memory","textChars":6,"textLines":1,"bbox":[1070,448,140,28]}
+{"kind":"textbox","id":"sh/jm9ofqlc","slide":16,"name":"text-42-565","text":"한 명령어가 더 빨라진다기보다, 전체 처리량이 높아집니다.","textPreview":"한 명령어가 더 빨라진다기보다, 전체 처리량이 높아집니다.","textChars":32,"textLines":1,"bbox":[42,565,1120,45]}
+{"kind":"notes","id":"nt/z0d2mp","slide":16,"text":"[3분] 세탁기 단계 비유를 사용할 수 있습니다. 파이프라인은 한 명령어의 지연을 반드시 줄이는 것이 아니라 여러 명령어를 겹쳐 처리해 처리량을 높인다고 구분합니다."}
+{"kind":"slide","id":"sl/tgc1yx","slide":17,"title":"분기 예측","textShapes":8}
+{"kind":"textbox","id":"sh/apobut4z","slide":17,"name":"text-42-34","text":"분기 예측","textPreview":"분기 예측","textChars":5,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/xsfup83a","slide":17,"name":"text-42-75","text":"분기문을 만나면 다음 길을 미리 예상합니다","textPreview":"분기문을 만나면 다음 길을 미리 예상합니다","textChars":23,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/wr6dw3mp","slide":17,"name":"text-1180-664","text":"17","textPreview":"17","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/n2xcjel8","slide":17,"name":"line-270-350","bbox":[270,220,320,130]}
+{"kind":"shape","id":"sh/214bq94n","slide":17,"name":"line-270-350","bbox":[270,350,320,130]}
+{"kind":"shape","id":"sh/pofulo3e","slide":17,"name":"box-70-290","bbox":[70,290,220,120]}
+{"kind":"textbox","id":"sh/o36tsjmt","slide":17,"name":"text-70-330","text":"if (조건)","textPreview":"if (조건)","textChars":7,"textLines":1,"bbox":[70,330,220,42]}
+{"kind":"shape","id":"sh/7yhcvilc","slide":17,"name":"box-650-150","bbox":[650,150,470,180]}
+{"kind":"textbox","id":"sh/6x8v2dkr","slide":17,"name":"text-674-174","text":"예측 성공","textPreview":"예측 성공","textChars":5,"textLines":1,"bbox":[674,174,422,44]}
+{"kind":"textbox","id":"sh/0zix4fy5","slide":17,"name":"text-674-232","text":"준비한 명령어를 그대로 실행합니다.","textPreview":"준비한 명령어를 그대로 실행합니다.","textChars":19,"textLines":1,"bbox":[674,232,422,75]}
+{"kind":"shape","id":"sh/l0bexkzq","slide":17,"name":"box-650-410","bbox":[650,410,470,180]}
+{"kind":"textbox","id":"sh/yx0f25gf","slide":17,"name":"text-674-434","text":"예측 실패","textPreview":"예측 실패","textChars":5,"textLines":1,"bbox":[674,434,422,44]}
+{"kind":"textbox","id":"sh/zy9wvah0","slide":17,"name":"text-674-492","text":"잘못 준비한 작업을 버리고 다시 시작합니다.","textPreview":"잘못 준비한 작업을 버리고 다시 시작합니다.","textChars":24,"textLines":1,"bbox":[674,492,422,75]}
+{"kind":"notes","id":"nt/tgc1yx","slide":17,"text":"[3분] CPU가 매번 분기 결과를 기다리면 파이프라인이 비기 때문에 예측한다고 설명합니다. 조건문 자체보다 예측 실패가 비싼 경우가 많다는 점을 강조합니다."}
+{"kind":"slide","id":"sl/08hclu","slide":18,"title":"비순차 실행","textShapes":10}
+{"kind":"textbox","id":"sh/g3m5or29","slide":18,"name":"text-42-34","text":"비순차 실행","textPreview":"비순차 실행","textChars":6,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/f2d4vm1o","slide":18,"name":"text-42-75","text":"기다리는 명령어를 앞질러 실행할 수 있습니다","textPreview":"기다리는 명령어를 앞질러 실행할 수 있습니다","textChars":24,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/e14nmhkj","slide":18,"name":"text-1180-664","text":"18","textPreview":"18","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/p8f61wj6","slide":18,"name":"box-42-190","bbox":[42,190,350,300]}
+{"kind":"textbox","id":"sh/o765sb2l","slide":18,"name":"text-66-214","text":"A","textPreview":"A","textChars":1,"textLines":1,"bbox":[66,214,302,44]}
+{"kind":"textbox","id":"sh/36xoz610","slide":18,"name":"text-66-272","text":"메모리에서 값을 읽는 중…\n오래 기다립니다.","textPreview":"메모리에서 값을 읽는 중… | 오래 기다립니다.","textChars":24,"textLines":2,"bbox":[66,272,302,195]}
+{"kind":"shape","id":"sh/254nq1kf","slide":18,"name":"box-465-190","bbox":[465,190,350,300]}
+{"kind":"textbox","id":"sh/dwf65gj2","slide":18,"name":"text-489-214","text":"B","textPreview":"B","textChars":1,"textLines":1,"bbox":[489,214,302,44]}
+{"kind":"textbox","id":"sh/cv65wb2h","slide":18,"name":"text-489-272","text":"x + y\nA와 관계없습니다.","textPreview":"x + y | A와 관계없습니다.","textChars":16,"textLines":2,"bbox":[489,272,302,195]}
+{"kind":"shape","id":"sh/idgnq50n","slide":18,"name":"box-888-190","bbox":[888,190,310,300]}
+{"kind":"textbox","id":"sh/3ep4ja18","slide":18,"name":"text-912-214","text":"C","textPreview":"C","textChars":1,"textLines":1,"bbox":[912,214,262,44]}
+{"kind":"textbox","id":"sh/4fy5sfit","slide":18,"name":"text-912-272","text":"p × q\nA와 관계없습니다.","textPreview":"p × q | A와 관계없습니다.","textChars":16,"textLines":2,"bbox":[912,272,262,195]}
+{"kind":"textbox","id":"sh/5g7mlkze","slide":18,"name":"text-42-555","text":"CPU는 B와 C를 먼저 실행해 빈 시간을 줄일 수 있습니다.","textPreview":"CPU는 B와 C를 먼저 실행해 빈 시간을 줄일 수 있습니다.","textChars":34,"textLines":1,"bbox":[42,555,1120,48]}
+{"kind":"notes","id":"nt/08hclu","slide":18,"text":"[2분] 프로그램이 보이는 결과는 원래 순서를 지키지만 내부 실행 순서는 달라질 수 있다고 설명합니다. 의존성이 없는 명령어만 앞서갈 수 있습니다."}
+{"kind":"slide","id":"sl/yv2ayx","slide":19,"title":"한 사이클의 병렬 처리","textShapes":11}
+{"kind":"textbox","id":"sh/bm50vyd4","slide":19,"name":"text-42-34","text":"한 사이클의 병렬 처리","textPreview":"한 사이클의 병렬 처리","textChars":12,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/cneh43ep","slide":19,"name":"text-42-75","text":"슈퍼스칼라는 여러 실행 유닛을 동시에 씁니다","textPreview":"슈퍼스칼라는 여러 실행 유닛을 동시에 씁니다","textChars":24,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/donix8va","slide":19,"name":"text-1180-664","text":"19","textPreview":"19","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"textbox","id":"sh/2hczytwn","slide":19,"name":"text-42-200","text":"명령어 대기열","textPreview":"명령어 대기열","textChars":7,"textLines":1,"bbox":[42,200,300,50]}
+{"kind":"shape","id":"sh/3ilgryd8","slide":19,"name":"line-300-330","bbox":[300,230,220,100]}
+{"kind":"shape","id":"sh/ojeh03ed","slide":19,"name":"line-300-330","bbox":[300,330,220,2]}
+{"kind":"shape","id":"sh/pknytovy","slide":19,"name":"line-300-330","bbox":[300,330,220,100]}
+{"kind":"shape","id":"sh/mdgzadwr","slide":19,"name":"box-580-150","bbox":[580,150,500,130]}
+{"kind":"textbox","id":"sh/nep03idc","slide":19,"name":"text-604-174","text":"ALU 0","textPreview":"ALU 0","textChars":5,"textLines":1,"bbox":[604,174,452,44]}
+{"kind":"textbox","id":"sh/ryxk3ad4","slide":19,"name":"text-604-232","text":"정수 덧셈","textPreview":"정수 덧셈","textChars":5,"textLines":1,"bbox":[604,232,452,25]}
+{"kind":"shape","id":"sh/qxo3u5cj","slide":19,"name":"box-580-300","bbox":[580,300,500,130]}
+{"kind":"textbox","id":"sh/d0fm5kvu","slide":19,"name":"text-604-324","text":"FPU / SIMD","textPreview":"FPU / SIMD","textChars":10,"textLines":1,"bbox":[604,324,452,44]}
+{"kind":"textbox","id":"sh/sz6lwfup","slide":19,"name":"text-604-382","text":"부동소수점·벡터 계산","textPreview":"부동소수점·벡터 계산","textChars":11,"textLines":1,"bbox":[604,382,452,25]}
+{"kind":"shape","id":"sh/z2x47ut0","slide":19,"name":"box-580-450","bbox":[580,450,500,130]}
+{"kind":"textbox","id":"sh/e1o3ypcf","slide":19,"name":"text-604-474","text":"Load / Store","textPreview":"Load / Store","textChars":12,"textLines":1,"bbox":[604,474,452,44]}
+{"kind":"textbox","id":"sh/1ozm94b6","slide":19,"name":"text-604-532","text":"메모리 읽기·쓰기","textPreview":"메모리 읽기·쓰기","textChars":9,"textLines":1,"bbox":[604,532,452,25]}
+{"kind":"textbox","id":"sh/0n6l0zul","slide":19,"name":"text-42-570","text":"독립적인 작업이 있어야 동시에 보낼 수 있습니다.","textPreview":"독립적인 작업이 있어야 동시에 보낼 수 있습니다.","textChars":27,"textLines":1,"bbox":[42,570,470,48]}
+{"kind":"notes","id":"nt/yv2ayx","slide":19,"text":"[2분] 슈퍼스칼라를 여러 조리대를 동시에 쓰는 주방에 비유합니다. 명령어 사이 의존성이 많으면 유닛이 있어도 동시에 활용하기 어렵습니다."}
+{"kind":"slide","id":"sl/u0rpud","slide":20,"title":"성능을 보는 법","textShapes":10}
+{"kind":"textbox","id":"sh/s3e5wbq9","slide":20,"name":"text-42-34","text":"성능을 보는 법","textPreview":"성능을 보는 법","textChars":8,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/r254nq9o","slide":20,"name":"text-42-75","text":"클럭이 높다고 항상 더 빠른 것은 아닙니다","textPreview":"클럭이 높다고 항상 더 빠른 것은 아닙니다","textChars":23,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/61wnul83","slide":20,"name":"text-1180-664","text":"20","textPreview":"20","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/1s7mt0rq","slide":20,"name":"box-42-180","bbox":[42,180,350,330]}
+{"kind":"textbox","id":"sh/0ry50vq5","slide":20,"name":"text-66-204","text":"Clock","textPreview":"Clock","textChars":5,"textLines":1,"bbox":[66,204,302,44]}
+{"kind":"textbox","id":"sh/f6p4rq9k","slide":20,"name":"text-66-262","text":"초당 박자 수\n3.5 GHz = 초당 35억 번의 박자","textPreview":"초당 박자 수 | 3.5 GHz = 초당 35억 번의 박자","textChars":30,"textLines":2,"bbox":[66,262,302,225]}
+{"kind":"shape","id":"sh/e5wnyl8z","slide":20,"name":"box-465-180","bbox":[465,180,350,330]}
+{"kind":"textbox","id":"sh/pw76x0rm","slide":20,"name":"text-489-204","text":"IPC","textPreview":"IPC","textChars":3,"textLines":1,"bbox":[489,204,302,44]}
+{"kind":"textbox","id":"sh/ovy54vq1","slide":20,"name":"text-489-262","text":"한 사이클에 완료한\n명령어 수","textPreview":"한 사이클에 완료한 | 명령어 수","textChars":16,"textLines":2,"bbox":[489,262,302,225]}
+{"kind":"shape","id":"sh/i54r2hsf","slide":20,"name":"box-888-180","bbox":[888,180,310,330]}
+{"kind":"textbox","id":"sh/36dsvm90","slide":20,"name":"text-912-204","text":"실제 조건","textPreview":"실제 조건","textChars":5,"textLines":1,"bbox":[912,204,262,44]}
+{"kind":"textbox","id":"sh/47m947al","slide":20,"name":"text-912-262","text":"캐시 미스\n분기 실패\n전력·온도","textPreview":"캐시 미스 | 분기 실패 | 전력·온도","textChars":17,"textLines":3,"bbox":[912,262,262,225]}
+{"kind":"textbox","id":"sh/58vaxcr6","slide":20,"name":"text-42-570","text":"성능 ≠ 클럭 하나","textPreview":"성능 ≠ 클럭 하나","textChars":10,"textLines":1,"bbox":[42,570,1120,50]}
+{"kind":"notes","id":"nt/u0rpud","slide":20,"text":"[3분] GHz는 박자 수일 뿐 같은 박자에 얼마나 많은 일을 했는지, 데이터를 얼마나 기다렸는지에 따라 결과가 달라진다고 설명합니다. 서로 다른 세대 CPU는 클럭만 직접 비교하지 않도록 합니다."}
+{"kind":"slide","id":"sl/3e05tx","slide":21,"title":"주소 변환","textShapes":10}
+{"kind":"textbox","id":"sh/7qtkje54","slide":21,"name":"text-42-34","text":"주소 변환","textPreview":"주소 변환","textChars":5,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/8r21cj6p","slide":21,"name":"text-42-75","text":"MMU와 TLB는 가상 주소를 실제 주소로 연결합니다","textPreview":"MMU와 TLB는 가상 주소를 실제 주소로 연결합니다","textChars":29,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/tsb2lona","slide":21,"name":"text-1180-664","text":"21","textPreview":"21","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/utkjetov","slide":21,"name":"box-42-210","bbox":[42,210,300,260]}
+{"kind":"textbox","id":"sh/vutkny5g","slide":21,"name":"text-66-234","text":"가상 주소","textPreview":"가상 주소","textChars":5,"textLines":1,"bbox":[66,234,252,44]}
+{"kind":"textbox","id":"sh/gvm1g361","slide":21,"name":"text-66-292","text":"프로그램이 보는 주소","textPreview":"프로그램이 보는 주소","textChars":11,"textLines":1,"bbox":[66,292,252,155]}
+{"kind":"shape","id":"sh/hwv2p8nm","slide":21,"name":"box-490-210","bbox":[490,210,300,260]}
+{"kind":"textbox","id":"sh/ax0j2por","slide":21,"name":"text-514-234","text":"MMU + TLB","textPreview":"MMU + TLB","textChars":9,"textLines":1,"bbox":[514,234,252,44]}
+{"kind":"textbox","id":"sh/by90bu5w","slide":21,"name":"text-514-292","text":"주소를 변환하고\n최근 결과를 기억","textPreview":"주소를 변환하고 | 최근 결과를 기억","textChars":18,"textLines":2,"bbox":[514,292,252,155]}
+{"kind":"shape","id":"sh/n294vq10","slide":21,"name":"box-938-210","bbox":[938,210,260,260]}
+{"kind":"textbox","id":"sh/m10nm50f","slide":21,"name":"text-962-234","text":"물리 주소","textPreview":"물리 주소","textChars":5,"textLines":1,"bbox":[962,234,212,44]}
+{"kind":"textbox","id":"sh/94rmx0j6","slide":21,"name":"text-962-292","text":"실제 RAM의 위치","textPreview":"실제 RAM의 위치","textChars":10,"textLines":1,"bbox":[962,292,212,155]}
+{"kind":"shape","id":"sh/o3i5ovil","slide":21,"name":"line-350-335","bbox":[350,335,120,2]}
+{"kind":"shape","id":"sh/fyp4rq14","slide":21,"name":"line-800-335","bbox":[800,335,120,2]}
+{"kind":"textbox","id":"sh/edgnil0j","slide":21,"name":"text-42-545","text":"TLB Hit: 바로 변환  ·  TLB Miss: 페이지 테이블 확인","textPreview":"TLB Hit: 바로 변환  ·  TLB Miss: 페이지 테이블 확인","textChars":39,"textLines":1,"bbox":[42,545,1120,45]}
+{"kind":"notes","id":"nt/3e05tx","slide":21,"text":"[2분] 주소 번역기 비유를 사용합니다. 프로그램은 가상 주소를 사용하고 MMU가 물리 주소로 바꿉니다. TLB는 자주 쓰는 번역 결과를 적어 둔 메모장입니다."}
+{"kind":"slide","id":"sl/sbl7eb","slide":22,"title":"캐시 일관성","textShapes":10}
+{"kind":"textbox","id":"sh/7edkbalc","slide":22,"name":"text-42-34","text":"캐시 일관성","textPreview":"캐시 일관성","textChars":6,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/sfml4vmh","slide":22,"name":"text-42-75","text":"멀티코어는 캐시의 복사본을 맞춰야 합니다","textPreview":"멀티코어는 캐시의 복사본을 맞춰야 합니다","textChars":22,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/tgv2d032","slide":22,"name":"text-1180-664","text":"22","textPreview":"22","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/u143654n","slide":22,"name":"box-42-190","bbox":[42,190,350,280]}
+{"kind":"textbox","id":"sh/f2d4fal8","slide":22,"name":"text-66-214","text":"Core 0 Cache","textPreview":"Core 0 Cache","textChars":12,"textLines":1,"bbox":[66,214,302,44]}
+{"kind":"textbox","id":"sh/g36l8fmt","slide":22,"name":"text-66-272","text":"value = 10","textPreview":"value = 10","textChars":10,"textLines":1,"bbox":[66,272,302,175]}
+{"kind":"shape","id":"sh/h4fmhk3e","slide":22,"name":"box-465-190","bbox":[465,190,350,280]}
+{"kind":"textbox","id":"sh/25o3ap4z","slide":22,"name":"text-489-214","text":"Core 1 Cache","textPreview":"Core 1 Cache","textChars":12,"textLines":1,"bbox":[489,214,302,44]}
+{"kind":"textbox","id":"sh/36x4jul4","slide":22,"name":"text-489-272","text":"value = 10","textPreview":"value = 10","textChars":10,"textLines":1,"bbox":[489,272,302,175]}
+{"kind":"shape","id":"sh/ry1cnyx8","slide":22,"name":"box-888-190","bbox":[888,190,310,280]}
+{"kind":"textbox","id":"sh/6xsbutgn","slide":22,"name":"text-912-214","text":"RAM","textPreview":"RAM","textChars":3,"textLines":1,"bbox":[912,214,262,44]}
+{"kind":"textbox","id":"sh/t0jup8fe","slide":22,"name":"text-912-272","text":"value = 10","textPreview":"value = 10","textChars":10,"textLines":1,"bbox":[912,272,262,175]}
+{"kind":"shape","id":"sh/szatw3yt","slide":22,"name":"line-390-330","bbox":[390,330,60,2]}
+{"kind":"shape","id":"sh/juhsjyxw","slide":22,"name":"line-818-330","bbox":[818,330,60,2]}
+{"kind":"shape","id":"sh/it8bqtgr","slide":22,"name":"box-180-525","bbox":[180,525,900,82]}
+{"kind":"textbox","id":"sh/5wzul8f2","slide":22,"name":"text-205-548","text":"Core 0이 값을 바꾸면 Core 1의 복사본도 낡았음을 알아야 합니다.","textPreview":"Core 0이 값을 바꾸면 Core 1의 복사본도 낡았음을 알아야 합니다.","textChars":41,"textLines":1,"bbox":[205,548,850,38]}
+{"kind":"notes","id":"nt/sbl7eb","slide":22,"text":"[3분] 캐시 복사본이 서로 다른 값을 갖는 문제를 설명합니다. MESI 이름은 소개만 하고 상태를 외우게 하지는 않습니다. 여러 스레드가 같은 캐시 라인을 계속 수정하면 성능이 떨어질 수 있다고 덧붙입니다."}
+{"kind":"slide","id":"sl/ovomc9","slide":23,"title":"SMT","textShapes":8}
+{"kind":"textbox","id":"sh/hcra50v6","slide":23,"name":"text-42-34","text":"SMT","textPreview":"SMT","textChars":3,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/u90ralcv","slide":23,"name":"text-42-75","text":"6코어 12스레드는 코어가 12개라는 뜻이 아닙니다","textPreview":"6코어 12스레드는 코어가 12개라는 뜻이 아닙니다","textChars":28,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/va9s3qdg","slide":23,"name":"text-1180-664","text":"23","textPreview":"23","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/8ny98bup","slide":23,"name":"box-42-190","bbox":[42,190,520,330]}
+{"kind":"textbox","id":"sh/to7q1gva","slide":23,"name":"text-66-214","text":"물리 코어 6개","textPreview":"물리 코어 6개","textChars":8,"textLines":1,"bbox":[66,214,472,44]}
+{"kind":"textbox","id":"sh/6lgr61cj","slide":23,"name":"text-66-272","text":"실제 실행 유닛을 가진\n작업자 6명","textPreview":"실제 실행 유닛을 가진 | 작업자 6명","textChars":19,"textLines":2,"bbox":[66,272,472,225]}
+{"kind":"shape","id":"sh/7mp8z6d4","slide":23,"name":"box-638-190","bbox":[638,190,560,330]}
+{"kind":"textbox","id":"sh/sj29kfut","slide":23,"name":"text-662-214","text":"논리 스레드 12개","textPreview":"논리 스레드 12개","textChars":10,"textLines":1,"bbox":[662,214,512,44]}
+{"kind":"textbox","id":"sh/dkbadkve","slide":23,"name":"text-662-272","text":"각 코어가 두 작업 흐름의\n빈 시간을 나눠 활용","textPreview":"각 코어가 두 작업 흐름의 | 빈 시간을 나눠 활용","textChars":26,"textLines":2,"bbox":[662,272,512,225]}
+{"kind":"textbox","id":"sh/lsbydg3e","slide":23,"name":"text-42-580","text":"실행 자원을 공유하므로 성능이 정확히 두 배가 되지는 않습니다.","textPreview":"실행 자원을 공유하므로 성능이 정확히 두 배가 되지는 않습니다.","textChars":35,"textLines":1,"bbox":[42,580,1150,44]}
+{"kind":"notes","id":"nt/ovomc9","slide":23,"text":"[2분] SMT와 멀티코어를 구분합니다. 한 스레드가 메모리를 기다릴 때 다른 스레드가 비어 있는 실행 유닛을 활용하는 예를 듭니다."}
+{"kind":"slide","id":"sl/pog0t9","slide":24,"title":"전체 흐름","textShapes":16}
+{"kind":"textbox","id":"sh/d8zy90zi","slide":24,"name":"text-42-34","text":"전체 흐름","textPreview":"전체 흐름","textChars":5,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/q58fe5gr","slide":24,"name":"text-42-75","text":"코드 한 줄이 CPU를 통과하는 순서","textPreview":"코드 한 줄이 CPU를 통과하는 순서","textChars":20,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/b6hg7ahc","slide":24,"name":"text-1180-664","text":"24","textPreview":"24","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"shape","id":"sh/o3qxcvy1","slide":24,"name":"box-42-170","bbox":[42,170,260,150]}
+{"kind":"textbox","id":"sh/p4zy50zm","slide":24,"name":"text-66-194","text":"1. 인출","textPreview":"1. 인출","textChars":5,"textLines":1,"bbox":[66,194,212,44]}
+{"kind":"textbox","id":"sh/218fal0v","slide":24,"name":"text-66-252","text":"PC → L1 명령어 캐시","textPreview":"PC → L1 명령어 캐시","textChars":14,"textLines":1,"bbox":[66,252,212,45]}
+{"kind":"shape","id":"sh/32hg3qhg","slide":24,"name":"box-322-170","bbox":[322,170,260,150]}
+{"kind":"textbox","id":"sh/8zax8fy5","slide":24,"name":"text-346-194","text":"2. 해석","textPreview":"2. 해석","textChars":5,"textLines":1,"bbox":[346,194,212,44]}
+{"kind":"textbox","id":"sh/903yhkzq","slide":24,"name":"text-346-252","text":"디코더가 연산으로 변환","textPreview":"디코더가 연산으로 변환","textChars":12,"textLines":1,"bbox":[346,252,212,45]}
+{"kind":"shape","id":"sh/t8bi9ozy","slide":24,"name":"box-602-170","bbox":[602,170,260,150]}
+{"kind":"textbox","id":"sh/s72h0jyd","slide":24,"name":"text-626-194","text":"3. 준비","textPreview":"3. 준비","textChars":5,"textLines":1,"bbox":[626,194,212,44]}
+{"kind":"textbox","id":"sh/r6tg7ehs","slide":24,"name":"text-626-252","text":"a와 b를 레지스터에","textPreview":"a와 b를 레지스터에","textChars":11,"textLines":1,"bbox":[626,252,212,45]}
+{"kind":"shape","id":"sh/65kzy9g7","slide":24,"name":"box-882-170","bbox":[882,170,316,150]}
+{"kind":"textbox","id":"sh/54by54zm","slide":24,"name":"text-906-194","text":"4. 실행","textPreview":"4. 실행","textChars":5,"textLines":1,"bbox":[906,194,268,44]}
+{"kind":"textbox","id":"sh/43ihwjy1","slide":24,"name":"text-906-252","text":"ALU가 더하기","textPreview":"ALU가 더하기","textChars":8,"textLines":1,"bbox":[906,252,268,45]}
+{"kind":"shape","id":"sh/j29g3ehg","slide":24,"name":"box-182-390","bbox":[182,390,360,150]}
+{"kind":"textbox","id":"sh/i10zu9gb","slide":24,"name":"text-206-414","text":"5. 기록","textPreview":"5. 기록","textChars":5,"textLines":1,"bbox":[206,414,312,44]}
+{"kind":"textbox","id":"sh/p0vih8z6","slide":24,"name":"text-206-472","text":"결과를 레지스터에 저장","textPreview":"결과를 레지스터에 저장","textChars":12,"textLines":1,"bbox":[206,472,312,45]}
+{"kind":"shape","id":"sh/ozmh83yl","slide":24,"name":"box-662-390","bbox":[662,390,360,150]}
+{"kind":"textbox","id":"sh/o3u1k76h","slide":24,"name":"text-686-414","text":"6. 다음 명령","textPreview":"6. 다음 명령","textChars":8,"textLines":1,"bbox":[686,414,312,44]}
+{"kind":"textbox","id":"sh/9432dc72","slide":24,"name":"text-686-472","text":"PC가 다음 위치로 이동","textPreview":"PC가 다음 위치로 이동","textChars":13,"textLines":1,"bbox":[686,472,312,45]}
+{"kind":"textbox","id":"sh/mhcjihor","slide":24,"name":"text-42-590","text":"실제로는 여러 명령어의 단계가 동시에 진행됩니다.","textPreview":"실제로는 여러 명령어의 단계가 동시에 진행됩니다.","textChars":27,"textLines":1,"bbox":[42,590,1120,40]}
+{"kind":"notes","id":"nt/pog0t9","slide":24,"text":"[3분] result = a + b를 기준으로 흐름을 천천히 따라갑니다. 캐시 미스가 나면 L2, L3, RAM 순으로 찾는다는 점을 중간에 넣습니다. 실제 CPU는 파이프라인과 비순차 실행 때문에 동시에 여러 단계가 진행됩니다."}
+{"kind":"slide","id":"sl/oczx5s","slide":25,"title":"퀴즈 2","textShapes":12}
+{"kind":"textbox","id":"sh/ytc3i107","slide":25,"name":"text-42-34","text":"퀴즈 2","textPreview":"퀴즈 2","textChars":4,"textLines":1,"bbox":[42,34,500,30]}
+{"kind":"textbox","id":"sh/lw32twjy","slide":25,"name":"text-42-75","text":"마지막 확인: 빈칸을 채워 보세요","textPreview":"마지막 확인: 빈칸을 채워 보세요","textChars":18,"textLines":1,"bbox":[42,75,1170,68]}
+{"kind":"textbox","id":"sh/0vulkrid","slide":25,"name":"text-1180-664","text":"25","textPreview":"25","textChars":2,"textLines":1,"bbox":[1180,664,58,24]}
+{"kind":"textbox","id":"sh/b61knm1g","slide":25,"name":"text-70-190","text":"CPU는 명령어를","textPreview":"CPU는 명령어를","textChars":9,"textLines":1,"bbox":[70,190,330,55]}
+{"kind":"shape","id":"sh/q5s3eh0b","slide":25,"name":"box-420-180","bbox":[420,180,240,70]}
+{"kind":"textbox","id":"sh/ds32pwjm","slide":25,"name":"text-420-198","text":"가져오고","textPreview":"가져오고","textChars":4,"textLines":1,"bbox":[420,198,240,35]}
+{"kind":"textbox","id":"sh/c7algri1","slide":25,"name":"text-70-310","text":"그 뜻을","textPreview":"그 뜻을","textChars":4,"textLines":1,"bbox":[70,310,330,55]}
+{"kind":"shape","id":"sh/321kj21k","slide":25,"name":"box-420-300","bbox":[420,300,240,70]}
+{"kind":"textbox","id":"sh/21sjax0z","slide":25,"name":"text-420-318","text":"해석하고","textPreview":"해석하고","textChars":4,"textLines":1,"bbox":[420,318,240,35]}
+{"kind":"textbox","id":"sh/kfid4zu1","slide":25,"name":"text-70-430","text":"실제 작업을","textPreview":"실제 작업을","textChars":6,"textLines":1,"bbox":[70,430,330,55]}
+{"kind":"shape","id":"sh/5grux4bm","slide":25,"name":"box-420-420","bbox":[420,420,240,70]}
+{"kind":"textbox","id":"sh/ydgv2pcb","slide":25,"name":"text-420-438","text":"실행합니다","textPreview":"실행합니다","textChars":5,"textLines":1,"bbox":[420,438,240,35]}
+{"kind":"textbox","id":"sh/je9cvudg","slide":25,"name":"text-760-210","text":"캐시는 왜 필요할까요?","textPreview":"캐시는 왜 필요할까요?","textChars":12,"textLines":1,"bbox":[760,210,400,55]}
+{"kind":"textbox","id":"sh/wbyd0zu5","slide":25,"name":"text-760-310","text":"CPU와 RAM의\n속도 차이를 줄이기 위해서","textPreview":"CPU와 RAM의 | 속도 차이를 줄이기 위해서","textChars":24,"textLines":2,"bbox":[760,310,400,130]}
+{"kind":"textbox","id":"sh/xc7ut4vq","slide":25,"name":"text-760-520","text":"옆 사람에게 30초 동안 설명해 보세요.","textPreview":"옆 사람에게 30초 동안 설명해 보세요.","textChars":22,"textLines":1,"bbox":[760,520,400,42]}
+{"kind":"notes","id":"nt/oczx5s","slide":25,"text":"[3분] 먼저 빈칸을 가린 채 질문하고 답을 확인합니다. 이어 캐시가 필요한 이유를 옆 사람에게 설명하게 합니다. 설명할 수 있으면 핵심 흐름을 이해한 것입니다."}
+{"kind":"slide","id":"sl/5h8v0a","slide":26,"title":"오늘의 결론","textShapes":5}
+{"kind":"textbox","id":"sh/eds7apov","slide":26,"name":"text-42-38","text":"오늘의 결론","textPreview":"오늘의 결론","textChars":6,"textLines":1,"bbox":[42,38,300,34]}
+{"kind":"textbox","id":"sh/1g36l47m","slide":26,"name":"text-42-170","text":"CPU는 혼자 빠른 부품이 아니라\n여러 장치가 협력하는 시스템입니다","textPreview":"CPU는 혼자 빠른 부품이 아니라 | 여러 장치가 협력하는 시스템입니다","textChars":37,"textLines":2,"bbox":[42,170,1150,205]}
+{"kind":"textbox","id":"sh/gfupcz61","slide":26,"name":"text-42-430","text":"Fetch → Decode → Execute","textPreview":"Fetch → Decode → Execute","textChars":24,"textLines":1,"bbox":[42,430,800,60]}
+{"kind":"textbox","id":"sh/3ilonupc","slide":26,"name":"text-42-535","text":"레지스터 · 실행 유닛 · 캐시 · 파이프라인 · 코어가 함께 움직입니다.","textPreview":"레지스터 · 실행 유닛 · 캐시 · 파이프라인 · 코어가 함께 움직입니다.","textChars":41,"textLines":1,"bbox":[42,535,1120,55]}
+{"kind":"textbox","id":"sh/2hc7e9or","slide":26,"name":"text-42-625","text":"질문과 함께 마무리해 봅시다.","textPreview":"질문과 함께 마무리해 봅시다.","textChars":16,"textLines":1,"bbox":[42,625,620,35]}
+{"kind":"notes","id":"nt/5h8v0a","slide":26,"text":"[2분] 첫 슬라이드의 질문으로 돌아갑니다. CPU를 한 문장으로 설명해 보게 한 뒤, “명령어를 가져와 해석하고 실행하며 여러 장치가 그 과정을 빠르게 만든다”로 정리합니다. 남은 시간은 질문을 받습니다."}
