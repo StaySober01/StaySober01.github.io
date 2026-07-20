@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="프로그래머스 가장 먼 노드 문제를 가중치 없는 양방향 그래프의 BFS로 해결하고, 최단 거리 기록과 최댓값 집계 과정을 정리한 TIL입니다.">
+    <title>프로그래머스 가장 먼 노드: BFS로 최단 거리 구하기 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes</p>
+            <h1>프로그래머스 가장 먼 노드: BFS로 최단 거리 구하기</h1>
+            <p class="post-meta">TIL · 프로그래머스 문제 풀이 · 2026.07.20</p>
+            <p class="post-lead">
+              간선의 가중치가 모두 같은 양방향 그래프에서 1번 노드부터 각 노드까지의 최단 거리를 BFS로 구했습니다.
+              거리 배열 하나로 방문 여부까지 관리하고, 가장 큰 거리와 그 거리를 가진 노드 수를 찾는 과정을 정리합니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#problem">문제 이해</a></li>
+                <li><a href="#bfs">BFS를 선택한 이유</a></li>
+                <li><a href="#graph">인접 리스트 만들기</a></li>
+                <li><a href="#distance">거리와 방문 여부 기록하기</a></li>
+                <li><a href="#trace">예제로 탐색 흐름 확인하기</a></li>
+                <li><a href="#count">가장 먼 노드 세기</a></li>
+                <li><a href="#code">최종 코드</a></li>
+                <li><a href="#complexity">복잡도와 체크포인트</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="problem" aria-labelledby="problem-title">
+                <h2 id="problem-title">문제 이해</h2>
+                <p>
+                  노드 <code>n</code>개와 양방향 간선 목록이 주어집니다. 1번 노드에서 각 노드까지 최단 경로로 이동했을 때,
+                  지나가는 간선 수가 가장 큰 노드가 몇 개인지 구하는 문제입니다.
+                </p>
+                <pre><code>가장 먼 노드
+= 1번 노드로부터의 최단 거리가 가장 큰 노드</code></pre>
+                <p>
+                  단순히 깊게 이동한 경로를 찾는 것이 아니라 모든 노드의 <strong>최단 거리</strong>를 비교해야 합니다.
+                  같은 노드로 가는 경로가 여러 개라면 그중 간선 수가 가장 적은 경로만 거리로 사용합니다.
+                </p>
+              </section>
+
+              <section id="bfs" aria-labelledby="bfs-title">
+                <h2 id="bfs-title">BFS를 선택한 이유</h2>
+                <p>
+                  모든 간선의 이동 비용이 <code>1</code>인 가중치 없는 그래프에서는 BFS로 최단 거리를 구할 수 있습니다.
+                  BFS는 시작점에서 거리가 <code>0</code>인 노드, 거리 <code>1</code>인 노드, 거리 <code>2</code>인 노드 순서로 탐색 범위를 넓힙니다.
+                </p>
+                <pre><code>거리 0: 시작 노드
+거리 1: 시작 노드와 직접 연결된 노드
+거리 2: 거리 1 노드에서 처음 발견한 노드
+거리 3: 거리 2 노드에서 처음 발견한 노드
+...</code></pre>
+                <p>
+                  따라서 어떤 노드를 처음 발견한 순간의 경로보다 더 짧은 경로가 나중에 등장할 수 없습니다.
+                  이 성질 덕분에 별도의 거리 갱신을 반복하지 않고 최초 방문 거리만 저장하면 됩니다.
+                </p>
+                <div class="post-callout">
+                  <p>
+                    DFS도 모든 노드를 방문할 수 있지만 처음 도착한 경로가 최단 경로라는 보장은 없습니다.
+                    가중치가 없는 그래프의 최소 간선 수를 구할 때는 레벨 순서로 탐색하는 BFS가 알맞습니다.
+                  </p>
+                </div>
+              </section>
+
+              <section id="graph" aria-labelledby="graph-title">
+                <h2 id="graph-title">인접 리스트 만들기</h2>
+                <p>
+                  입력은 간선 목록이므로 현재 노드에서 이동할 수 있는 이웃을 빠르게 찾을 수 있도록 인접 리스트로 변환합니다.
+                  간선은 양방향이기 때문에 <code>a → b</code>와 <code>b → a</code>를 모두 저장해야 합니다.
+                </p>
+                <pre><code>vector&lt;vector&lt;int&gt;&gt; graph(n + 1);
+
+for (const auto&amp; edge : vertex) {
+    int a = edge[0];
+    int b = edge[1];
+
+    graph[a].push_back(b);
+    graph[b].push_back(a);
+}</code></pre>
+                <p>
+                  노드 번호가 <code>1</code>부터 시작하므로 배열 크기는 <code>n + 1</code>로 잡습니다.
+                  인접 행렬을 사용하면 <code>n</code>이 최대 <code>20,000</code>일 때 불필요한 공간을 크게 사용하므로 간선 수에 비례하는 인접 리스트가 적합합니다.
+                </p>
+              </section>
+
+              <section id="distance" aria-labelledby="distance-title">
+                <h2 id="distance-title">거리와 방문 여부 기록하기</h2>
+                <p>거리 배열을 <code>-1</code>로 초기화하면 하나의 배열이 두 역할을 맡을 수 있습니다.</p>
+                <pre><code>distance[node] == -1  아직 방문하지 않은 노드
+distance[node] &gt;= 0   1번 노드부터 node까지의 최단 거리</code></pre>
+                <p>
+                  시작 노드의 거리는 <code>0</code>으로 바꾸고 큐에 넣습니다. 큐에서 현재 노드를 꺼낸 뒤 아직 방문하지 않은 이웃만 탐색합니다.
+                  이웃의 거리는 현재 노드의 거리보다 간선 하나만큼 멀기 때문에 <code>distance[current] + 1</code>입니다.
+                </p>
+                <pre><code>distance[1] = 0;
+q.push(1);
+
+while (!q.empty()) {
+    int current = q.front();
+    q.pop();
+
+    for (int next : graph[current]) {
+        if (distance[next] != -1) {
+            continue;
+        }
+
+        distance[next] = distance[current] + 1;
+        q.push(next);
+    }
+}</code></pre>
+                <p>
+                  방문 표시는 큐에서 꺼낼 때가 아니라 <strong>큐에 넣을 때</strong> 해야 합니다.
+                  그래야 여러 노드가 같은 이웃을 발견해 큐에 중복으로 넣는 일을 막을 수 있습니다.
+                </p>
+              </section>
+
+              <section id="trace" aria-labelledby="trace-title">
+                <h2 id="trace-title">예제로 탐색 흐름 확인하기</h2>
+                <p>예제 그래프를 1번 노드부터 BFS로 탐색하면 거리가 다음 순서로 정해집니다.</p>
+                <pre><code>거리 0: 1
+거리 1: 2, 3
+거리 2: 4, 5, 6
+
+distance = [-, 0, 1, 1, 2, 2, 2]</code></pre>
+                <p>
+                  4번 노드는 2번과 3번 양쪽에서 갈 수 있지만, 먼저 발견한 거리 <code>2</code>가 최단 거리입니다.
+                  이후 다른 간선에서 4번을 다시 만나도 이미 방문했으므로 건너뜁니다.
+                  가장 큰 최단 거리는 <code>2</code>이고 해당하는 노드는 <code>4, 5, 6</code>이므로 답은 <code>3</code>입니다.
+                </p>
+              </section>
+
+              <section id="count" aria-labelledby="count-title">
+                <h2 id="count-title">가장 먼 노드 세기</h2>
+                <p>BFS가 끝나면 거리 배열을 두 번 순회합니다. 먼저 최댓값을 구하고, 다시 그 값과 같은 노드의 수를 셉니다.</p>
+                <pre><code>int maxDistance = 0;
+
+for (int node = 1; node &lt;= n; ++node) {
+    maxDistance = max(maxDistance, distance[node]);
+}
+
+int answer = 0;
+
+for (int node = 1; node &lt;= n; ++node) {
+    if (distance[node] == maxDistance) {
+        ++answer;
+    }
+}</code></pre>
+                <p>
+                  두 순회 모두 <code>O(n)</code>이고 전체 BFS 복잡도보다 커지지 않습니다.
+                  최댓값을 먼저 확정한 뒤 개수를 세므로 집계 로직도 쉽게 읽을 수 있습니다.
+                </p>
+              </section>
+
+              <section id="code" aria-labelledby="code-title">
+                <h2 id="code-title">최종 코드</h2>
+                <pre><code>#include &lt;algorithm&gt;
+#include &lt;queue&gt;
+#include &lt;vector&gt;
+
+using namespace std;
+
+int solution(int n, vector&lt;vector&lt;int&gt;&gt; vertex)
+{
+    vector&lt;vector&lt;int&gt;&gt; graph(n + 1);
+
+    for (const auto&amp; edge : vertex) {
+        int a = edge[0];
+        int b = edge[1];
+
+        graph[a].push_back(b);
+        graph[b].push_back(a);
+    }
+
+    vector&lt;int&gt; distance(n + 1, -1);
+    queue&lt;int&gt; q;
+
+    distance[1] = 0;
+    q.push(1);
+
+    while (!q.empty()) {
+        int current = q.front();
+        q.pop();
+
+        for (int next : graph[current]) {
+            if (distance[next] != -1) {
+                continue;
+            }
+
+            distance[next] = distance[current] + 1;
+            q.push(next);
+        }
+    }
+
+    int maxDistance = 0;
+
+    for (int node = 1; node &lt;= n; ++node) {
+        maxDistance = max(maxDistance, distance[node]);
+    }
+
+    int answer = 0;
+
+    for (int node = 1; node &lt;= n; ++node) {
+        if (distance[node] == maxDistance) {
+            ++answer;
+        }
+    }
+
+    return answer;
+}</code></pre>
+                <p>
+                  초고의 구현에서 사용하지 않는 <code>&lt;string&gt;</code> 헤더를 제거하고, <code>std::max</code>를 사용하는 코드임을 명확히 하기 위해 <code>&lt;algorithm&gt;</code>을 포함했습니다.
+                  나머지는 BFS의 기본 구조를 그대로 따릅니다.
+                </p>
+              </section>
+
+              <section id="complexity" aria-labelledby="complexity-title">
+                <h2 id="complexity-title">복잡도와 체크포인트</h2>
+                <ul class="principle-list" aria-label="가장 먼 노드 풀이 체크포인트">
+                  <li>
+                    <h3>시간복잡도는 <code>O(n + e)</code></h3>
+                    <p>노드 수를 <code>n</code>, 간선 수를 <code>e</code>라 하면 BFS에서 각 노드와 양방향 간선을 상수 번 확인합니다. 거리 집계의 <code>O(n)</code>을 더해도 같습니다.</p>
+                  </li>
+                  <li>
+                    <h3>공간복잡도는 <code>O(n + e)</code></h3>
+                    <p>인접 리스트가 모든 간선을 저장하고, 거리 배열과 큐가 최대 노드 수에 비례하는 공간을 사용합니다.</p>
+                  </li>
+                  <li>
+                    <h3>양방향 간선을 양쪽에 저장한다</h3>
+                    <p><code>graph[a]</code>에 <code>b</code>만 넣으면 입력 방향에 따라 일부 노드에 도달할 수 없습니다.</p>
+                  </li>
+                  <li>
+                    <h3>거리 배열로 방문 여부를 함께 관리한다</h3>
+                    <p><code>-1</code>을 미방문 상태로 정하면 별도의 <code>visited</code> 배열 없이 중복 탐색을 막을 수 있습니다.</p>
+                  </li>
+                  <li>
+                    <h3>BFS의 적용 조건을 확인한다</h3>
+                    <p>간선마다 비용이 다르다면 일반 BFS가 최단 거리를 보장하지 않습니다. 이 문제는 모든 간선 비용이 동일하므로 사용할 수 있습니다.</p>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>가장 먼 노드는 1번 노드로부터 최단 거리가 가장 큰 노드다.</li>
+                  <li>가중치가 없는 그래프에서는 BFS의 최초 방문 거리가 최단 거리다.</li>
+                  <li>양방향 간선을 인접 리스트의 양쪽에 저장한다.</li>
+                  <li>거리 배열을 <code>-1</code>로 초기화해 방문 여부와 최단 거리를 함께 관리한다.</li>
+                  <li>BFS가 끝난 뒤 최대 거리와 그 거리를 가진 노드 수를 구한다.</li>
+                </ul>
+                <p>
+                  이전에 학습한 BFS 예제와 거의 같은 구조여서 알고리즘을 빠르게 선택할 수 있었습니다.
+                  이번 문제를 통해 “가중치 없는 그래프의 최단 거리”라는 조건을 발견하면 큐, 거리 배열, 최초 방문이라는 BFS의 기본 틀로 바로 연결할 수 있음을 확인했습니다.
+                </p>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js"
+                        data-repo="StaySober01/StaySober01.github.io"
+                        data-repo-id="R_kgDOTQFJZA"
+                        data-category="Comments"
+                        data-category-id="DIC_kwDOTQFJZM4DA3to"
+                        data-mapping="pathname"
+                        data-strict="0"
+                        data-reactions-enabled="1"
+                        data-emit-metadata="0"
+                        data-input-position="bottom"
+                        data-theme="preferred_color_scheme"
+                        data-lang="ko"
+                        data-loading="lazy"
+                        crossorigin="anonymous"
+                        async>
+                </script>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
