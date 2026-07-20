@@ -44,9 +44,9 @@
       <article class="post">
         <div class="container">
           <header class="post-header">
-            <p class="eyebrow">Learning Notes</p>
+            <p class="eyebrow">Technical Blog</p>
             <h1>분기 예측으로 이해하는 CPU 파이프라인 최적화</h1>
-            <p class="post-meta">TIL · 컴퓨터 구조 · 2026.07.09</p>
+            <p class="post-meta">기술 블로그 · 컴퓨터 구조 · 2026.07.09</p>
             <p class="post-lead">
               분기 예측은 CPU가 조건문의 결과를 기다리지 않고 다음에 실행될 가능성이 높은 명령어를 미리 처리하는 기술입니다.
               예측이 맞으면 파이프라인이 계속 흐르지만, 예측이 틀리면 준비하던 작업을 버리고 다시 시작해야 하므로 성능 손실이 커집니다.
@@ -62,6 +62,7 @@
                 <li><a href="#misprediction">예측 실패와 파이프라인 플러시</a></li>
                 <li><a href="#types">정적 예측과 동적 예측</a></li>
                 <li><a href="#code">코드에서 생각할 점</a></li>
+                <li><a href="#measurement">분기 비용을 측정할 때</a></li>
                 <li><a href="#summary">정리</a></li>
               </ol>
             </aside>
@@ -179,6 +180,13 @@
                     코드를 복잡하게 바꾸면 유지보수 비용만 커질 수 있습니다.
                   </p>
                 </div>
+              </section>
+
+              <section id="measurement" aria-labelledby="measurement-title">
+                <h2 id="measurement-title">분기 비용을 측정할 때</h2>
+                <p>조건문이 있다는 사실만으로 코드를 바꿀 필요는 없습니다. 분기 예측 실패가 실제 병목인지 확인하려면 같은 데이터로 분기형 코드와 대안을 반복 실행하고, 전체 실행 시간과 함께 branch-misses 같은 하드웨어 카운터를 비교해야 합니다.</p>
+                <p>입력 분포도 결과를 크게 바꿉니다. 대부분 같은 방향으로 흐르는 조건은 예측하기 쉽지만, 매번 무작위로 바뀌는 조건은 어렵습니다. 벤치마크 데이터가 실제 게임 플레이의 상태 분포를 반영하지 않으면 최적화 결론도 잘못될 수 있습니다.</p>
+                <div class="post-callout"><p>분기를 없앤 코드가 항상 빠르지는 않습니다. 추가 연산, 더 많은 메모리 읽기, 벡터화 가능성, 코드 가독성을 함께 비교하고 프로파일링 결과가 뚜렷할 때 적용해야 합니다.</p></div>
               </section>
 
               <section id="summary" aria-labelledby="summary-title">

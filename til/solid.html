@@ -44,9 +44,9 @@
       <article class="post">
         <div class="container">
           <header class="post-header">
-            <p class="eyebrow">Learning Notes</p>
+            <p class="eyebrow">Technical Blog</p>
             <h1>SOLID 원칙으로 설계 책임 나누기</h1>
-            <p class="post-meta">TIL · 객체지향 설계 · 2026.07.08</p>
+            <p class="post-meta">기술 블로그 · 객체지향 설계 · 2026.07.08</p>
             <p class="post-lead">
               SOLID는 객체지향 설계를 더 오래 유지하고 쉽게 확장하기 위한 다섯 가지 기준입니다.
               단순히 원칙 이름을 외우는 것이 아니라, 변경이 생겼을 때 어떤 코드가 흔들리는지 판단하는 도구로 쓰는 것이 중요합니다.
@@ -63,6 +63,7 @@
                 <li><a href="#lsp">LSP</a></li>
                 <li><a href="#isp">ISP</a></li>
                 <li><a href="#dip">DIP</a></li>
+                <li><a href="#tradeoffs">SOLID를 적용하지 말아야 할 때</a></li>
                 <li><a href="#summary">정리</a></li>
               </ol>
             </aside>
@@ -191,6 +192,18 @@
                   DIP는 테스트와 유지보수에도 도움이 됩니다. 저장 시스템, 사운드 시스템, 네트워크 통신처럼 외부 환경에 가까운 코드를
                   추상화 뒤에 두면, 핵심 로직은 더 안정적으로 유지되고 테스트용 구현으로 바꿔 끼우기도 쉬워집니다.
                 </p>
+              </section>
+
+              <section id="tradeoffs" aria-labelledby="tradeoffs-title">
+                <h2 id="tradeoffs-title">SOLID를 적용하지 말아야 할 때</h2>
+                <p>SOLID는 클래스 수를 늘리는 목표가 아니라 변경 비용을 낮추기 위한 판단 기준입니다. 변화 가능성이 확인되지 않은 작은 기능에 인터페이스와 팩토리, 추상 계층을 미리 추가하면 코드 탐색과 디버깅 비용만 커질 수 있습니다.</p>
+                <ul>
+                  <li>변경 이유가 실제로 둘 이상 생겼을 때 책임 분리를 검토합니다.</li>
+                  <li>새 구현을 반복해서 추가하는 지점이 확인됐을 때 확장 경계를 만듭니다.</li>
+                  <li>테스트 대역이나 플랫폼 교체가 필요한 의존성부터 역전합니다.</li>
+                  <li>인터페이스 하나에 사용하지 않는 기능이 늘어날 때 소비자 기준으로 나눕니다.</li>
+                </ul>
+                <p>즉 처음부터 모든 원칙을 최대한 적용하기보다, 변경 이력과 테스트 난이도가 보여 주는 압력을 근거로 가장 작은 리팩터링을 선택하는 편이 좋습니다.</p>
               </section>
 
               <section id="summary" aria-labelledby="summary-title">

@@ -44,9 +44,9 @@
       <article class="post">
         <div class="container">
           <header class="post-header">
-            <p class="eyebrow">Learning Notes</p>
+            <p class="eyebrow">Technical Blog</p>
             <h1>시간복잡도, 빅오 표기법, 대표 자료구조 정리</h1>
-            <p class="post-meta">TIL · 알고리즘과 자료구조 · 2026.07.09</p>
+            <p class="post-meta">기술 블로그 · 알고리즘과 자료구조 · 2026.07.09</p>
             <p class="post-lead">
               알고리즘을 비교할 때는 실행 시간이 몇 초인지보다 입력이 커질수록 연산량이 어떻게 증가하는지를 보는 것이 중요합니다.
               시간복잡도와 빅오 표기법은 그 증가 추세를 간단히 표현하고, 자료구조 선택은 그 비용을 실제 코드에서 결정합니다.
@@ -62,6 +62,7 @@
                 <li><a href="#common-orders">대표 복잡도</a></li>
                 <li><a href="#structures">대표 자료구조</a></li>
                 <li><a href="#selection">자료구조 선택 기준</a></li>
+                <li><a href="#amortized">상환 분석과 실제 비용</a></li>
                 <li><a href="#summary">정리</a></li>
               </ol>
             </aside>
@@ -206,6 +207,13 @@
                   아이템 ID로 정보를 자주 찾는다면 해시 기반 맵이 편합니다. 길 찾기나 상태 전이처럼 관계가 중요한 문제는 그래프로 모델링하면
                   문제를 더 명확하게 다룰 수 있습니다.
                 </p>
+              </section>
+
+              <section id="amortized" aria-labelledby="amortized-title">
+                <h2 id="amortized-title">상환 분석과 실제 비용</h2>
+                <p>한 번의 연산이 가끔 비싸더라도 긴 연산열 전체의 평균 비용이 낮을 수 있습니다. 예를 들어 동적 배열은 용량이 부족할 때 새 메모리를 할당하고 모든 원소를 옮기므로 해당 삽입은 O(n)이지만, 용량을 배수로 늘리면 여러 삽입에 비용이 분산되어 끝 삽입의 상환 시간복잡도는 O(1)입니다.</p>
+                <p>빅오가 같아도 실제 속도는 다를 수 있습니다. 연속 배열은 캐시 지역성이 좋고 할당 횟수가 적은 반면, 연결 리스트는 노드마다 포인터 추적과 할당 비용이 생깁니다. 반대로 중간 원소의 위치를 이미 알고 있고 이동 비용이 큰 상황에서는 연결 구조의 장점이 나타날 수 있습니다.</p>
+                <div class="post-callout"><p>자료구조를 선택할 때는 최악·평균·상환 복잡도와 함께 입력 크기, 메모리 사용량, 접근 패턴, 원소 이동 비용을 확인해야 합니다. 복잡도 표는 후보를 좁히는 도구이지 벤치마크를 대신하는 결론이 아닙니다.</p></div>
               </section>
 
               <section id="summary" aria-labelledby="summary-title">

@@ -44,9 +44,9 @@
       <article class="post">
         <div class="container">
           <header class="post-header">
-            <p class="eyebrow">Learning Notes</p>
+            <p class="eyebrow">Technical Blog</p>
             <h1>멀티프로세스와 멀티스레드: 메모리 공유부터 동기화까지</h1>
-            <p class="post-meta">TIL · 운영체제 · 2026.07.15</p>
+            <p class="post-meta">기술 블로그 · 운영체제 · 2026.07.15</p>
             <p class="post-lead">
               멀티프로세스는 독립된 실행 단위를 여러 개 사용하고, 멀티스레드는 한 프로세스 안의 실행 흐름을 여러 개 사용합니다.
               둘의 가장 중요한 차이인 메모리 격리와 공유를 출발점으로 비용, 안정성, 동기화 문제와 게임 개발에서의 활용 기준을 정리했습니다.
@@ -66,6 +66,7 @@
                 <li><a href="#concurrency">동시성과 병렬성</a></li>
                 <li><a href="#workload">작업 유형에 따른 선택</a></li>
                 <li><a href="#game">게임 개발에서의 활용</a></li>
+                <li><a href="#decision">선택을 위한 판단표</a></li>
                 <li><a href="#summary">정리</a></li>
               </ol>
             </aside>
@@ -279,6 +280,16 @@ Core 3: Thread C</code></pre>
                   멀티스레딩의 목표는 스레드 수를 늘리는 것이 아니라 프레임의 긴 작업을 분산하면서도 상태의 소유권을 명확하게 유지하는 것입니다.
                   공유 데이터, 작업 의존성, 완료 시점과 게임 스레드 복귀 경로를 먼저 설계해야 합니다.
                 </p>
+              </section>
+
+              <section id="decision" aria-labelledby="decision-title">
+                <h2 id="decision-title">선택을 위한 판단표</h2>
+                <ul class="principle-list" aria-label="프로세스와 스레드 선택 기준">
+                  <li><h3>격리가 우선일 때</h3><p>한 작업의 충돌이나 메모리 오류가 다른 작업까지 중단시키면 안 된다면 프로세스 분리가 유리합니다. 대신 IPC 규약과 직렬화 비용을 설계해야 합니다.</p></li>
+                  <li><h3>낮은 공유 비용이 우선일 때</h3><p>같은 대용량 상태를 자주 읽고 써야 한다면 스레드가 유리할 수 있습니다. 대신 데이터 소유권과 동기화 범위를 명확히 해야 합니다.</p></li>
+                  <li><h3>작업이 매우 작을 때</h3><p>매번 스레드를 만들기보다 스레드 풀이나 작업 시스템에 제출해 생성·문맥 교환 비용을 나눠야 합니다.</p></li>
+                </ul>
+                <p>게임 루프에서는 평균 처리량뿐 아니라 최악 프레임 시간도 중요합니다. 락 대기, 작업 큐의 편중, 코어 간 캐시 이동을 타임라인 프로파일러로 확인하고, 공유 가변 상태를 줄인 뒤에 병렬 작업 수를 늘리는 편이 안전합니다.</p>
               </section>
 
               <section id="summary" aria-labelledby="summary-title">

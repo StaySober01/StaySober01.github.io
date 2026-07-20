@@ -44,9 +44,9 @@
       <article class="post">
         <div class="container">
           <header class="post-header">
-            <p class="eyebrow">Learning Notes</p>
+            <p class="eyebrow">Technical Blog</p>
             <h1>C#과 언리얼로 이해하는 가비지 컬렉션</h1>
-            <p class="post-meta">TIL · 메모리 관리 · 2026.07.14</p>
+            <p class="post-meta">기술 블로그 · 메모리 관리 · 2026.07.14</p>
             <p class="post-lead">
               가비지 컬렉터는 더 이상 도달할 수 없는 관리 객체의 메모리를 자동으로 회수합니다.
               하지만 C#의 관리 힙과 언리얼의 UObject는 추적 방식과 사용 규칙이 다르며, 파일·소켓 같은 자원이나 일반 C++ 객체까지 대신 정리해 주지는 않습니다.
@@ -65,6 +65,7 @@
                 <li><a href="#outer-actor">Outer와 Actor 수명</a></li>
                 <li><a href="#references">강한·약한·소프트 참조</a></li>
                 <li><a href="#native-cpp">일반 C++ 객체 관리</a></li>
+                <li><a href="#debugging">수명 문제를 추적하는 방법</a></li>
                 <li><a href="#summary">정리</a></li>
               </ol>
             </aside>
@@ -295,6 +296,18 @@ TSharedPtr&lt;FInventoryData&gt; SharedData =
                   <code>TUniquePtr</code>와 <code>TSharedPtr</code>는 참조 추적 GC가 아니라 스코프와 소유권 규칙에 따라 객체를 정리하는 스마트 포인터입니다.
                   UObject에는 UObject용 참조 타입을, 일반 C++ 객체에는 값과 RAII를 사용한다는 경계를 구분해야 합니다.
                 </p>
+              </section>
+
+              <section id="debugging" aria-labelledby="debugging-title">
+                <h2 id="debugging-title">수명 문제를 추적하는 방법</h2>
+                <p>메모리 문제는 “GC가 있으니 누수가 없다” 또는 “참조만 보관하면 안전하다”는 가정에서 자주 시작됩니다. C#에서는 정적 컬렉션, 이벤트 구독, 캐시가 객체를 계속 도달 가능한 상태로 만들 수 있고, 언리얼에서는 GC가 추적하지 못하는 참조나 파괴 중인 Actor를 잘못 사용할 수 있습니다.</p>
+                <ul>
+                  <li>C# 메모리 프로파일러에서 객체 수와 retained size를 비교하고, GC root까지 이어지는 참조 경로를 확인합니다.</li>
+                  <li>프레임 할당량과 GC pause를 함께 측정해 임시 객체가 반복 생성되는 핫 패스를 찾습니다.</li>
+                  <li>언리얼에서는 참조가 <code>UPROPERTY</code> 또는 지원되는 포인터 형태로 추적되는지 확인하고, 유효성 검사와 파괴 시점을 구분합니다.</li>
+                  <li>파일·소켓·GPU 자원은 메모리 GC와 별개이므로 명시적인 해제 경로를 검증합니다.</li>
+                </ul>
+                <p>수명 버그를 고칠 때는 참조를 무조건 강하게 만드는 대신 누가 객체를 소유하고 언제 해제해야 하는지 먼저 정해야 합니다. 소유권 규칙이 명확해야 누수와 댕글링 참조를 동시에 줄일 수 있습니다.</p>
               </section>
 
               <section id="summary" aria-labelledby="summary-title">
