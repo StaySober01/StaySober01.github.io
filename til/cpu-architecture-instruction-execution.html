@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="CPU의 코어, 제어 장치, 레지스터, 실행 유닛과 캐시부터 파이프라인, 비순차 실행, MMU와 캐시 일관성까지 명령어 실행 흐름을 중심으로 정리한 TIL입니다.">
+    <title>CPU 구조와 명령어 실행 흐름 | StaySober01</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; }
+      catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path></svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes</p>
+            <h1>CPU 구조와 명령어 실행 흐름</h1>
+            <p class="post-meta">TIL · 컴퓨터 구조 · 2026.07.20</p>
+            <p class="post-lead">CPU는 명령어를 가져오고, 해석하고, 실행합니다. 이 과정에서 제어 장치와 레지스터, 실행 유닛과 캐시가 협력하고 파이프라이닝·분기 예측·비순차 실행이 여러 명령어를 겹쳐 처리합니다. 각 구성 요소를 하나의 명령어가 지나가는 순서로 정리했습니다.</p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#overview">CPU의 큰 구조</a></li>
+                <li><a href="#registers">제어 장치와 레지스터</a></li>
+                <li><a href="#units">실행 유닛</a></li>
+                <li><a href="#memory">캐시와 주소 변환</a></li>
+                <li><a href="#parallelism">명령어 수준 병렬성</a></li>
+                <li><a href="#cores">멀티코어와 SMT</a></li>
+                <li><a href="#walkthrough">명령어 실행 따라가기</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="overview" aria-labelledby="overview-title">
+                <h2 id="overview-title">CPU의 큰 구조</h2>
+                <p>현대 CPU는 보통 여러 <strong>코어</strong>를 가집니다. 각 코어는 독립적인 명령어 흐름을 처리하며, 코어 안에는 명령어를 가져와 해석하는 프런트엔드, 실제 연산을 맡는 실행 유닛, 값을 보관하는 레지스터와 가까운 캐시가 있습니다. 코어 밖에는 공유 캐시와 메모리 컨트롤러 등이 연결됩니다.</p>
+                <pre><code>CPU
+├─ Core 0 ─ 제어 장치 · 레지스터 · 실행 유닛 · L1/L2
+├─ Core 1 ─ 제어 장치 · 레지스터 · 실행 유닛 · L1/L2
+├─ Shared L3 Cache
+└─ Memory Controller ─ RAM</code></pre>
+                <p>코어가 많다고 모든 프로그램이 같은 비율로 빨라지는 것은 아닙니다. 작업을 독립적으로 나눌 수 있어야 하며, 공유 데이터의 동기화와 캐시·메모리 대역폭도 병목이 됩니다. 게임에서는 메인 로직, 렌더링 명령 생성, 물리, 애니메이션과 경로 탐색 등을 여러 스레드로 나눌 수 있지만 실제 분배 방식은 엔진과 시스템 설계에 달려 있습니다.</p>
+              </section>
+
+              <section id="registers" aria-labelledby="registers-title">
+                <h2 id="registers-title">제어 장치와 레지스터</h2>
+                <p><strong>제어 장치</strong>는 다음 명령어의 위치를 확인하고, 명령어를 가져와 해석한 뒤 필요한 실행 유닛에 제어 신호를 보냅니다. 예를 들어 <code>ADD R1, R2, R3</code>를 해석하면 R2와 R3를 읽고 ALU에서 더한 결과를 R1에 쓰는 흐름을 만듭니다. 실제 현대 CPU의 과정은 더 복잡하지만, 명령어가 데이터 이동과 연산으로 풀린다는 핵심은 같습니다.</p>
+                <p><strong>레지스터</strong>는 코어 내부의 매우 작고 빠른 저장 공간입니다. ISA에 따라 이름과 역할은 다르지만 개념적으로 다음과 같이 나눌 수 있습니다.</p>
+                <ul>
+                  <li><strong>범용 레지스터</strong>: 정수, 주소와 중간 계산 결과를 보관합니다.</li>
+                  <li><strong>프로그램 카운터(PC)</strong>: 다음에 가져올 명령어 주소를 가리킵니다. x86-64에서는 RIP가 이 역할을 합니다.</li>
+                  <li><strong>스택 포인터(SP)</strong>: 현재 스택 경계를 가리키며 함수 호출 프레임과 지역 데이터 접근에 쓰입니다.</li>
+                  <li><strong>상태 레지스터</strong>: Zero, Carry, Sign, Overflow 같은 연산 결과 상태를 기록합니다.</li>
+                </ul>
+                <p>비교 명령어는 흔히 뺄셈과 비슷한 내부 연산으로 플래그를 설정하고, 뒤따르는 조건 분기가 플래그를 검사합니다. 구체적인 명령어와 플래그 사용법은 ISA마다 다릅니다.</p>
+              </section>
+
+              <section id="units" aria-labelledby="units-title">
+                <h2 id="units-title">실행 유닛: 실제 계산이 일어나는 곳</h2>
+                <ul class="principle-list" aria-label="CPU 실행 유닛">
+                  <li><h3>ALU</h3><p>정수 사칙연산, 비교, AND·OR·XOR, 비트 시프트 같은 산술·논리 연산을 처리합니다.</p></li>
+                  <li><h3>FPU</h3><p>부동소수점 연산을 맡습니다. 위치, 회전과 물리 계산처럼 실수 연산이 많은 게임 코드와 밀접합니다.</p></li>
+                  <li><h3>SIMD Unit</h3><p>하나의 명령어로 여러 데이터를 처리합니다. SSE, AVX 계열과 ARM NEON 등이 대표적입니다.</p></li>
+                  <li><h3>Load/Store Unit</h3><p>주소를 계산하고 캐시·메모리와 레지스터 사이에서 데이터를 읽고 씁니다.</p></li>
+                </ul>
+                <pre><code>// 개념적인 SIMD 연산
+[a1, a2, a3, a4] + [b1, b2, b3, b4]
+// [a1+b1, a2+b2, a3+b3, a4+b4]</code></pre>
+                <p>SIMD는 벡터·행렬, 애니메이션 포즈, 파티클처럼 같은 계산을 많은 데이터에 적용할 때 유리합니다. 다만 자료 배치와 정렬, 컴파일러 최적화, 대상 ISA에 따라 실제 벡터화 여부와 효과가 달라집니다.</p>
+                <p>CPU는 보통 load로 값을 레지스터에 가져오고 연산한 뒤 store로 되돌립니다. 산술 연산보다 데이터를 기다리는 시간이 더 큰 병목이 되기 쉬운 이유입니다.</p>
+              </section>
+
+              <section id="memory" aria-labelledby="memory-title">
+                <h2 id="memory-title">캐시와 주소 변환</h2>
+                <p>저장 공간은 CPU에 가까울수록 빠르고 작습니다. 일반적인 계층은 레지스터 → L1 → L2 → L3 → RAM → 보조 저장 장치 순서입니다.</p>
+                <ul>
+                  <li><strong>L1</strong>: 코어에 가장 가깝고, 흔히 명령어 캐시(L1I)와 데이터 캐시(L1D)로 나뉩니다.</li>
+                  <li><strong>L2</strong>: L1보다 크지만 느리며 대개 코어별로 둡니다.</li>
+                  <li><strong>L3</strong>: 여러 코어가 공유하는 경우가 많고 RAM 접근을 줄이는 마지막 단계 캐시 역할을 합니다.</li>
+                </ul>
+                <p>캐시는 데이터를 <strong>캐시 라인</strong> 단위로 가져옵니다. 많은 현대 데스크톱 CPU에서 64바이트가 흔하지만 구조마다 다릅니다. 연속 배열을 순서대로 읽으면 한 번 가져온 라인의 여러 값을 사용할 수 있습니다. 자세한 원리는 <a href="locality-of-reference.html">메모리 참조 지역성 글</a>에서 다뤘습니다.</p>
+                <h3>MMU와 TLB</h3>
+                <p>프로그램이 보는 주소는 일반적으로 가상 주소입니다. <strong>MMU</strong>가 페이지 테이블을 이용해 물리 주소로 변환하고, <strong>TLB</strong>는 최근 주소 변환 결과를 캐시합니다. TLB에 결과가 없으면 페이지 테이블을 따라가는 추가 작업이 필요하므로 큰 메모리를 불규칙하게 접근할 때 데이터 캐시 미스와 TLB 미스가 함께 늘 수 있습니다.</p>
+                <h3>캐시 일관성과 거짓 공유</h3>
+                <p>코어마다 자체 캐시가 있으므로 같은 메모리 값을 여러 코어가 사용할 때 복사본의 상태를 맞춰야 합니다. MESI 같은 캐시 일관성 프로토콜이 이를 관리합니다. 서로 다른 스레드가 같은 캐시 라인의 값을 계속 수정하면 실제로 같은 변수를 공유하지 않아도 라인이 코어 사이를 오가는 <strong>거짓 공유</strong>가 발생할 수 있습니다.</p>
+              </section>
+
+              <section id="parallelism" aria-labelledby="parallelism-title">
+                <h2 id="parallelism-title">명령어 수준 병렬성</h2>
+                <p>CPU는 한 명령어가 완전히 끝나기를 기다린 다음 명령어를 시작하지 않습니다. 설명용 5단계 파이프라인은 IF(인출), ID(해석), EX(실행), MEM(메모리 접근), WB(결과 기록)로 나눌 수 있습니다.</p>
+                <pre><code>Cycle 1: A 인출
+Cycle 2: A 해석 | B 인출
+Cycle 3: A 실행 | B 해석 | C 인출
+Cycle 4: A 메모리 | B 실행 | C 해석</code></pre>
+                <p>파이프라이닝은 명령어 하나의 지연 시간을 반드시 줄이는 기술이 아니라 여러 명령어의 단계를 겹쳐 전체 처리량을 높입니다. 현대 CPU의 실제 파이프라인은 더 복잡하며, 한 사이클에 여러 명령어를 발행하는 <strong>슈퍼스칼라</strong> 구조도 사용합니다.</p>
+                <h3>분기 예측과 비순차 실행</h3>
+                <p>조건 분기를 기다리는 동안 파이프라인이 비지 않도록 CPU는 다음 경로를 예측합니다. 맞으면 진행하고, 틀리면 잘못 준비한 명령어를 버리고 올바른 경로에서 다시 시작합니다. 자세한 내용은 <a href="branch-prediction.html">분기 예측 글</a>로 연결했습니다.</p>
+                <pre><code>a = LoadFromMemory(); // 오래 걸리는 load
+b = x + y;           // a와 독립적
+c = p * q;           // a와 독립적</code></pre>
+                <p><strong>비순차 실행</strong>은 앞선 명령어가 데이터를 기다릴 때 의존성이 없는 뒤의 명령어를 먼저 실행합니다. 예약 스테이션과 스케줄러가 준비된 작업을 고르고, 레지스터 리네이밍이 이름 때문에 생기는 거짓 의존성을 제거하며, Reorder Buffer가 프로그램에서 관찰되는 결과를 원래 순서에 맞춰 확정합니다.</p>
+                <div class="post-callout"><p>클럭 주파수만으로 CPU 성능을 판단할 수 없습니다. 처리량은 클럭과 사이클당 명령어 수(IPC), 코어 활용도에 영향을 받고, 실제 프로그램에서는 캐시 미스, 분기, 데이터 의존성, 전력과 온도 제한까지 함께 작용합니다.</p></div>
+              </section>
+
+              <section id="cores" aria-labelledby="cores-title">
+                <h2 id="cores-title">멀티코어와 SMT는 다른 병렬성이다</h2>
+                <p>멀티코어는 물리 코어 여러 개가 각각 명령어 흐름을 처리합니다. 반면 <strong>SMT</strong>는 하나의 물리 코어가 둘 이상의 논리 스레드 상태를 유지하며 실행 자원을 나눠 쓰는 기술입니다. Intel의 Hyper-Threading은 SMT의 한 구현입니다.</p>
+                <p>한 스레드가 메모리를 기다릴 때 다른 스레드가 빈 실행 유닛을 사용할 수 있어 처리량이 늘 수 있지만 같은 코어의 실행 유닛과 캐시를 공유하므로 성능이 두 배가 되지는 않습니다. “6코어 12스레드”는 물리 코어 6개가 논리 실행 흐름 12개를 제공한다는 뜻입니다.</p>
+              </section>
+
+              <section id="walkthrough" aria-labelledby="walkthrough-title">
+                <h2 id="walkthrough-title"><code>result = a + b</code> 실행 따라가기</h2>
+                <ol>
+                  <li>프로그램 카운터가 다음 명령어의 주소를 가리킵니다.</li>
+                  <li>프런트엔드가 L1 명령어 캐시에서 명령어 바이트를 가져옵니다.</li>
+                  <li>디코더가 명령어를 CPU 내부에서 처리할 연산으로 해석합니다.</li>
+                  <li>load/store 유닛이 <code>a</code>와 <code>b</code>의 주소를 계산하고 데이터를 요청합니다.</li>
+                  <li>L1에 없으면 L2, L3, RAM 쪽으로 내려가 데이터를 찾습니다.</li>
+                  <li>준비된 값을 물리 레지스터에 두고 ALU가 덧셈을 수행합니다.</li>
+                  <li>결과를 레지스터에 기록하고 필요하면 캐시를 거쳐 메모리에 저장합니다.</li>
+                  <li>예외 없이 완료되면 결과를 프로그램 순서에 맞춰 확정합니다.</li>
+                </ol>
+                <p>설명을 위해 순서대로 적었지만 실제 CPU에서는 여러 명령어의 인출, 해석, 실행과 메모리 접근이 동시에 진행됩니다. 정확한 내부 단계는 ISA가 아니라 마이크로아키텍처에 따라 달라지며, 같은 x86-64 프로그램도 CPU 세대에 따라 다른 방식으로 실행될 수 있습니다.</p>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>제어 장치는 명령어를 가져와 해석하고, 레지스터와 실행 유닛이 필요한 작업을 수행합니다.</li>
+                  <li>ALU·FPU·SIMD는 계산을, load/store 유닛은 레지스터와 메모리 계층 사이의 이동을 맡습니다.</li>
+                  <li>캐시는 RAM 접근을 줄이고, MMU와 TLB는 가상 주소를 물리 주소로 변환합니다.</li>
+                  <li>파이프라이닝, 슈퍼스칼라, 분기 예측과 비순차 실행은 독립적인 명령어를 겹쳐 처리합니다.</li>
+                  <li>멀티코어는 물리 코어 수준, SMT는 한 코어의 실행 자원 활용 수준에서 병렬성을 제공합니다.</li>
+                  <li>실제 성능은 클럭 하나가 아니라 IPC, 메모리, 분기, 병렬화, 전력과 온도의 영향을 함께 받습니다.</li>
+                </ul>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js" data-repo="StaySober01/StaySober01.github.io" data-repo-id="R_kgDOTQFJZA" data-category="Comments" data-category-id="DIC_kwDOTQFJZM4DA3to" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="preferred_color_scheme" data-lang="ko" data-loading="lazy" crossorigin="anonymous" async></script>
+              </section>
+              <nav class="post-nav" aria-label="글 이동"><a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a></nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+    <footer class="site-footer"><div class="container footer-inner"><p>© 2026 StaySober01</p><a href="https://github.com/StaySober01">GitHub</a></div></footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
