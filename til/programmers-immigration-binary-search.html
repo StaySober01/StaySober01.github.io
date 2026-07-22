@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="프로그래머스 입국심사 문제를 시간에 대한 결정 문제로 바꾸고, 이분 탐색으로 최소 시간을 찾는 과정과 int 곱셈 오버플로 문제를 정리한 TIL입니다.">
+    <title>프로그래머스 입국심사: 처리 가능한 최소 시간을 찾는 이분 탐색 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes</p>
+            <h1>프로그래머스 입국심사: 처리 가능한 최소 시간을 찾는 이분 탐색</h1>
+            <p class="post-meta">TIL · 프로그래머스 문제 풀이 · 2026.07.22</p>
+            <p class="post-lead">
+              최대 10억 명을 심사대에 한 명씩 배치하는 대신, 특정 시간 안에 모두를 처리할 수 있는지 판정합니다.
+              시간이 늘수록 불가능에서 가능으로 한 번만 바뀌는 성질을 이용해 정답의 경계를 이분 탐색하고, 큰 수의 곱셈에서 발생한 오버플로까지 정리합니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#problem">문제 이해</a></li>
+                <li><a href="#simulation">시뮬레이션이 어려운 이유</a></li>
+                <li><a href="#decision">시간을 결정 문제로 바꾸기</a></li>
+                <li><a href="#range">탐색 범위 정하기</a></li>
+                <li><a href="#boundary">가능한 첫 시간을 찾기</a></li>
+                <li><a href="#example">예제로 따라가기</a></li>
+                <li><a href="#overflow">절반만 통과한 이유</a></li>
+                <li><a href="#code">최종 코드</a></li>
+                <li><a href="#complexity">복잡도와 주의점</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="problem" aria-labelledby="problem-title">
+                <h2 id="problem-title">문제 이해</h2>
+                <p>
+                  심사관마다 한 사람을 처리하는 시간이 다르고 모든 심사대는 처음에 비어 있습니다.
+                  기다리는 <code>n</code>명이 어떤 심사대를 선택하든 상관없이, 전원이 심사를 마치는 데 필요한 최소 시간을 구해야 합니다.
+                </p>
+                <p>
+                  예를 들어 <code>n = 6</code>, <code>times = [7, 10]</code>이면 7분 심사대는 28분 동안 4명,
+                  10분 심사대는 2명을 처리할 수 있으므로 답은 28분입니다.
+                </p>
+              </section>
+
+              <section id="simulation" aria-labelledby="simulation-title">
+                <h2 id="simulation-title">시뮬레이션이 어려운 이유</h2>
+                <p>
+                  가장 직관적인 방법은 각 심사대가 다음에 비는 시간을 관리하며 사람을 한 명씩 배치하는 것입니다.
+                  하지만 사람 수가 최대 10억 명이므로 한 사람마다 작업하는 방식은 입력 상한에서 사용할 수 없습니다.
+                </p>
+                <div class="post-callout">
+                  <p>
+                    답을 만드는 과정을 직접 재현하기보다, 어떤 시간 <code>T</code>가 답으로 충분한지 빠르게 판정할 수 있는지를 먼저 생각해야 합니다.
+                  </p>
+                </div>
+              </section>
+
+              <section id="decision" aria-labelledby="decision-title">
+                <h2 id="decision-title">시간을 결정 문제로 바꾸기</h2>
+                <p>
+                  한 사람을 심사하는 데 <code>time</code>분이 걸리는 심사관은 <code>T</code>분 동안 <code>T / time</code>명을 처리할 수 있습니다.
+                  정수 나눗셈을 사용하는 이유는 해당 시간 안에 끝난 심사만 세어야 하기 때문입니다.
+                </p>
+                <pre><code>processed(T) = T / times[0]
+             + T / times[1]
+             + ...
+
+processed(T) &gt;= n 이면 T분 안에 모두 심사 가능</code></pre>
+                <p>
+                  시간이 늘면 처리 가능한 사람 수는 줄지 않습니다. 따라서 어떤 시점 전까지는 불가능하고, 그 시점부터는 계속 가능합니다.
+                </p>
+                <pre><code>시간:  0 ... 27 | 28 ...
+판정: 불가능     | 가능</code></pre>
+                <p>이처럼 판정 결과가 한 번만 바뀌므로 이분 탐색으로 최초의 가능한 시간을 찾을 수 있습니다.</p>
+              </section>
+
+              <section id="range" aria-labelledby="range-title">
+                <h2 id="range-title">탐색 범위 정하기</h2>
+                <p>최소 시간은 아무도 심사하지 않은 <code>0</code>분을 하한으로 둘 수 있습니다.</p>
+                <pre><code>left = 0</code></pre>
+                <p>
+                  상한은 가장 빠른 심사관이 <code>n</code>명을 혼자 처리하는 시간입니다.
+                  실제로는 다른 심사관도 함께 일하므로 정답은 반드시 이 값 이하입니다.
+                </p>
+                <pre><code>right = min(times) * n</code></pre>
+                <p><code>times</code>를 오름차순 정렬하면 <code>times[0]</code>으로 가장 빠른 심사 시간을 얻을 수 있습니다.</p>
+              </section>
+
+              <section id="boundary" aria-labelledby="boundary-title">
+                <h2 id="boundary-title">가능한 첫 시간을 찾기</h2>
+                <p>
+                  <code>left</code>와 <code>right</code>를 모두 정답 후보가 될 수 있는 닫힌 범위로 관리합니다.
+                  중간 시간에 <code>n</code>명 이상 처리할 수 있다면 그 시간도 답 후보이므로 <code>right = mid</code>로 줄입니다.
+                </p>
+                <pre><code>while (left &lt; right) {
+    long long mid = left + (right - left) / 2;
+    long long count = 처리 가능한 사람 수;
+
+    if (count &gt;= n) {
+        right = mid;
+    } else {
+        left = mid + 1;
+    }
+}</code></pre>
+                <p>
+                  처리할 수 없다면 <code>mid</code>는 정답이 아니므로 제외하고 <code>left = mid + 1</code>로 이동합니다.
+                  반복이 끝나 <code>left == right</code>가 되면 두 값이 가리키는 위치가 최초의 가능한 시간입니다.
+                </p>
+              </section>
+
+              <section id="example" aria-labelledby="example-title">
+                <h2 id="example-title">예제로 따라가기</h2>
+                <p><code>n = 6</code>, <code>times = [7, 10]</code>이면 탐색 범위는 <code>0</code>부터 <code>7 × 6 = 42</code>까지입니다.</p>
+                <div class="table-scroll" role="region" aria-label="입국심사 이분 탐색 과정" tabindex="0">
+                  <table>
+                    <thead>
+                      <tr><th scope="col">mid</th><th scope="col">처리 인원</th><th scope="col">판정</th><th scope="col">다음 범위</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row">21</th><td><code>21 / 7 + 21 / 10 = 5</code></td><td>불가능</td><td><code>[22, 42]</code></td></tr>
+                      <tr><th scope="row">32</th><td><code>32 / 7 + 32 / 10 = 7</code></td><td>가능</td><td><code>[22, 32]</code></td></tr>
+                      <tr><th scope="row">27</th><td><code>27 / 7 + 27 / 10 = 5</code></td><td>불가능</td><td><code>[28, 32]</code></td></tr>
+                      <tr><th scope="row">30</th><td><code>30 / 7 + 30 / 10 = 7</code></td><td>가능</td><td><code>[28, 30]</code></td></tr>
+                      <tr><th scope="row">29</th><td><code>29 / 7 + 29 / 10 = 6</code></td><td>가능</td><td><code>[28, 29]</code></td></tr>
+                      <tr><th scope="row">28</th><td><code>28 / 7 + 28 / 10 = 6</code></td><td>가능</td><td><code>[28, 28]</code></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>27분에는 5명만 처리할 수 있지만 28분에는 6명을 처리할 수 있으므로 최소 시간은 28분입니다.</p>
+              </section>
+
+              <section id="overflow" aria-labelledby="overflow-title">
+                <h2 id="overflow-title">절반만 통과한 이유</h2>
+                <p>처음 작성한 코드에서는 반환형만 <code>long long</code>으로 두고 다음처럼 상한을 계산했습니다.</p>
+                <pre><code>long long right = times[0] * n;</code></pre>
+                <p>
+                  대입받는 변수가 <code>long long</code>이어도 곱셈의 두 피연산자가 모두 <code>int</code>이면 곱셈부터 <code>int</code>로 수행됩니다.
+                  제한값에서는 최대 <code>10<sup>18</sup></code>까지 필요하므로 중간 결과가 먼저 오버플로한 뒤 잘못된 값이 저장될 수 있습니다.
+                </p>
+                <pre><code>long long right = static_cast&lt;long long&gt;(times[0])
+                * static_cast&lt;long long&gt;(n);</code></pre>
+                <p>곱셈 전에 피연산자를 <code>long long</code>으로 변환해야 실제 연산도 64비트 정수로 수행됩니다.</p>
+              </section>
+
+              <section id="code" aria-labelledby="code-title">
+                <h2 id="code-title">최종 코드</h2>
+                <pre><code>#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+using namespace std;
+
+long long solution(int n, vector&lt;int&gt; times) {
+    sort(times.begin(), times.end());
+
+    long long left = 0;
+    long long right = static_cast&lt;long long&gt;(times[0])
+                    * static_cast&lt;long long&gt;(n);
+
+    while (left &lt; right) {
+        long long mid = left + (right - left) / 2;
+        long long count = 0;
+
+        for (int time : times) {
+            count += mid / time;
+        }
+
+        if (count &gt;= n) {
+            right = mid;
+        } else {
+            left = mid + 1;
+        }
+    }
+
+    return left;
+}</code></pre>
+                <p>
+                  <code>mid = left + (right - left) / 2</code> 형태를 사용하면 <code>left + right</code>를 먼저 더할 때 생길 수 있는 오버플로도 피할 수 있습니다.
+                </p>
+              </section>
+
+              <section id="complexity" aria-labelledby="complexity-title">
+                <h2 id="complexity-title">복잡도와 주의점</h2>
+                <ul class="principle-list" aria-label="입국심사 풀이 체크포인트">
+                  <li>
+                    <h3>시간복잡도는 <code>O(M log(N × T))</code></h3>
+                    <p>심사관 수를 <code>M</code>, 가장 빠른 심사 시간을 <code>T</code>라 하면 각 이분 탐색 단계에서 심사관을 한 번씩 순회합니다. 정렬의 <code>O(M log M)</code>도 필요합니다.</p>
+                  </li>
+                  <li>
+                    <h3>공간복잡도는 <code>O(1)</code></h3>
+                    <p>정렬 구현의 내부 공간을 제외하면 탐색 경계와 처리 인원만 저장합니다.</p>
+                  </li>
+                  <li>
+                    <h3>값의 범위를 먼저 계산한다</h3>
+                    <p>정답과 상한이 최대 <code>10<sup>18</sup></code>이므로 시간 관련 변수는 <code>long long</code>이어야 합니다.</p>
+                  </li>
+                  <li>
+                    <h3>가능한 경우에도 <code>mid</code>를 보존한다</h3>
+                    <p>최솟값을 찾으므로 가능한 <code>mid</code> 자체가 정답일 수 있습니다. 따라서 <code>right = mid - 1</code>이 아니라 <code>right = mid</code>를 사용합니다.</p>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>최대 10억 명을 한 명씩 배치하는 시뮬레이션은 피한다.</li>
+                  <li><code>T</code>분 동안 처리 가능한 인원은 각 심사대의 <code>T / time</code>을 더해 구한다.</li>
+                  <li>시간이 늘수록 가능 여부가 불가능에서 가능으로 한 번만 바뀌므로 이분 탐색을 적용한다.</li>
+                  <li>가장 빠른 심사관이 모두 처리하는 시간을 안전한 상한으로 사용한다.</li>
+                  <li>큰 수의 곱셈은 연산 전에 <code>long long</code>으로 형변환해야 한다.</li>
+                </ul>
+                <p>
+                  이번 문제에서는 대상을 직접 배치하는 대신 답의 후보인 시간을 탐색하는 관점 전환이 핵심이었습니다.
+                  알고리즘이 맞아도 자료형 변환 시점 때문에 실패할 수 있다는 점까지 함께 확인했습니다.
+                </p>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js"
+                        data-repo="StaySober01/StaySober01.github.io"
+                        data-repo-id="R_kgDOTQFJZA"
+                        data-category="Comments"
+                        data-category-id="DIC_kwDOTQFJZM4DA3to"
+                        data-mapping="pathname"
+                        data-strict="0"
+                        data-reactions-enabled="1"
+                        data-emit-metadata="0"
+                        data-input-position="bottom"
+                        data-theme="preferred_color_scheme"
+                        data-lang="ko"
+                        data-loading="lazy"
+                        crossorigin="anonymous"
+                        async>
+                </script>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
