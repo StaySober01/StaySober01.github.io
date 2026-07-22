@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="프로그래머스 단속카메라 문제에서 진출 지점 기준 정렬과 탐욕적 선택의 근거를 세우고, O(N²) 초안을 O(N log N)으로 개선한 과정을 정리한 TIL입니다.">
+    <title>프로그래머스 단속카메라: 가장 빠른 진출 지점에 설치하는 탐욕법 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Learning Notes</p>
+            <h1>프로그래머스 단속카메라: 가장 빠른 진출 지점에 설치하는 탐욕법</h1>
+            <p class="post-meta">TIL · 프로그래머스 문제 풀이 · 2026.07.22</p>
+            <p class="post-lead">
+              모든 차량의 이동 구간에 카메라가 하나 이상 포함되도록 하면서 설치 수를 최소화하는 문제입니다.
+              진출 지점이 가장 빠른 차량부터 처리해야 하는 이유와, 카메라 목록 전체를 검사하던 초안을 마지막 카메라 하나만 기억하도록 개선한 과정을 정리합니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#problem">문제 이해</a></li>
+                <li><a href="#choice">탐욕적 선택 찾기</a></li>
+                <li><a href="#proof">선택이 최적인 이유</a></li>
+                <li><a href="#first-code">첫 구현과 병목</a></li>
+                <li><a href="#improvement">마지막 카메라만 확인하기</a></li>
+                <li><a href="#example">예제로 따라가기</a></li>
+                <li><a href="#code">최종 코드</a></li>
+                <li><a href="#complexity">복잡도와 주의점</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="problem" aria-labelledby="problem-title">
+                <h2 id="problem-title">문제 이해</h2>
+                <p>
+                  각 차량의 경로는 진입 지점과 진출 지점으로 이루어진 닫힌 구간 <code>[start, end]</code>입니다.
+                  카메라가 구간 안에 있으면 해당 차량을 단속할 수 있으며, 진입점이나 진출점에 설치해도 포함됩니다.
+                </p>
+                <pre><code>차량 경로: [start, end]
+단속 조건: start &lt;= camera &lt;= end</code></pre>
+                <p>
+                  결국 모든 구간을 적어도 한 번 찌르는 점을 최소 개수로 고르는 문제입니다. 어떤 구간을 먼저 처리하고 그 안의 어느 위치를 고를지가 핵심입니다.
+                </p>
+              </section>
+
+              <section id="choice" aria-labelledby="choice-title">
+                <h2 id="choice-title">탐욕적 선택 찾기</h2>
+                <p>진출 지점이 가장 빠른 차량을 먼저 생각하면 반드시 처리해야 할 대상이 분명해집니다.</p>
+                <ol>
+                  <li>이 차량은 진출 지점을 지나면 다시 만날 수 없으므로, 카메라 하나가 반드시 현재 구간 안에 있어야 합니다.</li>
+                  <li>구간 안에서 가장 오른쪽인 진출 지점에 설치하면 현재 차량을 단속하면서 뒤에 오는 구간과 겹칠 가능성을 가장 크게 남깁니다.</li>
+                  <li>따라서 차량을 진출 지점 기준 오름차순으로 정렬하고, 아직 단속되지 않은 첫 차량의 진출 지점에 카메라를 설치합니다.</li>
+                </ol>
+                <pre><code>1. routes를 end 기준 오름차순 정렬
+2. 현재 카메라를 포함하지 않는 첫 구간을 찾음
+3. 그 구간의 end에 새 카메라 설치
+4. 모든 구간을 확인할 때까지 반복</code></pre>
+              </section>
+
+              <section id="proof" aria-labelledby="proof-title">
+                <h2 id="proof-title">선택이 최적인 이유</h2>
+                <p>
+                  진출 지점이 가장 빠른 구간을 <code>A = [start, end]</code>라고 하겠습니다. 어떤 최적해도 <code>A</code>를 단속하려면 그 안의 위치 <code>p</code>에 카메라 하나를 두어야 합니다.
+                </p>
+                <p>
+                  이 카메라를 <code>p</code>에서 <code>A.end</code>로 옮겨도 손해가 없습니다. 정렬상 아직 처리할 구간 <code>B</code>는 <code>A.end &lt;= B.end</code>를 만족합니다.
+                  기존 카메라 <code>p</code>가 <code>B</code>에도 포함되었다면 <code>B.start &lt;= p &lt;= A.end</code>이고, 따라서 <code>A.end</code> 역시 <code>B</code> 안에 있습니다.
+                </p>
+                <div class="post-callout">
+                  <p>
+                    즉, 첫 카메라를 가장 빠른 진출 지점에 둔 최적해가 항상 하나 이상 존재합니다.
+                    이 선택 뒤에 남은 구간에도 같은 논리를 반복할 수 있으므로 탐욕법이 전체 최적해를 만듭니다.
+                  </p>
+                </div>
+              </section>
+
+              <section id="first-code" aria-labelledby="first-code-title">
+                <h2 id="first-code-title">첫 구현과 병목</h2>
+                <p>
+                  처음에는 설치한 카메라를 벡터에 모두 저장하고, 각 차량이 기존 카메라 중 하나를 포함하는지 전부 검사했습니다.
+                  탐욕적 선택 자체는 맞지만 차량마다 카메라 목록을 다시 순회하므로 최악에는 <code>O(N²)</code>이 됩니다.
+                </p>
+                <pre><code>vector&lt;int&gt; cameras;
+
+for (const vector&lt;int&gt;&amp; route : routes) {
+    bool covered = false;
+
+    for (int camera : cameras) {
+        if (route[0] &lt;= camera &amp;&amp; camera &lt;= route[1]) {
+            covered = true;
+            break;
+        }
+    }
+
+    if (!covered) {
+        cameras.push_back(route[1]);
+    }
+}</code></pre>
+                <p>차량 수가 최대 10,000대이므로 정렬로 만든 규칙을 이용해 이 중첩 검사를 없애는 편이 좋습니다.</p>
+              </section>
+
+              <section id="improvement" aria-labelledby="improvement-title">
+                <h2 id="improvement-title">마지막 카메라만 확인하기</h2>
+                <p>
+                  카메라는 처리 순서에 따라 항상 오른쪽으로 이동합니다. 새 카메라는 현재 미처리 차량의 진출 지점에 설치되고, 이후 차량의 진출 지점은 이보다 작지 않기 때문입니다.
+                  따라서 과거의 모든 카메라를 저장할 필요 없이 가장 최근에 설치한 카메라 위치만 기억하면 됩니다.
+                </p>
+                <pre><code>if (camera &lt; route[0]) {
+    camera = route[1];
+    ++answer;
+}</code></pre>
+                <p>
+                  <code>camera &lt; route[0]</code>이면 마지막 카메라가 현재 차량의 진입점보다 왼쪽에 있어 이 차량을 단속하지 못합니다.
+                  반대로 이 조건이 거짓이면 정렬 특성상 <code>camera &lt;= route[1]</code>도 보장되므로 카메라는 현재 구간 안에 있습니다.
+                </p>
+              </section>
+
+              <section id="example" aria-labelledby="example-title">
+                <h2 id="example-title">예제로 따라가기</h2>
+                <p>입력 구간을 진출 지점 기준으로 정렬하면 다음 순서가 됩니다.</p>
+                <pre><code>[-20, -15], [-18, -13], [-14, -5], [-5, -3]</code></pre>
+                <ol>
+                  <li><code>[-20, -15]</code>는 아직 단속되지 않았으므로 <code>-15</code>에 첫 카메라를 설치합니다.</li>
+                  <li><code>[-18, -13]</code>은 <code>-15</code>를 포함하므로 같은 카메라로 처리됩니다.</li>
+                  <li><code>[-14, -5]</code>의 진입점은 <code>-15</code>보다 오른쪽이므로 <code>-5</code>에 두 번째 카메라를 설치합니다.</li>
+                  <li><code>[-5, -3]</code>은 경계값 <code>-5</code>를 포함하므로 추가 설치가 필요 없습니다.</li>
+                </ol>
+                <p>모든 차량을 단속하는 최소 카메라 수는 <code>2</code>입니다.</p>
+              </section>
+
+              <section id="code" aria-labelledby="code-title">
+                <h2 id="code-title">최종 코드</h2>
+                <pre><code>#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;climits&gt;
+
+using namespace std;
+
+int solution(vector&lt;vector&lt;int&gt;&gt; routes) {
+    sort(routes.begin(), routes.end(),
+         [](const vector&lt;int&gt;&amp; a, const vector&lt;int&gt;&amp; b) {
+             return a[1] &lt; b[1];
+         });
+
+    int answer = 0;
+    int camera = INT_MIN;
+
+    for (const vector&lt;int&gt;&amp; route : routes) {
+        if (camera &lt; route[0]) {
+            camera = route[1];
+            ++answer;
+        }
+    }
+
+    return answer;
+}</code></pre>
+                <p>
+                  <code>camera</code>를 입력 범위보다 작은 <code>INT_MIN</code>으로 초기화해 첫 차량에서는 반드시 카메라가 설치되도록 했습니다.
+                  차량의 진입·진출 지점은 모두 <code>int</code> 범위 안이므로 안전합니다.
+                </p>
+              </section>
+
+              <section id="complexity" aria-labelledby="complexity-title">
+                <h2 id="complexity-title">복잡도와 주의점</h2>
+                <ul class="principle-list" aria-label="단속카메라 풀이 체크포인트">
+                  <li>
+                    <h3>시간복잡도는 <code>O(N log N)</code></h3>
+                    <p>진출 지점 기준 정렬이 <code>O(N log N)</code>, 정렬 뒤 한 번의 순회가 <code>O(N)</code>입니다.</p>
+                  </li>
+                  <li>
+                    <h3>추가 공간은 <code>O(1)</code></h3>
+                    <p>정렬 구현의 내부 공간을 제외하면 카메라 위치와 개수만 저장합니다. 별도의 카메라 목록은 필요하지 않습니다.</p>
+                  </li>
+                  <li>
+                    <h3>진출 지점을 기준으로 정렬한다</h3>
+                    <p>진입 지점 기준 정렬만으로는 가장 먼저 놓칠 차량과 카메라의 최적 위치를 바로 결정할 수 없습니다.</p>
+                  </li>
+                  <li>
+                    <h3>경계값도 단속에 포함한다</h3>
+                    <p>진입점에 카메라가 있어도 단속되므로 새 카메라 조건은 <code>camera &lt; route[0]</code>입니다. <code>&lt;=</code>를 사용하면 불필요한 카메라가 추가됩니다.</p>
+                  </li>
+                </ul>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>차량 경로를 닫힌 구간으로 보고 모든 구간을 찌르는 최소 개수의 점을 찾는다.</li>
+                  <li>진출 지점이 가장 빠른 차량은 더 늦기 전에 반드시 처리해야 한다.</li>
+                  <li>현재 차량의 진출 지점에 카메라를 두면 이후 구간을 포함할 가능성을 가장 크게 남긴다.</li>
+                  <li>교환 논증으로 임의의 최적해의 첫 카메라를 이 위치로 옮겨도 손해가 없음을 확인할 수 있다.</li>
+                  <li>정렬 뒤에는 마지막 카메라 하나만 확인해 전체 풀이를 <code>O(N log N)</code>에 끝낸다.</li>
+                </ul>
+                <p>
+                  이번 풀이에서는 탐욕적 선택을 찾는 것만큼, 정렬이 만들어 낸 순서를 끝까지 활용하는 것이 중요했습니다.
+                  선택은 맞았지만 모든 카메라를 재검사하던 초안을 개선하면서 탐욕법의 간결함과 효율을 코드에도 그대로 반영할 수 있었습니다.
+                </p>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js"
+                        data-repo="StaySober01/StaySober01.github.io"
+                        data-repo-id="R_kgDOTQFJZA"
+                        data-category="Comments"
+                        data-category-id="DIC_kwDOTQFJZM4DA3to"
+                        data-mapping="pathname"
+                        data-strict="0"
+                        data-reactions-enabled="1"
+                        data-emit-metadata="0"
+                        data-input-position="bottom"
+                        data-theme="preferred_color_scheme"
+                        data-lang="ko"
+                        data-loading="lazy"
+                        crossorigin="anonymous"
+                        async>
+                </script>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
