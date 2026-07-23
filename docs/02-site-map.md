@@ -29,6 +29,7 @@
    ├─ programmers-n-expression-dp.html
    ├─ dynamic-programming.html
    ├─ branch-prediction.html
+   ├─ pipeline-hazard-interrupt-dma.html
    ├─ time-complexity-big-o-data-structures.html
    └─ solid.html
 ```
