@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="C++17 콘솔 RPG에서 GameManager를 중심으로 전투, UI, 인벤토리, 레시피, 상점을 연결하며 배운 시스템 통합과 객체지향 설계의 트레이드오프를 정리합니다.">
+    <title>분리된 시스템을 하나의 게임으로 연결하기 | StaySober01</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; }
+      catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li><button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false"><svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg><svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path></svg></button></li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Technical Blog</p>
+            <h1>분리된 시스템을 하나의 게임으로 연결하기</h1>
+            <p class="post-meta">기술 블로그 · C++ 게임 개발 · 2026.08.04</p>
+            <p class="post-lead">클래스가 모두 구현되어 있어도 게임은 저절로 완성되지 않습니다. C++17 콘솔 RPG의 통합을 맡아 전투, UI, 인벤토리, 레시피, 상점 사이의 데이터 흐름을 설계하고, 처음부터 엔딩까지 이어지는 실행 경로를 만든 과정을 정리합니다.</p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#project">프로젝트와 문제</a></li>
+                <li><a href="#responsibility">내 역할과 설계 기준</a></li>
+                <li><a href="#orchestration">GameManager로 흐름 연결하기</a></li>
+                <li><a href="#battle-data">전투 로직과 출력 분리</a></li>
+                <li><a href="#ownership">상태와 소유권 정리</a></li>
+                <li><a href="#integration">통합 과정의 문제 해결</a></li>
+                <li><a href="#verification">검증과 한계</a></li>
+                <li><a href="#lessons">배운 점</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="project" aria-labelledby="project-title">
+                <h2 id="project-title">프로젝트와 문제</h2>
+                <p><strong>CH2 Text RPG</strong>는 여섯 명이 C++17로 만든 콘솔 게임입니다. 플레이어는 재료 몬스터를 처치해 골드와 식재료를 얻고, 요리를 완성해 능력치를 높입니다. 일반 요리 열 개를 완성하면 궁극의 햄버거와 보스전이 열리고, 최종 요리를 만들면 엔딩에 도달합니다.</p>
+                <p>개발을 시작할 때 저는 <code>BattleManager</code>, <code>RecipeManager</code>, <code>ShopManager</code>, <code>UIManager</code> 등 기능별 매니저 파일을 빈 골격으로 먼저 생성했습니다. 시스템의 경계를 파일과 클래스 단위로 제시한 뒤 팀원들이 역할에 따라 각 영역의 내부 구현을 채우는 방식으로 작업을 나눴습니다.</p>
+                <p>팀원들의 구현이 모인 초기 통합본에는 각 클래스와 함수가 존재했지만, 메뉴 선택은 실제 동작으로 이어지지 않았고 전투 보상은 인벤토리에 들어가지 않았습니다. 레시피와 상점 역시 화면과 로직이 분리된 채였기 때문에, 처음에 나눈 시스템 경계를 실제 게임의 실행 흐름으로 다시 연결해야 했습니다.</p>
+                <div class="post-callout"><p>핵심 문제는 클래스의 부재가 아니라 <strong>객체 사이의 계약과 상태 전이의 부재</strong>였습니다. “전투 기능이 있다”와 “전투를 마친 뒤 보상을 받고 메뉴로 돌아갈 수 있다”는 서로 다른 완성 조건입니다.</p></div>
+              </section>
+
+              <section id="responsibility" aria-labelledby="responsibility-title">
+                <h2 id="responsibility-title">내 역할과 설계 기준</h2>
+                <p>저는 개발 초기에 기능별 매니저 파일과 클래스 골격을 만들고 팀의 작업 영역을 나눴습니다. 이후 프로그램의 진입점과 <code>GameManager</code>, 전체 진행 흐름, 팀 코드 통합을 맡았습니다. 플레이어 초기화부터 튜토리얼, 메인 루프, 스킬 선택, 전투 보상, 요리, 상점, 보스전과 엔딩까지 하나의 유스케이스로 연결했습니다.</p>
+                <p>즉 제 역할은 완성된 시스템을 마지막에 이어 붙이는 데서 시작하지 않았습니다. 먼저 시스템별 책임이 놓일 자리를 만들고, 팀원들이 구현한 코드를 그 구조 안에서 조율한 다음, 시스템 사이의 인터페이스와 상태 전이를 완성하는 작업까지 포함했습니다.</p>
+                <p>통합 기준은 “매니저끼리 직접 참조하지 않고 <code>GameManager</code>가 조정한다”였습니다. UI가 상점을 직접 호출하거나 전투가 화면에 직접 출력하면 한 시스템의 인터페이스 변경이 다른 시스템으로 번지고 순환 의존성이 생기기 쉽기 때문입니다.</p>
+                <pre><code class="language-text">UIManager ── 선택값 ──▶ GameManager ── 명령 ──▶ 각 도메인 시스템
+UIManager ◀── 출력 데이터 ─ GameManager ◀── 실행 결과 ─ 각 도메인 시스템</code></pre>
+                <p>각 시스템은 자신의 규칙을 처리하고, <code>GameManager</code>는 호출 순서와 데이터 전달을 담당하도록 경계를 잡았습니다.</p>
+              </section>
+
+              <section id="orchestration" aria-labelledby="orchestration-title">
+                <h2 id="orchestration-title">GameManager로 흐름 연결하기</h2>
+                <p>막연한 “전투”를 실행 가능한 단계로 풀었습니다. 몬스터 생성 → 스킬 선택 → 자동 전투 → 로그 출력 → 승패 확인 → 보상 지급 → 체력·마나 복구 → 메뉴 복귀 순서입니다. 메인 루프는 UI가 반환한 선택값만 해석합니다.</p>
+                <pre><code class="language-cpp">while (isRunning &amp;&amp; !recipe.IsFinalRecipeCompleted())
+{
+    switch (ui.PrintMenu())
+    {
+    case 1: RunNextIngredientBattle(); break;
+    case 2: ui.PrintInventory(player.GetInventory()); break;
+    case 3: HandleRecipeMenu(); break;
+    case 4: HandleShopMenu(); break;
+    case 0: isRunning = false; break;
+    }
+}</code></pre>
+                <p>상점도 같은 방향으로 연결했습니다. <code>ShopManager</code>가 상품 목록을 제공하면 UI는 이를 표시하고 선택한 ID만 반환합니다. 구매 가능 여부, 아이템 지급, 골드 차감은 <code>PurchaseItem()</code>이 처리하며, 성공 여부를 다시 UI에 전달합니다.</p>
+                <pre><code class="language-cpp">const int itemId = ui.PrintShop(shop.GetShopItems());
+if (itemId &lt;= 0) return;
+
+const bool purchased = shop.PurchaseItem(player, itemId);
+ui.PrintShopPurchaseResult(purchased, player);</code></pre>
+                <p>UI가 입력과 상태 변경을 함께 처리하지 않기 때문에 취소, 구매 실패, 메뉴 복귀 같은 전이를 한곳에서 추적할 수 있게 됐습니다.</p>
+              </section>
+
+              <section id="battle-data" aria-labelledby="battle-data-title">
+                <h2 id="battle-data-title">전투 로직과 출력 분리</h2>
+                <p>전투는 자동 진행되지만 시작 전에 스킬 하나를 선택합니다. <code>GameManager</code>가 선택 ID를 <code>Skill</code> 포인터로 변환해 전달하면, <code>BattleManager</code>는 턴 주기나 HP 비율 같은 발동 조건과 MP를 검사합니다. 조건이 맞지 않으면 기본 공격으로 대체합니다.</p>
+                <p>중요한 결정은 전투 중 콘솔을 직접 출력하지 않고 <code>BattleInfo</code> 목록을 반환한 것입니다. 각 항목에는 턴, 사용 스킬, 몬스터 ID와 이름, 양측 피해량, 남은 HP가 담깁니다.</p>
+                <pre><code class="language-cpp">const auto result = battle.StartBattle(player, monster, selectedSkill);
+ui.PrintBattleLog(result);
+
+if (result.first == BattleResult::Win)
+{
+    ApplyBattleReward(monster);
+}</code></pre>
+                <p>이 구조에서 전투는 규칙만 알고 UI는 표현만 압니다. 콘솔 출력 형식을 바꾸더라도 피해 계산을 수정할 필요가 없고, 같은 로그 데이터로 리플레이나 다른 화면을 구현할 여지도 생깁니다.</p>
+              </section>
+
+              <section id="ownership" aria-labelledby="ownership-title">
+                <h2 id="ownership-title">상태와 소유권 정리</h2>
+                <p><code>Player</code>와 <code>Monster</code>의 공통 능력치는 <code>Character</code>에 두고, 아이템은 <code>Item</code>에서 <code>Potion</code>과 <code>Ingredient</code>로 나눴습니다. 반면 플레이어와 인벤토리는 “is-a”가 아니므로 상속 대신 합성을 사용했습니다.</p>
+                <pre><code class="language-cpp">struct InventorySlot
+{
+    std::unique_ptr&lt;Item&gt; ItemPtr;
+    int Count;
+};
+
+class Player : public Character
+{
+    Inventory PlayerInventory;
+};</code></pre>
+                <p><code>unique_ptr</code>는 슬롯이 아이템을 단독 소유한다는 사실을 타입으로 표현합니다. 슬롯이 사라질 때 아이템도 함께 정리되어 수동 해제와 이중 해제 위험을 줄입니다.</p>
+                <p>상태 변경 역시 데이터를 가진 객체에 두었습니다. 골드는 <code>Player::AddGold()</code>와 <code>SpendGold()</code>, 아이템 수량은 <code>Inventory::AddItem()</code>과 <code>ReduceItem()</code>, 레시피 완료 상태는 <code>RecipeManager::CompleteRecipe()</code>가 담당합니다. 외부에서 멤버를 직접 수정하는 것보다 “부족하면 차감하지 않는다”, “수량은 음수가 되지 않는다” 같은 불변식을 지키기 쉽습니다.</p>
+              </section>
+
+              <section id="integration" aria-labelledby="integration-title">
+                <h2 id="integration-title">통합 과정에서 해결한 문제</h2>
+                <h3>레시피와 실제 인벤토리 연결</h3>
+                <p><code>RecipeManager</code>는 제작 가능 여부를 판단할 수 있었지만 플레이어 인벤토리를 직접 알지 못했습니다. 따라서 <code>GameManager</code>가 슬롯을 <code>RecipeIngredient</code> 목록으로 변환해 전달하고, 성공하면 레시피 상태 변경과 음식 능력치 적용을 차례로 호출했습니다. 독립된 두 모델 사이에 명시적인 변환 경계를 둔 셈입니다.</p>
+                <h3>취소값을 상태 전이로 취급</h3>
+                <p>레시피 상세 화면에서 취소를 눌러도 제작되는 버그는 반환값을 무시한 것이 원인이었습니다. 모든 UI 입력에서 <code>0</code>을 취소 또는 이전 화면으로 통일하고, 유효 범위를 검사한 뒤에만 도메인 동작을 호출하도록 수정했습니다. 콘솔 게임에서 입력값은 단순 숫자가 아니라 다음 상태를 결정하는 이벤트입니다.</p>
+                <h3>인코딩과 저장소 설정</h3>
+                <p>UTF-8과 CP949가 섞인 파일에서는 한글이 깨지고 문자열 리터럴이 잘못 해석되었습니다. 파일별 인코딩을 확인해 필요한 파일을 변환했고, Git에 이미 추적된 빌드 산출물은 <code>.gitignore</code>만 추가해도 사라지지 않는다는 점도 확인했습니다. 인코딩·줄바꿈·무시 규칙은 통합 단계의 잡일이 아니라 사전에 합의할 빌드 계약이었습니다.</p>
+              </section>
+
+              <section id="verification" aria-labelledby="verification-title">
+                <h2 id="verification-title">검증과 남은 한계</h2>
+                <p>기능을 연결할 때마다 Visual Studio의 x64 Debug 빌드로 컴파일과 링크를 확인하고, 콘솔 입력을 전달해 튜토리얼 전투, 보상, 메뉴 복귀, 스킬 선택, ASCII 아트 출력까지 실행했습니다. 마지막에는 <code>git diff --check</code>로 공백과 줄바꿈 문제를 점검했습니다.</p>
+                <p>그러나 빌드 성공은 실행 흐름의 정확성을 보장하지 않습니다. 자동화된 테스트가 없어 메뉴 경로를 수동으로 검증했고, 후반 콘텐츠를 빠르게 확인하기 위해 재료 차감 코드가 임시로 비활성화된 상태도 소스에 남았습니다. 이는 제품 규칙이 아니라 테스트 편의를 위한 기술 부채이며, 발행 시점의 코드 한계로 명확히 구분해야 합니다.</p>
+                <p>또한 모든 조정 책임을 모은 <code>GameManager</code>는 약 300줄 규모로 성장했습니다. 작은 프로젝트에서는 의존 흐름을 한눈에 볼 수 있었지만, 콘텐츠가 늘면 전투 진행, 메뉴 상태, 보상 처리 같은 흐름별 컨트롤러로 분리해야 합니다.</p>
+              </section>
+
+              <section id="lessons" aria-labelledby="lessons-title">
+                <h2 id="lessons-title">배운 점과 다음 개선</h2>
+                <ul>
+                  <li>클래스를 나누는 것보다 객체가 주고받을 입력, 결과, 실패 조건을 먼저 합의해야 합니다.</li>
+                  <li>UI는 선택을 반환하고 상태 변경은 해당 데이터를 소유한 객체가 맡아야 흐름을 추적하기 쉽습니다.</li>
+                  <li>DTO 역할의 <code>BattleInfo</code>처럼 로직과 표현 사이의 데이터 계약을 두면 변경 범위가 줄어듭니다.</li>
+                  <li>중앙 조정자는 직접 참조를 줄이지만, 커지기 시작하면 유스케이스 단위로 다시 분리해야 합니다.</li>
+                  <li>컴파일뿐 아니라 실제 사용자 입력 경로를 실행해야 통합이 끝납니다.</li>
+                </ul>
+                <p>다음 팀 프로젝트에서는 구현 전에 공개 인터페이스와 공통 ID, 반환값과 실패 조건을 문서화하고, 인벤토리 수량 변경·구매 실패·레시피 제작 조건부터 단위 테스트를 추가할 계획입니다. PR에는 빌드 결과와 실행한 시나리오를 기록하고 UTF-8과 줄바꿈 규칙도 저장소 생성 시점에 고정해야 합니다.</p>
+                <div class="post-callout"><p>이번 프로젝트에서 얻은 결론은 단순합니다. 객체지향은 클래스를 많이 만드는 기술이 아니라, <strong>변경의 책임을 어디에 두고 의존성이 어느 방향으로 흐르게 할지 결정하는 과정</strong>입니다.</p></div>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js" data-repo="StaySober01/StaySober01.github.io" data-repo-id="R_kgDOTQFJZA" data-category="Comments" data-category-id="DIC_kwDOTQFJZM4DA3to" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="preferred_color_scheme" data-lang="ko" data-loading="lazy" crossorigin="anonymous" async></script>
+              </section>
+              <nav class="post-nav" aria-label="글 이동"><a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a></nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+    <footer class="site-footer"><div class="container footer-inner"><p>© 2026 StaySober01</p><a href="https://github.com/StaySober01">GitHub</a></div></footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="프로그램이 프로세스가 되어 CPU에서 실행되는 흐름을 스레드, PCB와 TCB, 문맥 교환, 스케줄링, IPC를 중심으로 설명합니다.">
+    <title>프로세스와 CPU 실행 구조: 스케줄링부터 문맥 교환까지 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Technical Blog</p>
+            <h1>프로세스와 CPU 실행 구조: 스케줄링부터 문맥 교환까지</h1>
+            <p class="post-meta">기술 블로그 · 운영체제 · 2026.07.27</p>
+            <p class="post-lead">실행 파일은 스스로 CPU를 사용하는 것이 아닙니다. 운영체제가 프로세스와 스레드의 상태를 관리하고, 스케줄러가 실행할 대상을 고르며, 문맥 교환으로 중단된 실행을 이어 줍니다. 프로그램이 CPU 위에서 움직이는 전체 흐름과 게임 개발에서의 판단 기준을 연결해 정리했습니다.</p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#overview">실행 흐름 한눈에 보기</a></li>
+                <li><a href="#process">프로그램과 프로세스</a></li>
+                <li><a href="#thread">실행 단위인 스레드</a></li>
+                <li><a href="#state">프로세스 상태와 대기</a></li>
+                <li><a href="#control-block">PCB와 TCB</a></li>
+                <li><a href="#scheduling">CPU 스케줄링</a></li>
+                <li><a href="#context-switch">문맥 교환의 비용</a></li>
+                <li><a href="#ipc">프로세스 간 통신</a></li>
+                <li><a href="#game">게임 클라이언트에서의 적용</a></li>
+                <li><a href="#summary">정리</a></li>
+                <li><a href="#references">참고 자료</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="overview" aria-labelledby="overview-title">
+                <h2 id="overview-title">실행 흐름 한눈에 보기</h2>
+                <p>프로그램은 디스크에 저장된 명령과 데이터의 묶음입니다. 사용자가 프로그램을 실행하면 운영체제는 주소 공간과 자원을 준비해 프로세스를 만들고, 프로세스 안의 스레드를 실행 가능한 상태로 둡니다. 스케줄러가 그중 하나를 고르면 CPU가 해당 스레드의 레지스터와 프로그램 카운터를 복원하고 명령어를 실행합니다.</p>
+                <pre><code>실행 파일
+  → 프로세스 생성: 가상 주소 공간과 OS 자원 준비
+  → 스레드 준비: PC, 레지스터, 스택과 실행 상태 생성
+  → Ready Queue에서 대기
+  → Scheduler가 실행 대상 선택
+  → CPU가 명령어 실행
+  → I/O 대기·시간 할당량 만료·종료
+  → 필요하면 Context Switch</code></pre>
+                <div class="post-callout"><p>CPU가 직접 실행하는 흐름은 스레드입니다. 프로세스는 그 실행에 필요한 주소 공간과 자원을 담는 경계라고 이해하면 뒤의 개념이 자연스럽게 연결됩니다.</p></div>
+              </section>
+
+              <section id="process" aria-labelledby="process-title">
+                <h2 id="process-title">프로그램과 프로세스</h2>
+                <p><strong>프로그램</strong>은 실행 전의 정적인 파일이고, <strong>프로세스</strong>는 운영체제가 실행을 위해 관리하는 프로그램의 인스턴스입니다. 같은 실행 파일을 두 번 실행하면 코드 내용은 같더라도 서로 다른 프로세스와 주소 공간을 가질 수 있습니다.</p>
+                <pre><code>가상 주소 공간
+높은 주소  ┌─────────────┐
+           │ Stack       │  함수 호출, 지역 변수
+           │      ↓      │
+           │             │
+           │      ↑      │
+           │ Heap        │  동적 할당
+           ├─────────────┤
+           │ Data / BSS  │  전역·정적 데이터
+낮은 주소  │ Code        │  실행 명령
+           └─────────────┘</code></pre>
+                <p>운영체제는 프로세스에 가상 주소 공간뿐 아니라 열린 파일, 보안 자격 증명, 신호 처리 정보 같은 자원을 연결합니다. 프로세스마다 주소 공간이 격리되므로 한 프로세스의 일반 포인터로 다른 프로세스의 메모리를 직접 읽을 수 없습니다. 이 경계는 오류와 권한을 격리하지만 데이터를 주고받을 때는 IPC가 필요합니다.</p>
+                <p>그림의 영역은 개념적인 구분입니다. 실제 배치, 공유 라이브러리, 메모리 매핑과 주소 증가 방향은 운영체제·ABI·실행 형식에 따라 달라질 수 있습니다.</p>
+              </section>
+
+              <section id="thread" aria-labelledby="thread-title">
+                <h2 id="thread-title">실행 단위인 스레드</h2>
+                <p><strong>스레드</strong>는 프로세스 안의 실행 흐름입니다. 같은 프로세스의 스레드들은 코드, 전역 데이터, 힙과 열린 파일 같은 자원을 공유합니다. 반면 각 스레드는 자신의 스택, 프로그램 카운터, 레지스터 값과 스케줄링 상태를 가집니다.</p>
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th scope="col">구분</th><th scope="col">프로세스 안에서 공유</th><th scope="col">스레드마다 독립</th></tr></thead>
+                    <tbody>
+                      <tr><th scope="row">메모리</th><td>코드, 데이터, 힙, 메모리 매핑</td><td>스택과 스레드 지역 저장소</td></tr>
+                      <tr><th scope="row">실행 상태</th><td>프로세스 수준 설정</td><td>PC, 레지스터, 상태와 우선순위</td></tr>
+                      <tr><th scope="row">자원</th><td>열린 파일 등 프로세스 자원</td><td>스레드 ID와 스케줄링 정보</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>공유 메모리는 스레드 사이의 데이터 전달을 빠르게 만들지만, 동시에 같은 데이터를 수정하면 데이터 레이스가 생길 수 있습니다. 따라서 빠른 통신만 보고 스레드를 선택할 수는 없습니다. 상태 소유권, 동기화와 실패가 미치는 범위를 함께 설계해야 합니다.</p>
+              </section>
+
+              <section id="state" aria-labelledby="state-title">
+                <h2 id="state-title">프로세스 상태와 대기</h2>
+                <p>실행 중인 모든 스레드가 항상 CPU를 사용하는 것은 아닙니다. 설명을 단순화하면 실행 주체는 다음 상태 사이를 이동합니다. 운영체제마다 상태 이름과 세부 단계는 다르지만 핵심 흐름은 같습니다.</p>
+                <pre><code>           admit
+New ─────────────→ Ready ──dispatch──→ Running ──exit──→ Terminated
+                     ↑                    │
+                     │ preempt            │ I/O 요청·이벤트 대기
+                     └────────────────────┤
+                                          ↓
+                                      Waiting
+                                          │ I/O 완료·이벤트 발생
+                                          └────────────→ Ready</code></pre>
+                <ul>
+                  <li><strong>Ready</strong>: 실행할 준비가 되었지만 CPU를 기다립니다.</li>
+                  <li><strong>Running</strong>: 현재 CPU 코어에서 명령어를 실행합니다.</li>
+                  <li><strong>Waiting 또는 Blocked</strong>: 파일 읽기, 네트워크 수신, 락이나 이벤트처럼 어떤 조건이 충족되기를 기다립니다.</li>
+                </ul>
+                <p>I/O를 기다리는 스레드를 계속 CPU에서 실행하는 것은 낭비입니다. 운영체제는 이 스레드를 대기 상태로 옮기고 다른 준비된 스레드에 CPU를 줍니다. I/O 완료 인터럽트나 동기화 사건이 발생하면 다시 Ready 상태로 돌아갑니다.</p>
+              </section>
+
+              <section id="control-block" aria-labelledby="control-block-title">
+                <h2 id="control-block-title">PCB와 TCB: 중단된 실행을 기억하는 정보</h2>
+                <p><strong>PCB(Process Control Block)</strong>는 운영체제가 프로세스를 관리하기 위해 유지하는 커널 자료구조를 가리키는 일반적인 이름입니다. 프로세스 ID, 상태, 주소 공간과 메모리 관리 정보, 열린 파일, 보안 정보와 스케줄링 관련 정보 등이 연결됩니다.</p>
+                <p>스레드별 실행 문맥은 흔히 <strong>TCB(Thread Control Block)</strong>라고 설명합니다. 여기에는 스레드 ID, PC와 레지스터 같은 CPU 문맥, 스택 정보, 상태와 스케줄링 속성이 포함될 수 있습니다. 실제 커널 구현은 PCB와 TCB를 반드시 별도 구조체로 나누지는 않습니다. 예를 들어 Linux는 프로세스와 스레드를 모두 task로 다루며 여러 커널 구조를 연결해 관리합니다.</p>
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th scope="col">관리 범위</th><th scope="col">대표 정보</th><th scope="col">목적</th></tr></thead>
+                    <tbody>
+                      <tr><th scope="row">프로세스 수준</th><td>PID, 주소 공간, 파일, 권한, 프로세스 상태</td><td>자원과 격리 경계 관리</td></tr>
+                      <tr><th scope="row">스레드 수준</th><td>PC, 레지스터, 스택, 우선순위, 실행 상태</td><td>중단된 실행 흐름 재개</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>“PCB에 모든 레지스터가 항상 저장되어 있다”기보다, 실행을 멈추는 경로에서 필요한 문맥을 커널 스택과 관련 구조에 저장하고 다시 스케줄될 때 복원한다고 이해하는 편이 정확합니다. 저장 범위와 방식은 CPU 아키텍처와 운영체제 구현에 따라 달라집니다.</p>
+              </section>
+
+              <section id="scheduling" aria-labelledby="scheduling-title">
+                <h2 id="scheduling-title">CPU 스케줄링: 다음에는 누가 실행될까</h2>
+                <p>실행 가능한 스레드가 CPU 코어보다 많으면 모두가 물리적으로 동시에 실행될 수 없습니다. <strong>스케줄러</strong>는 Ready 상태의 작업 가운데 다음 실행 대상을 고릅니다. 목표는 환경에 따라 처리량, 평균 대기 시간, 응답성, 공정성, 마감 시간 보장처럼 달라집니다.</p>
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th scope="col">방식</th><th scope="col">핵심 아이디어</th><th scope="col">주요 특성</th></tr></thead>
+                    <tbody>
+                      <tr><th scope="row">FCFS</th><td>먼저 도착한 작업부터 실행</td><td>단순하지만 긴 작업 뒤에 짧은 작업이 기다릴 수 있습니다.</td></tr>
+                      <tr><th scope="row">SJF</th><td>예상 실행 시간이 짧은 작업부터 실행</td><td>평균 대기 시간을 줄일 수 있지만 실행 시간 예측이 필요합니다.</td></tr>
+                      <tr><th scope="row">Round Robin</th><td>각 작업에 시간 할당량을 주고 순환</td><td>응답성이 좋지만 할당량이 너무 짧으면 전환 비용이 커집니다.</td></tr>
+                      <tr><th scope="row">Priority</th><td>우선순위가 높은 작업을 먼저 실행</td><td>낮은 우선순위의 기아를 막는 정책이 필요할 수 있습니다.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>이 알고리즘들은 원리를 이해하기 위한 모델입니다. 범용 운영체제의 실제 스케줄러는 우선순위, 공정성, CPU 친화도, 실시간 정책, 멀티코어 부하 분산 등을 함께 고려합니다. 또한 프로세스보다 스레드가 실질적인 스케줄링 단위인 시스템이 많습니다.</p>
+                <h3>선점은 왜 필요한가</h3>
+                <p><strong>선점형 스케줄링</strong>에서는 시간 할당량 만료나 더 높은 우선순위 작업의 준비 같은 이유로 운영체제가 현재 실행을 멈출 수 있습니다. 한 작업이 CPU를 오래 독점하지 못하게 해 상호작용 프로그램의 응답성을 지킵니다. 반대로 협력형 방식은 실행 중인 작업이 자발적으로 CPU를 양보해야 하므로 잘못된 작업 하나가 전체 응답성을 해칠 수 있습니다.</p>
+              </section>
+
+              <section id="context-switch" aria-labelledby="context-switch-title">
+                <h2 id="context-switch-title">문맥 교환과 보이지 않는 비용</h2>
+                <p><strong>문맥 교환(Context Switch)</strong>은 CPU가 실행할 스레드나 프로세스를 바꾸는 과정입니다. 현재 실행 상태를 저장하고 다음 대상의 상태를 복원한 뒤, 그 대상이 중단되었던 지점부터 실행을 계속합니다.</p>
+                <ol>
+                  <li>인터럽트, 시스템 호출, 대기 또는 선점으로 커널이 제어권을 얻습니다.</li>
+                  <li>현재 실행의 PC, 스택 포인터와 필요한 레지스터 상태를 저장합니다.</li>
+                  <li>스케줄러가 다음 실행 대상을 선택합니다.</li>
+                  <li>주소 공간과 커널의 현재 작업 정보를 필요에 따라 전환합니다.</li>
+                  <li>다음 대상의 문맥을 복원하고 사용자 코드로 돌아갑니다.</li>
+                </ol>
+                <p>문맥 교환은 애플리케이션의 실제 문제를 직접 처리하지 않으므로 오버헤드입니다. 직접 비용에는 커널 진입, 레지스터 저장·복원과 스케줄러 실행이 있습니다. 간접 비용으로는 새 작업의 코드와 데이터가 캐시에 없어 생기는 cache miss, 분기 예측기 상태 변화, 주소 공간 전환에 따른 TLB 영향이 있습니다.</p>
+                <div class="post-callout"><p>프로세스 전환이 항상 스레드 전환보다 일정한 값만큼 비싼 것은 아닙니다. 다른 주소 공간으로 바뀌면 메모리 관리 문맥의 영향이 추가될 수 있지만, PCID/ASID, TLB 관리 방식, 캐시 공유와 스케줄링 위치에 따라 실제 비용은 크게 달라집니다. 성능 판단에는 측정이 필요합니다.</p></div>
+                <p>인터럽트와 문맥 교환도 같은 말이 아닙니다. 인터럽트 처리 후 원래 스레드로 복귀할 수 있고, 시스템 호출도 다른 스레드를 선택하지 않으면 스케줄링 문맥 교환은 일어나지 않습니다.</p>
+              </section>
+
+              <section id="ipc" aria-labelledby="ipc-title">
+                <h2 id="ipc-title">IPC: 격리된 프로세스가 협력하는 방법</h2>
+                <p>서로 다른 프로세스는 기본적으로 주소 공간이 분리되어 있으므로 운영체제가 제공하는 <strong>IPC(Inter-Process Communication)</strong>를 사용합니다. 선택 기준은 같은 컴퓨터인지, 데이터 양과 지연 요구가 어떤지, 메시지 경계가 필요한지, 실패를 얼마나 격리해야 하는지입니다.</p>
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th scope="col">방식</th><th scope="col">특징</th><th scope="col">주의점</th></tr></thead>
+                    <tbody>
+                      <tr><th scope="row">Pipe / Named Pipe</th><td>바이트 스트림으로 단순하게 연결</td><td>방향, 수명과 메시지 경계를 설계해야 합니다.</td></tr>
+                      <tr><th scope="row">Message Queue</th><td>메시지 단위 교환과 비동기 처리</td><td>크기 제한, 복사와 큐 포화 정책이 필요합니다.</td></tr>
+                      <tr><th scope="row">Shared Memory</th><td>큰 데이터를 낮은 복사 비용으로 공유</td><td>동기화, 수명과 메모리 가시성을 직접 관리해야 합니다.</td></tr>
+                      <tr><th scope="row">Socket</th><td>로컬 및 네트워크 통신에 사용 가능</td><td>직렬화, 부분 송수신, 연결 실패를 처리해야 합니다.</td></tr>
+                      <tr><th scope="row">Signal / Event</th><td>사건이나 상태 변화를 알림</td><td>복잡한 데이터 전달보다 알림에 적합합니다.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>Shared Memory는 데이터를 매번 커널 버퍼로 복사하지 않을 수 있어 빠르지만, 그 자체로 안전한 통신을 보장하지는 않습니다. 어느 프로세스가 언제 쓰는지 정하기 위한 mutex, semaphore, atomic 연산이나 명시적인 소유권 프로토콜이 필요합니다.</p>
+              </section>
+
+              <section id="game" aria-labelledby="game-title">
+                <h2 id="game-title">게임 클라이언트에서의 적용</h2>
+                <p>게임 클라이언트에는 게임 로직, 렌더링 준비, 오디오, 네트워크, 파일 I/O와 작업 시스템이 함께 존재할 수 있습니다. 이 이름들이 반드시 각각 하나의 전용 스레드를 뜻하는 것은 아닙니다. 엔진과 플랫폼에 따라 전용 스레드, 워커 풀, 비동기 I/O와 GPU 큐의 조합으로 구현됩니다.</p>
+                <pre><code>Main / Game Thread
+  ├─ 입력과 게임 상태 갱신
+  ├─ 작은 작업들을 Worker Pool에 제출
+  ├─ Network·I/O 완료 결과 소비
+  └─ 렌더링에 필요한 상태 전달
+
+Worker Threads
+  └─ 서로 독립적인 애니메이션·물리·가시성 계산 등</code></pre>
+                <h3>스레드를 늘리기 전에 확인할 것</h3>
+                <ol>
+                  <li><strong>작업이 병렬 가능한가?</strong> 앞 작업의 결과를 기다린다면 스레드 수보다 의존성 구조를 먼저 개선해야 합니다.</li>
+                  <li><strong>작업 크기가 충분한가?</strong> 매우 작은 작업은 큐잉, 깨우기와 문맥 교환 비용이 계산 시간보다 커질 수 있습니다.</li>
+                  <li><strong>공유 쓰기가 많은가?</strong> 락 경합과 코어 사이의 캐시 라인 이동이 병렬 이득을 상쇄할 수 있습니다.</li>
+                  <li><strong>코어보다 실행 가능한 스레드가 과도하게 많은가?</strong> oversubscription은 문맥 교환과 캐시 손실을 늘립니다.</li>
+                  <li><strong>평균이 아닌 프레임 시간이 안정적인가?</strong> 평균 FPS뿐 아니라 긴 프레임과 작업 타임라인을 프로파일링해야 합니다.</li>
+                </ol>
+                <p>예를 들어 파일이나 네트워크 입력을 기다리는 작업은 CPU를 계속 점유하지 않고 대기 상태가 되는 편이 낫습니다. 반면 프레임마다 수행하는 순수 계산은 코어 수와 작업 크기에 맞춰 워커 풀에 분배할 수 있습니다. 핵심은 “스레드를 많이 만든다”가 아니라 CPU를 쓸 수 있는 작업과 기다려야 하는 작업을 분리하고, 공유 상태를 최소화하는 것입니다.</p>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>프로그램은 저장된 파일이고, 프로세스는 주소 공간과 운영체제 자원을 가진 실행 인스턴스입니다.</li>
+                  <li>CPU가 실행하는 흐름은 스레드이며, 각 스레드는 PC, 레지스터와 스택을 따로 가집니다.</li>
+                  <li>PCB와 TCB는 프로세스 자원과 스레드 실행 상태를 관리한다는 개념적 구분입니다.</li>
+                  <li>스케줄러는 Ready 상태의 작업 가운데 CPU를 받을 대상을 선택합니다.</li>
+                  <li>문맥 교환에는 직접적인 저장·복원 비용과 캐시·TLB에 미치는 간접 비용이 있습니다.</li>
+                  <li>프로세스 격리는 안정성을 높이지만 데이터 교환에는 IPC와 명시적인 통신 규약이 필요합니다.</li>
+                  <li>게임에서는 스레드 수보다 작업 의존성, 공유 상태, 락 경합과 최악 프레임 시간을 먼저 봐야 합니다.</li>
+                </ul>
+                <div class="post-callout"><p>한 문장으로 정리하면, <strong>프로세스는 실행 자원의 경계이고, 스레드는 CPU가 스케줄링하는 실행 흐름이며, 운영체제는 저장된 문맥을 교체해 제한된 코어 위에서 여러 작업을 진행시킵니다.</strong></p></div>
+              </section>
+
+              <section id="references" aria-labelledby="references-title">
+                <h2 id="references-title">참고 자료</h2>
+                <ul>
+                  <li><a href="https://docs.kernel.org/scheduler/sched-design-CFS.html">Linux Kernel Documentation: CFS Scheduler</a></li>
+                  <li><a href="https://man7.org/linux/man-pages/man7/sched.7.html">Linux manual page: sched(7)</a></li>
+                  <li><a href="https://man7.org/linux/man-pages/man7/signal.7.html">Linux manual page: signal(7)</a></li>
+                  <li><a href="https://learn.microsoft.com/en-us/windows/win32/procthread/processes-and-threads">Microsoft Learn: Processes and Threads</a></li>
+                </ul>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js" data-repo="StaySober01/StaySober01.github.io" data-repo-id="R_kgDOTQFJZA" data-category="Comments" data-category-id="DIC_kwDOTQFJZM4DA3to" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="preferred_color_scheme" data-lang="ko" data-loading="lazy" crossorigin="anonymous" async></script>
+              </section>
+              <nav class="post-nav" aria-label="글 이동"><a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a></nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+    <footer class="site-footer"><div class="container footer-inner"><p>© 2026 StaySober01</p><a href="https://github.com/StaySober01">GitHub</a></div></footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
