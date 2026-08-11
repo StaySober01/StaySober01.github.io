@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Unreal Engine Live Coding의 바이너리 패치와 Object Reinstancing, Unity의 스크립트 컴파일·어셈블리 재로드·Domain Reload를 비교하고 안전한 사용 기준을 정리한 TIL입니다.">
+    <title>Unreal Live Coding과 Unity 코드 리로드 비교 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">TIL</p>
+            <h1>Unreal Live Coding과 Unity 코드 리로드 비교</h1>
+            <p class="post-meta">TIL · 게임 엔진 · 2026.08.11</p>
+            <p class="post-lead">
+              두 엔진 모두 에디터를 종료하지 않고 코드 변경을 반영할 수 있지만 내부 과정은 다릅니다.
+              Unreal은 컴파일한 네이티브 코드를 실행 중인 프로세스에 패치하고, Unity는 관리 코드 어셈블리를 다시 불러옵니다.
+              이 차이를 알면 어떤 변경까지 빠르게 시험하고 언제 에디터를 재시작해야 하는지 판단할 수 있습니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#same-goal">같은 목적, 다른 방식</a></li>
+                <li><a href="#unreal">Unreal Live Coding</a></li>
+                <li><a href="#reinstancing">Object Reinstancing의 역할과 한계</a></li>
+                <li><a href="#unity">Unity의 스크립트 리로드</a></li>
+                <li><a href="#domain-reload">Domain Reload는 언제 일어나는가</a></li>
+                <li><a href="#comparison">두 엔진 비교</a></li>
+                <li><a href="#workflow">안전한 작업 기준</a></li>
+                <li><a href="#summary">정리</a></li>
+                <li><a href="#references">참고 자료</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="same-goal" aria-labelledby="same-goal-title">
+                <h2 id="same-goal-title">같은 목적, 다른 방식</h2>
+                <p>
+                  코드 한 줄을 확인할 때마다 큰 프로젝트를 다시 빌드하고 에디터를 재시작하면 반복 시간이 길어집니다.
+                  Unreal Engine과 Unity는 이 시간을 줄이기 위해 실행 중인 에디터에 변경 코드를 반영하지만,
+                  각각 네이티브 C++와 관리형 C# 환경을 사용하므로 갱신 단위와 상태 복원 방식이 다릅니다.
+                </p>
+                <div class="post-callout">
+                  <p>핵심은 “적용되었는가”뿐 아니라 “기존 객체와 런타임 상태가 새 코드와 일치하는가”까지 확인하는 것입니다.</p>
+                </div>
+              </section>
+
+              <section id="unreal" aria-labelledby="unreal-title">
+                <h2 id="unreal-title">Unreal Live Coding: 네이티브 코드 패치</h2>
+                <p>
+                  Live Coding은 에디터 프로세스를 유지한 채 변경된 C++ 소스를 컴파일하고, 생성된 패치 모듈을 불러와
+                  기존 함수가 새 구현을 실행하도록 메모리의 코드를 갱신합니다. 기본 단축키는 <code>Ctrl + Alt + F11</code>입니다.
+                </p>
+                <pre><code>C++ 코드 수정
+→ 변경된 소스와 모듈 컴파일
+→ 패치 바이너리 로드
+→ 기존 코드가 새 함수 구현을 사용하도록 갱신</code></pre>
+                <p>
+                  함수 본문의 계산식, 조건문, 로그처럼 객체의 메모리 배치를 바꾸지 않는 수정은 Live Coding으로 확인하기 좋습니다.
+                  반면 멤버 변수를 추가하거나 제거하는 변경, 상속 관계 변경, <code>UCLASS</code>·<code>UPROPERTY</code>·<code>UFUNCTION</code>
+                  선언 변경은 클래스 메타데이터나 객체 레이아웃에도 영향을 줍니다.
+                </p>
+              </section>
+
+              <section id="reinstancing" aria-labelledby="reinstancing-title">
+                <h2 id="reinstancing-title">Object Reinstancing의 역할과 한계</h2>
+                <p>
+                  Unreal은 구조가 바뀐 리플렉션 대상 타입을 처리하기 위해 Object Reinstancing을 사용할 수 있습니다.
+                  새 클래스 정보로 객체를 만들고 기존 객체의 속성과 참조를 가능한 범위에서 옮겨, 실행 중인 인스턴스를 새 구조에 맞춥니다.
+                  하지만 모든 네이티브 상태와 외부 포인터를 완벽히 이전한다는 뜻은 아닙니다.
+                </p>
+                <ul>
+                  <li>이미 생성된 객체는 생성자를 다시 실행하지 않으므로 생성자 로직의 변경을 그대로 확인하기 어렵습니다.</li>
+                  <li>C++ 생성자에서 바꾼 기본값은 기존 인스턴스나 이미 저장된 Blueprint 자산에 즉시 반영되지 않을 수 있습니다.</li>
+                  <li>리인스턴싱 전 객체의 주소를 일반 포인터나 엔진 밖의 자료구조가 보관하면 오래된 참조가 남을 수 있습니다.</li>
+                  <li>모듈 의존성, <code>Build.cs</code>, 플러그인 구성처럼 빌드 구조를 바꾸는 수정은 Live Coding의 범위를 벗어날 수 있습니다.</li>
+                </ul>
+                <p>
+                  따라서 “컴파일 성공”은 변경이 안전하게 적용됐다는 보장이 아닙니다. 헤더와 타입 구조를 크게 바꿨거나 결과가 이상하면
+                  에디터를 종료한 뒤 IDE 또는 빌드 도구에서 다시 빌드하고 재실행하는 편이 안전합니다.
+                </p>
+              </section>
+
+              <section id="unity" aria-labelledby="unity-title">
+                <h2 id="unity-title">Unity의 스크립트 리로드: 어셈블리 교체</h2>
+                <p>
+                  Unity는 C# 스크립트가 바뀌면 영향을 받는 스크립트 어셈블리를 다시 컴파일합니다.
+                  그동안 직렬화 가능한 상태를 보존하고 기존 관리 코드 환경을 내린 뒤 새 어셈블리를 로드하며,
+                  새 타입 정보에 맞춰 상태를 복원합니다.
+                </p>
+                <pre><code>C# 스크립트 수정
+→ 영향받는 스크립트 어셈블리 컴파일
+→ 직렬화 가능한 상태 보존
+→ 관리 코드 환경과 어셈블리 재로드
+→ 새 타입 정보로 상태 복원</code></pre>
+                <p>
+                  네이티브 함수 주소를 패치하는 Unreal과 달리 관리 런타임에서 타입과 어셈블리를 다시 구성하므로,
+                  필드 추가 같은 변경도 비교적 자연스럽게 처리됩니다. 다만 직렬화할 수 없는 런타임 데이터,
+                  이벤트 구독, 스레드처럼 재로드 경계를 넘기 어려운 상태까지 자동 보존되는 것은 아닙니다.
+                </p>
+                <p>
+                  재로드 전후 정리가 필요하면 <code>OnDisable</code>, <code>OnEnable</code>과 관련 에디터 콜백의 호출 시점을 확인해야 합니다.
+                  특히 에디터 도구나 전역 상태에 의존하는 코드는 재로드 후 중복 등록과 초기화 누락을 점검해야 합니다.
+                </p>
+              </section>
+
+              <section id="domain-reload" aria-labelledby="domain-reload-title">
+                <h2 id="domain-reload-title">Domain Reload는 언제 일어나는가</h2>
+                <p>
+                  코드 변경으로 일어나는 스크립트 어셈블리 재로드와 Play Mode 진입 시 초기화는 관련되어 있지만 같은 사건은 아닙니다.
+                  Unity는 기본 설정에서 Play Mode에 들어갈 때 Domain Reload를 수행해 정적 필드와 등록된 정적 이벤트 핸들러를 초기 상태로 되돌립니다.
+                </p>
+                <pre><code>public static int Score = 0;</code></pre>
+                <p>
+                  이전 실행에서 <code>Score</code>가 100이 되었더라도 Domain Reload 후에는 필드 초기화 코드가 다시 실행되어 0에서 시작합니다.
+                  Enter Play Mode Options에서 Domain Reload를 끄면 진입 시간은 줄어들지만 정적 상태가 이전 실행에서 남습니다.
+                  이 경우 개발자가 정적 필드와 이벤트 구독을 명시적으로 초기화하지 않으면 테스트 결과가 실행 순서에 따라 달라질 수 있습니다.
+                </p>
+              </section>
+
+              <section id="comparison" aria-labelledby="comparison-title">
+                <h2 id="comparison-title">두 엔진 비교</h2>
+                <div class="table-wrap" role="region" aria-label="Unreal과 Unity 코드 갱신 방식 비교" tabindex="0">
+                  <table>
+                    <thead>
+                      <tr><th scope="col">구분</th><th scope="col">Unreal Engine</th><th scope="col">Unity</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row">주요 코드</th><td>네이티브 C++</td><td>관리형 C#</td></tr>
+                      <tr><th scope="row">갱신 방식</th><td>컴파일된 코드를 실행 중 프로세스에 패치</td><td>스크립트 어셈블리를 컴파일하고 재로드</td></tr>
+                      <tr><th scope="row">기존 객체 대응</th><td>필요 시 Object Reinstancing</td><td>직렬화 가능한 상태 보존과 복원</td></tr>
+                      <tr><th scope="row">구조 변경</th><td>객체 레이아웃과 메타데이터 변경에 주의</td><td>상대적으로 유연하지만 모든 런타임 상태를 보존하지는 않음</td></tr>
+                      <tr><th scope="row">별도 초기화 경계</th><td>에디터 재시작과 전체 빌드</td><td>Play Mode의 Domain Reload 설정</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section id="workflow" aria-labelledby="workflow-title">
+                <h2 id="workflow-title">안전한 작업 기준</h2>
+                <ul class="principle-list" aria-label="코드 변경별 권장 작업 방식">
+                  <li><h3>함수 내부만 수정</h3><p>Unreal은 Live Coding, Unity는 일반 스크립트 재컴파일로 빠르게 검증합니다.</p></li>
+                  <li><h3>필드와 리플렉션 선언 변경</h3><p>새 인스턴스뿐 아니라 기존 레벨 객체, Prefab 또는 Blueprint의 저장값과 참조까지 확인합니다.</p></li>
+                  <li><h3>생성·초기화 코드 변경</h3><p>이미 살아 있는 객체만 보지 말고 Play Mode나 에디터를 다시 시작해 처음부터 실행되는 경로를 검사합니다.</p></li>
+                  <li><h3>상속·모듈·빌드 구성 변경</h3><p>Unreal은 에디터 종료 후 전체 빌드를 우선하고, Unity도 어셈블리 정의와 패키지 의존성까지 다시 검증합니다.</p></li>
+                  <li><h3>결과가 의심스러움</h3><p>핫 리로드 상태를 디버깅하기보다 깨끗한 재시작에서 같은 현상이 재현되는지 먼저 확인합니다.</p></li>
+                </ul>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <p>
+                  Unreal Live Coding은 새 네이티브 코드를 실행 중인 프로세스에 패치하고, Unity는 C# 어셈블리와 관리 코드 환경을 다시 구성합니다.
+                  그래서 Unreal에서는 객체의 메모리 구조가 바뀌는 수정에 특히 주의해야 하고,
+                  Unity에서는 직렬화되지 않는 런타임 상태와 Domain Reload 설정을 의식해야 합니다.
+                </p>
+                <p>
+                  앞으로는 작은 함수 구현 변경에는 빠른 갱신 기능을 사용하되, 타입 구조·생성 과정·빌드 구성이 바뀌면 깨끗한 재시작과 전체 빌드로 검증하겠습니다.
+                  빠른 반복 도구는 재시작을 없애는 기능이 아니라, 안전하게 생략할 수 있는 재시작을 구분해 주는 도구에 가깝습니다.
+                </p>
+              </section>
+
+              <section id="references" aria-labelledby="references-title">
+                <h2 id="references-title">참고 자료</h2>
+                <ul>
+                  <li><a class="text-link" href="https://dev.epicgames.com/documentation/ko-kr/unreal-engine/using-live-coding-to-recompile-unreal-engine-applications-at-runtime">Epic Games · 라이브 코딩을 사용하여 런타임 중에 언리얼 엔진 애플리케이션 리컴파일하기</a></li>
+                  <li><a class="text-link" href="https://docs.unity3d.com/Manual/DomainReloading.html">Unity Manual · Domain Reloading</a></li>
+                  <li><a class="text-link" href="https://docs.unity3d.com/Manual/script-serialization-how-unity-uses.html">Unity Manual · How Unity uses serialization</a></li>
+                </ul>
+              </section>
+
+              <section class="comments-section" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <script src="https://giscus.app/client.js"
+                        data-repo="StaySober01/StaySober01.github.io"
+                        data-repo-id="R_kgDOTQFJZA"
+                        data-category="Comments"
+                        data-category-id="DIC_kwDOTQFJZM4DA3to"
+                        data-mapping="pathname"
+                        data-strict="0"
+                        data-reactions-enabled="1"
+                        data-emit-metadata="0"
+                        data-input-position="bottom"
+                        data-theme="preferred_color_scheme"
+                        data-lang="ko"
+                        data-loading="lazy"
+                        crossorigin="anonymous"
+                        async>
+                </script>
+              </section>
+
+              <nav class="post-nav" aria-label="글 이동">
+                <a class="text-link" href="index.html">TIL 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
