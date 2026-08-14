@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Unreal Engine의 UBT·UHT·리플렉션·가비지 컬렉션이 연결되는 흐름과 Class Default Object(CDO)의 생성, 기본값 전파, 생성자 작성 시 주의점을 정리한 TIL입니다.">
+    <title>Unreal 리플렉션과 GC, CDO의 동작 흐름 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">TIL</p>
+            <h1>Unreal 리플렉션과 GC, CDO의 동작 흐름</h1>
+            <p class="post-meta">TIL · 게임 엔진 · 2026.08.13</p>
+            <p class="post-lead">
+              <code>UCLASS</code>, <code>UPROPERTY</code> 같은 매크로는 단순한 에디터 표시 옵션이 아닙니다.
+              UHT가 이 선언을 메타데이터와 생성 코드로 바꾸면 엔진은 타입을 조회하고, 객체 참조를 추적하며,
+              클래스마다 하나인 CDO를 기준으로 새 인스턴스의 기본 상태를 구성할 수 있습니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#reflection">표준 C++에 리플렉션을 더하는 이유</a></li>
+                <li><a href="#specifiers">매크로와 프로퍼티 지정자</a></li>
+                <li><a href="#build-flow">UBT와 UHT의 빌드 흐름</a></li>
+                <li><a href="#gc">리플렉션과 GC의 연결</a></li>
+                <li><a href="#cdo">CDO는 무엇인가</a></li>
+                <li><a href="#cdo-lifecycle">CDO 생성과 인스턴스 초기화</a></li>
+                <li><a href="#cdo-cautions">CDO와 생성자 주의점</a></li>
+                <li><a href="#summary">정리</a></li>
+                <li><a href="#references">참고 자료</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="reflection" aria-labelledby="reflection-title">
+                <h2 id="reflection-title">표준 C++에 리플렉션을 더하는 이유</h2>
+                <p>
+                  리플렉션은 실행 중인 프로그램이 자신의 타입과 멤버 구조를 조회하고 다룰 수 있는 기능입니다.
+                  표준 C++의 타입 정보만으로는 에디터가 임의의 클래스를 읽어 디테일 패널을 만들거나,
+                  Blueprint 노드와 C++ 함수를 연결하고, 저장할 프로퍼티와 객체 참조를 일관되게 찾기 어렵습니다.
+                </p>
+                <p>
+                  Unreal은 <code>UCLASS</code>, <code>UFUNCTION</code>, <code>UPROPERTY</code>로 엔진에 공개할 대상을 표시하고
+                  빌드 과정에서 필요한 코드를 생성합니다. 이렇게 등록된 정보는 에디터·Blueprint뿐 아니라 직렬화,
+                  네트워크 복제, 기본값 관리, GC의 참조 추적에도 쓰입니다.
+                </p>
+                <div class="post-callout">
+                  <p>매크로가 기능을 직접 수행하는 것이 아니라, UHT가 매크로를 단서로 엔진이 사용할 타입 정보를 생성한다는 점이 핵심입니다.</p>
+                </div>
+              </section>
+
+              <section id="specifiers" aria-labelledby="specifiers-title">
+                <h2 id="specifiers-title">매크로와 프로퍼티 지정자</h2>
+                <pre><code>UCLASS()
+class MYGAME_API AMyCharacter : public ACharacter
+{
+    GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+    int32 Health = 100;
+};</code></pre>
+                <p>
+                  <code>UCLASS</code>는 이 타입을 UObject 시스템에 등록하고, <code>GENERATED_BODY</code>는 UHT가 생성한 선언이
+                  클래스에 들어갈 위치를 제공합니다. <code>UPROPERTY</code> 뒤의 지정자는 해당 필드를 어디에서 편집하고
+                  어떤 시스템에 노출할지 설명합니다.
+                </p>
+                <div class="table-wrap" role="region" aria-label="주요 프로퍼티 지정자 비교" tabindex="0">
+                  <table>
+                    <thead>
+                      <tr><th scope="col">지정자</th><th scope="col">의미</th><th scope="col">주의점</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row"><code>EditAnywhere</code></th><td>클래스 기본값과 인스턴스에서 편집 허용</td><td>Blueprint 읽기·쓰기를 자동 허용하지는 않음</td></tr>
+                      <tr><th scope="row"><code>VisibleAnywhere</code></th><td>디테일 패널에 표시하되 직접 편집은 금지</td><td>포인터 자체의 교체를 막는 용도로 자주 사용</td></tr>
+                      <tr><th scope="row"><code>BlueprintReadOnly</code></th><td>Blueprint에서 값을 읽도록 허용</td><td>에디터의 디테일 패널 편집 여부와는 별개</td></tr>
+                      <tr><th scope="row"><code>BlueprintReadWrite</code></th><td>Blueprint에서 읽고 쓰도록 허용</td><td>외부 변경을 허용해도 되는 상태인지 검토 필요</td></tr>
+                      <tr><th scope="row"><code>Transient</code></th><td>저장하지 않을 런타임 임시 값으로 표시</td><td>로드 후 다시 계산하거나 초기화해야 함</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  <code>Category</code>, <code>DisplayName</code>, <code>ClampMin</code> 같은 메타데이터는 주로 편집 경험을 보조합니다.
+                  반면 편집 가능 여부나 직렬화처럼 동작 자체를 결정하는 지정자도 있으므로 둘을 같은 단순 주석으로 보면 안 됩니다.
+                </p>
+              </section>
+
+              <section id="build-flow" aria-labelledby="build-flow-title">
+                <h2 id="build-flow-title">UBT와 UHT의 빌드 흐름</h2>
+                <p>
+                  Unreal Build Tool(UBT)은 타깃, 모듈, 플랫폼, <code>Build.cs</code>, 플러그인 의존성을 읽어 전체 빌드 환경을 구성합니다.
+                  리플렉션 대상 헤더가 있으면 UBT가 Unreal Header Tool(UHT)을 호출합니다.
+                </p>
+                <pre><code>UBT가 타깃과 모듈 구성 분석
+→ UHT가 Unreal 매크로가 있는 헤더 파싱
+→ 리플렉션 등록용 코드와 *.generated.h 생성
+→ C++ 컴파일러가 원본 코드와 생성 코드를 함께 컴파일·링크
+→ 엔진이 모듈을 로드하고 UClass 등록
+→ 각 UClass의 CDO 생성</code></pre>
+                <p>
+                  UHT는 완전한 범용 C++ 컴파일러가 아니라 UObject 시스템을 위한 파서이자 코드 생성 도구입니다.
+                  따라서 <code>*.generated.h</code>는 헤더의 마지막 include로 두고, 매크로 문법과 지원되는 타입 규칙을 지켜야 합니다.
+                  UHT가 성공한 뒤에야 일반 C++ 컴파일 단계가 이어집니다.
+                </p>
+              </section>
+
+              <section id="gc" aria-labelledby="gc-title">
+                <h2 id="gc-title">리플렉션과 GC의 연결</h2>
+                <p>
+                  표준 C++ 객체는 보통 <code>new</code>/<code>delete</code> 또는 스마트 포인터의 소유권으로 수명을 관리합니다.
+                  반면 <code>UObject</code>는 엔진의 가비지 컬렉터가 관리합니다. GC는 루트 집합에서 출발해 알려진 참조를 따라가며
+                  도달 가능한 객체를 표시하고, 도달하지 못한 객체를 이후 정리하는 Mark &amp; Sweep 계열 방식입니다.
+                </p>
+                <pre><code>UPROPERTY()
+TObjectPtr&lt;UMyItem&gt; EquippedItem;</code></pre>
+                <p>
+                  엔진이 참조를 추적하려면 그 참조를 알아야 합니다. 멤버로 보관하는 강한 UObject 참조는 일반적으로
+                  <code>UPROPERTY</code>가 붙은 <code>TObjectPtr</code>로 선언합니다. 이렇게 해야 대상이 사용 중인 동안 GC에서 보호되고,
+                  직렬화와 참조 갱신 같은 UObject 시스템의 지원도 받을 수 있습니다.
+                </p>
+                <ul>
+                  <li><code>TWeakObjectPtr</code>는 객체를 살려 두지 않으며 사용 전에 유효성을 확인할 때 적합합니다.</li>
+                  <li><code>TSoftObjectPtr</code>는 에셋 경로를 보관해 필요할 때 로드하는 참조에 적합합니다.</li>
+                  <li>리플렉션에 등록되지 않은 일반 raw pointer는 대상을 살려 두지 않고 자동으로 안전한 참조가 되지도 않습니다.</li>
+                  <li>표준 스마트 포인터는 일반 C++ 객체에 사용하며, GC가 관리하는 UObject에 그대로 적용하지 않습니다.</li>
+                </ul>
+                <p>
+                  즉 <code>UPROPERTY</code>는 “GC 매크로” 하나로만 이해하기보다, 엔진이 필드의 존재와 성격을 알게 하는 관문으로 보는 편이 정확합니다.
+                  정수 같은 값 타입에 붙은 <code>UPROPERTY</code>가 GC 대상을 만드는 것은 아니며, UObject 참조 필드일 때 참조 그래프 구성에 관여합니다.
+                </p>
+              </section>
+
+              <section id="cdo" aria-labelledby="cdo-title">
+                <h2 id="cdo-title">CDO는 무엇인가</h2>
+                <p>
+                  Class Default Object(CDO)는 각 <code>UClass</code>가 하나씩 보유하는 기본 템플릿 객체입니다.
+                  C++ 클래스 관점의 타입 설명이 <code>UClass</code>라면, 그 클래스 인스턴스가 처음 가져야 할 프로퍼티 값의 기준은 CDO에 담깁니다.
+                </p>
+                <div class="table-wrap" role="region" aria-label="UClass CDO 인스턴스 비교" tabindex="0">
+                  <table>
+                    <thead>
+                      <tr><th scope="col">구분</th><th scope="col">역할</th><th scope="col">예시</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row"><code>UClass</code></th><td>타입, 프로퍼티, 함수 등의 리플렉션 정보</td><td>설계도와 항목 정의</td></tr>
+                      <tr><th scope="row">CDO</th><td>클래스당 하나인 기본 프로퍼티 값의 기준 객체</td><td>기본 레시피</td></tr>
+                      <tr><th scope="row">인스턴스</th><td>월드나 게임에서 실제로 사용하는 개별 객체</td><td>레시피로 만든 각각의 결과물</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  CDO도 실제 UObject이지만 일반 게임플레이 인스턴스는 아닙니다. 클래스 생성자가 CDO를 구성하고,
+                  이후 생성되는 객체는 CDO 또는 지정된 archetype의 프로퍼티 값을 바탕으로 초기화됩니다.
+                  그래서 생성자에 쓴 기본값이 에디터의 Class Defaults에 나타나고 새 인스턴스의 출발점이 됩니다.
+                </p>
+                <pre><code>const AMyCharacter* Defaults = AMyCharacter::StaticClass()
+    -&gt;GetDefaultObject&lt;AMyCharacter&gt;();
+
+const int32 DefaultHealth = Defaults-&gt;Health;</code></pre>
+                <p>
+                  클래스의 기본 설정을 읽기만 하면 될 때 CDO를 조회하면 임시 인스턴스를 생성할 필요가 없습니다.
+                  다만 CDO는 여러 생성의 기준이므로 일반적으로 읽기 전용 템플릿처럼 취급해야 합니다.
+                </p>
+              </section>
+
+              <section id="cdo-lifecycle" aria-labelledby="cdo-lifecycle-title">
+                <h2 id="cdo-lifecycle-title">CDO 생성과 인스턴스 초기화</h2>
+                <ol>
+                  <li><strong>클래스 등록:</strong> 모듈이 로드되면 생성 코드가 네이티브 타입의 리플렉션 정보를 등록해 <code>UClass</code>를 구성합니다.</li>
+                  <li><strong>CDO 생성:</strong> 클래스의 CDO가 필요해지면 엔진은 해당 클래스 생성자를 실행해 기본 객체를 만듭니다. 부모 클래스의 기본 상태도 초기화 기준에 포함됩니다.</li>
+                  <li><strong>기본값 보관:</strong> C++ 생성자와 프로퍼티 초기값, Blueprint 클래스라면 부모 기본값 위에 저장된 Blueprint 기본값이 반영됩니다.</li>
+                  <li><strong>인스턴스 생성:</strong> <code>NewObject</code>나 Actor 스폰 과정에서 CDO/archetype의 프로퍼티가 새 객체에 복사되어 출발 상태가 만들어집니다.</li>
+                  <li><strong>개별 상태 변경:</strong> 이후 생성 훅과 게임플레이가 실행되면서 각 인스턴스의 값이 서로 달라집니다.</li>
+                </ol>
+                <p>
+                  “생성자가 실행된 뒤 CDO를 복사한다”처럼 단순화하면 혼동하기 쉽습니다. UObject 생성 파이프라인에서는
+                  생성자가 객체의 네이티브 초기화와 기본 서브오브젝트 구성을 담당하고, 엔진의 초기화 과정이 archetype/CDO 기반 프로퍼티 값을 적용합니다.
+                  중요한 결론은 <strong>생성자와 CDO가 기본 상태를 정의하고, BeginPlay 같은 단계가 개별 런타임 동작을 담당한다</strong>는 것입니다.
+                </p>
+                <p>
+                  Blueprint 클래스에도 별도의 <code>UBlueprintGeneratedClass</code>와 CDO가 있습니다. Blueprint에서 바꾼 Class Defaults는
+                  C++ 부모 CDO를 그대로 수정하는 것이 아니라, 파생 Blueprint 클래스 CDO의 기본값을 구성합니다.
+                  따라서 같은 C++ 클래스를 부모로 둔 여러 Blueprint가 서로 다른 기본 체력과 컴포넌트 설정을 가질 수 있습니다.
+                </p>
+              </section>
+
+              <section id="cdo-cautions" aria-labelledby="cdo-cautions-title">
+                <h2 id="cdo-cautions-title">CDO와 생성자 주의점</h2>
+                <ul class="principle-list" aria-label="CDO와 UObject 생성자 작성 원칙">
+                  <li><h3>월드 상태에 의존하지 않기</h3><p>CDO는 게임 월드가 준비되기 전, 에디터의 클래스 로드 과정에서도 만들어질 수 있습니다. 생성자에서 월드의 Actor 검색이나 게임 상태 접근을 피합니다.</p></li>
+                  <li><h3>기본 서브오브젝트는 생성자에서 만들기</h3><p><code>CreateDefaultSubobject</code>로 만드는 컴포넌트는 클래스의 기본 구조에 속합니다. 상황에 따라 생기는 런타임 객체는 별도의 초기화 단계에서 생성합니다.</p></li>
+                  <li><h3>게임플레이 부작용 만들지 않기</h3><p>생성자는 CDO와 모든 인스턴스에 관여할 수 있습니다. 이벤트 발송, 저장 데이터 변경, 타이머 시작은 <code>BeginPlay</code> 등 적절한 생명주기 함수로 옮깁니다.</p></li>
+                  <li><h3>CDO를 런타임 저장소로 쓰지 않기</h3><p>CDO 값을 변경하면 이후 인스턴스의 기준과 에디터 동작에 영향을 줄 수 있습니다. 전역 게임 상태는 GameInstance나 전용 시스템이 소유해야 합니다.</p></li>
+                  <li><h3>기존 인스턴스의 오버라이드 구분하기</h3><p>기본값이 바뀌어도 에디터나 Blueprint에서 명시적으로 덮어쓴 값은 유지될 수 있습니다. 새 CDO 값과 저장된 인스턴스 값을 따로 확인합니다.</p></li>
+                </ul>
+                <div class="post-callout">
+                  <p>생성자에서는 “이 클래스의 기본 형태”를 만들고, 런타임 초기화에서는 “이 인스턴스가 지금 무엇을 할지”를 결정합니다.</p>
+                </div>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <p>
+                  UBT는 프로젝트의 빌드 구성을 만들고 UHT를 호출하며, UHT는 Unreal 매크로를 해석해 UObject 시스템용 코드를 생성합니다.
+                  이 리플렉션 정보 덕분에 에디터와 Blueprint가 타입을 다루고, 직렬화와 GC가 프로퍼티와 참조를 추적할 수 있습니다.
+                </p>
+                <p>
+                  클래스가 등록되면 <code>UClass</code>마다 CDO가 만들어집니다. CDO는 새 객체가 출발할 기본 상태이며,
+                  Blueprint 파생 클래스도 자기 CDO를 가집니다. 따라서 생성자는 월드 로직을 실행하는 장소가 아니라
+                  기본값과 기본 서브오브젝트를 정의하는 장소로 사용해야 합니다.
+                </p>
+              </section>
+
+              <section id="references" aria-labelledby="references-title">
+                <h2 id="references-title">참고 자료</h2>
+                <ul>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/unreal-header-tool-for-unreal-engine">Epic Games, Unreal Header Tool</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/unreal-engine/reflection-system-in-unreal-engine">Epic Games, Reflection System</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/unreal-engine/objects-in-unreal-engine">Epic Games, Objects</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/unreal-object-handling-in-unreal-engine">Epic Games, Unreal Object Handling</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/object-pointers-in-unreal-engine">Epic Games, Object Pointers</a></li>
+                </ul>
+              </section>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
