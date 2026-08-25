@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Unreal Engine 5.6으로 이상현상 판별 게임 Exit 3를 시작하며, 반복 공간의 상태를 개별 복구하는 대신 Gameplay Level을 동적으로 교체하도록 설계한 과정을 정리한 TIL입니다.">
+    <title>Unreal 반복 공간을 레벨 스트리밍으로 초기화하기 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">TIL</p>
+            <h1>Unreal 반복 공간을 레벨 스트리밍으로 초기화하기</h1>
+            <p class="post-meta">TIL · 게임 엔진 · 2026.08.25</p>
+            <p class="post-lead">
+              이상현상 판별 게임 <strong>Exit 3</strong>는 같은 지하철 출구가 반복되지만 매 라운드 오브젝트 상태가 달라집니다.
+              상태를 하나씩 되돌리는 대신, 유지할 공간과 교체할 공간을 나누고 Gameplay Level 자체를 다시 생성하는 구조를 선택했습니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#project-rule">Exit 3의 핵심 규칙</a></li>
+                <li><a href="#reset-problem">반복 공간의 초기화 문제</a></li>
+                <li><a href="#level-separation">Persistent와 Gameplay Level 분리</a></li>
+                <li><a href="#gameplay-flow">Stage 판정과 이상현상 적용</a></li>
+                <li><a href="#build-issues">첫 빌드에서 만난 문제</a></li>
+                <li><a href="#milestone">첫 번째 마일스톤</a></li>
+                <li><a href="#summary">정리</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="project-rule" aria-labelledby="project-rule-title">
+                <h2 id="project-rule-title">Exit 3의 핵심 규칙</h2>
+                <p>
+                  Exit 3는 반복되는 지하철 출구를 관찰하고 이상현상의 유무를 판단하는 1인칭 게임입니다.
+                  플레이어는 별도 선택 버튼 대신 이동 방향으로 답을 제출합니다. 정상이라고 판단하면 앞으로 진행하고,
+                  이상현상을 발견했다면 왔던 길로 돌아갑니다.
+                </p>
+                <pre><code>Stage 1: 한눈에 보이는 큰 변화
+Stage 2: 주변을 살펴야 찾을 수 있는 변화
+Stage 3: 정상 공간을 기억해야 찾을 수 있는 변화</code></pre>
+                <p>
+                  라운드가 시작되면 정상과 이상 상태를 같은 확률로 정합니다. 이상 상태에서는 현재 Stage에 등록된 후보 다섯 개 중
+                  하나만 무작위로 적용합니다. 정답이면 다음 Stage로, 오답이면 Stage 1로 돌아가며 Stage 3을 통과하면 게임을 완료합니다.
+                </p>
+                <div class="post-callout">
+                  <p>규칙은 짧지만, 오답 후 처음부터 다시 시작해도 이전 라운드의 변화가 남지 않아야 한다는 초기화 조건이 생깁니다.</p>
+                </div>
+              </section>
+
+              <section id="reset-problem" aria-labelledby="reset-problem-title">
+                <h2 id="reset-problem-title">반복 공간의 초기화 문제</h2>
+                <p>
+                  처음에는 모든 오브젝트의 정상 상태를 저장하고 라운드가 끝날 때 복구하는 방식을 생각했습니다.
+                  하지만 이상현상은 크기, 위치, 회전, 머티리얼, 가시성, 조명처럼 서로 다른 값을 바꿉니다.
+                  대상이 늘어날수록 각 클래스에 저장과 복구 코드를 추가해야 하고, 한 항목만 빠져도 다음 라운드에 흔적이 남습니다.
+                </p>
+                <div class="table-wrap" role="region" aria-label="반복 공간 초기화 방식 비교" tabindex="0">
+                  <table>
+                    <thead>
+                      <tr><th scope="col">방식</th><th scope="col">장점</th><th scope="col">위험</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row">오브젝트별 상태 복구</th><td>현재 레벨을 유지하며 필요한 값만 되돌릴 수 있음</td><td>속성이 늘수록 초기화 누락과 클래스별 복구 코드가 증가함</td></tr>
+                      <tr><th scope="row">Gameplay Level 재생성</th><td>배치된 기본 상태에서 라운드를 다시 시작할 수 있음</td><td>플레이어와 관리자처럼 유지할 대상을 별도 레벨로 분리해야 함</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  이 프로젝트에서는 라운드마다 공간 전체를 깨끗한 상태로 되돌리는 것이 더 중요했습니다.
+                  그래서 개별 상태를 빠짐없이 복구하는 책임을 늘리는 대신, 변경 가능한 공간을 제거하고 다시 불러오는 방식을 선택했습니다.
+                </p>
+              </section>
+
+              <section id="level-separation" aria-labelledby="level-separation-title">
+                <h2 id="level-separation-title">Persistent와 Gameplay Level 분리</h2>
+                <p>레벨을 다시 생성해도 게임 진행 정보가 사라지지 않도록 공간과 책임을 둘로 나눴습니다.</p>
+                <ul>
+                  <li><strong>Persistent Level</strong>: 연결 통로, 플레이어, 판정 트리거, Stage 관리자, HUD, 레벨 스트리밍 관리자를 유지합니다.</li>
+                  <li><strong>Gameplay Level</strong>: 관찰 공간, 조명, 포스터, 안내판, CCTV, 소품과 이상현상 대상을 배치합니다.</li>
+                </ul>
+                <pre><code>연결 통로
+→ Gameplay Level 진입
+→ 이상현상 관찰
+→ 앞 또는 뒤로 이동해 판단
+→ 판정 후 연결 통로로 복귀
+→ 기존 Gameplay Level 제거
+→ 새 Gameplay Level 생성
+→ 다음 라운드 시작</code></pre>
+                <p>
+                  C++에서는 <code>ULevelStreamingDynamic</code>을 사용하는 관리 클래스를 준비했습니다.
+                  이렇게 하면 이상현상이 바꾼 Transform, Material, Visibility를 각각 기억하지 않아도 새로 로드된 레벨의 기본 배치 상태에서 시작할 수 있습니다.
+                </p>
+              </section>
+
+              <section id="gameplay-flow" aria-labelledby="gameplay-flow-title">
+                <h2 id="gameplay-flow-title">Stage 판정과 이상현상 적용</h2>
+                <p>
+                  현재 Stage, 라운드 상태, 플레이어 판단은 각각 enum으로 분리했습니다. 판정은 플레이어의 판단과 라운드 상태가 같은지만 비교합니다.
+                </p>
+                <pre><code>const bool bCorrect =
+    (Decision == EExit3PlayerDecision::Normal &amp;&amp;
+     State-&gt;GetRoundState() == EExit3RoundState::Normal) ||
+    (Decision == EExit3PlayerDecision::Anomaly &amp;&amp;
+     State-&gt;GetRoundState() == EExit3RoundState::Anomaly);</code></pre>
+                <p>
+                  이상현상 Actor는 공통 기반 클래스에서 ID, 등장 Stage, 적용 여부와 <code>ApplyAnomaly</code>,
+                  <code>ResetAnomaly</code> 인터페이스를 제공합니다. 핵심 선택과 진행은 C++이 담당하고,
+                  Mesh나 Material처럼 에디터 연결이 편한 부분은 <code>BlueprintNativeEvent</code>로 확장할 수 있게 했습니다.
+                </p>
+                <p>
+                  Stage Manager는 현재 Gameplay Level의 이상현상 Actor를 찾고, 현재 Stage와 일치하는 후보만 모아 하나를 적용합니다.
+                  레벨 교체가 정상 동작하면 <code>ResetAnomaly</code>는 진행의 필수 조건이 아니라 개별 테스트와 재사용을 위한 안전장치가 됩니다.
+                </p>
+              </section>
+
+              <section id="build-issues" aria-labelledby="build-issues-title">
+                <h2 id="build-issues-title">첫 빌드에서 만난 문제</h2>
+                <h3>UENUM에는 0 기본값을 준비한다</h3>
+                <p>
+                  Stage 값을 1부터 정의하자 Unreal Header Tool이 <code>EExit3Stage does not have a 0 entry</code>를 보고했습니다.
+                  enum은 0으로 기본 초기화될 수 있으므로 숨겨진 <code>None = 0 UMETA(Hidden)</code> 항목을 추가해 해결했습니다.
+                </p>
+                <h3>Editor가 사용 중인 DLL은 링크할 수 없다</h3>
+                <p>
+                  소스 컴파일은 통과했지만 마지막 링크에서 <code>LNK1104</code>가 발생했습니다.
+                  Unreal Editor가 기존 <code>UnrealEditor-Exit3.dll</code>을 사용 중이어서 파일을 교체할 수 없었던 것이 원인이었습니다.
+                  Editor를 종료한 뒤 전체 빌드를 다시 실행하는 방식으로 확인해야 합니다.
+                </p>
+                <h3>새 C++ 파일 뒤에는 프로젝트 파일을 갱신한다</h3>
+                <p>
+                  직접 만든 클래스가 Solution Explorer에 보이지 않았던 이유는 파일 생성 시점의 목록이 기존 프로젝트 파일에 남아 있었기 때문입니다.
+                  <code>UnrealVersionSelector</code>로 프로젝트 파일을 다시 생성하고 Visual Studio에서 프로젝트를 Reload해 새 파일을 반영했습니다.
+                </p>
+              </section>
+
+              <section id="milestone" aria-labelledby="milestone-title">
+                <h2 id="milestone-title">첫 번째 마일스톤</h2>
+                <p>
+                  현재는 C++ 폴더 구조와 GameMode, GameState, Character, ChoiceTrigger, Stage Manager,
+                  Level Stream Manager, Anomaly Actor, HUD Widget의 기반을 만든 단계입니다. 다음 작업에서는 Enhanced Input과
+                  캐릭터 Blueprint를 연결하고 Persistent Level과 Gameplay Level을 블록아웃합니다.
+                </p>
+                <p>첫 마일스톤은 그래픽 완성도가 아니라 다음 루프가 여러 번 안정적으로 반복되는지 확인하는 것입니다.</p>
+                <pre><code>연결 통로
+→ 관찰 공간
+→ 앞 또는 뒤 선택
+→ Stage 판정
+→ 관찰 공간 재생성</code></pre>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <p>
+                  반복 공간에서 여러 오브젝트가 서로 다른 상태를 바꾼다면, 개별 복구 코드는 기능이 늘수록 누락 가능성도 함께 커집니다.
+                  Exit 3에서는 계속 유지할 진행 요소를 Persistent Level에 두고, 변할 수 있는 관찰 공간을 Gameplay Level로 분리했습니다.
+                </p>
+                <p>
+                  이번 설계의 핵심은 레벨 스트리밍 자체보다 초기화 책임의 위치를 정한 것입니다.
+                  먼저 게임의 판정과 반복 루프를 검증한 뒤 이상현상과 연출을 추가하면, 콘텐츠를 늘리는 동안에도 라운드의 시작 상태를 일관되게 유지할 수 있습니다.
+                </p>
+              </section>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
