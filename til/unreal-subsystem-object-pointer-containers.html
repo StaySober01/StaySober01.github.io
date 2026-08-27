@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Unreal Engine Subsystem의 수명 선택, TObjectPtr와 UObject GC의 관계, TArray·TSet·TMap의 선택 기준을 Quest 시스템 예제로 연결해 설명합니다.">
+    <title>Unreal Subsystem과 UObject 참조, 컨테이너 설계 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">Technical Blog</p>
+            <h1>Unreal Subsystem과 UObject 참조, 컨테이너 설계</h1>
+            <p class="post-meta">기술 블로그 · 게임 엔진 · 2026.08.27</p>
+            <p class="post-lead">
+              게임 시스템을 설계할 때는 “어디서든 접근할 수 있는가”보다 누가 소유하고 언제 사라지는지를 먼저 정해야 합니다.
+              Unreal의 Subsystem으로 서비스의 수명을 정하고, <code>TObjectPtr</code>로 UObject 참조를 표현하며,
+              데이터의 관계에 맞춰 <code>TArray</code>, <code>TSet</code>, <code>TMap</code>을 선택하는 과정을 하나의 Quest 시스템으로 연결합니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#problem">Manager가 커질 때 생기는 문제</a></li>
+                <li><a href="#lifetime">Subsystem은 수명 단위의 서비스</a></li>
+                <li><a href="#implementation">Subsystem 구현과 의존성</a></li>
+                <li><a href="#tick">Tick은 정말 필요할 때만</a></li>
+                <li><a href="#object-pointers">TObjectPtr와 GC의 관계</a></li>
+                <li><a href="#pointer-choice">강한·약한·소프트 참조 선택</a></li>
+                <li><a href="#containers">TArray·TSet·TMap 선택 기준</a></li>
+                <li><a href="#custom-key">사용자 정의 Key의 조건</a></li>
+                <li><a href="#quest-design">Quest 시스템으로 연결하기</a></li>
+                <li><a href="#summary">정리</a></li>
+                <li><a href="#references">참고 자료</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="problem" aria-labelledby="problem-title">
+                <h2 id="problem-title">Manager가 커질 때 생기는 문제</h2>
+                <p>
+                  프로젝트가 커지면 QuestManager, SaveManager, AudioManager처럼 여러 기능을 조율하는 객체가 생깁니다.
+                  이를 모두 <code>UGameInstance</code>의 멤버로 넣으면 접근은 쉽지만, 생성 순서·초기화·정리 책임과 의존성이 한 클래스에 쌓입니다.
+                  결국 GameInstance가 서로 무관한 시스템을 모두 아는 거대한 서비스 저장소가 되기 쉽습니다.
+                </p>
+                <pre><code>UCLASS()
+class UMyGameInstance : public UGameInstance
+{
+    GENERATED_BODY()
+
+    UPROPERTY()
+    TObjectPtr&lt;UQuestManager&gt; QuestManager;
+
+    UPROPERTY()
+    TObjectPtr&lt;USaveManager&gt; SaveManager;
+};</code></pre>
+                <p>
+                  Subsystem은 이 문제를 “전역 Singleton 하나”가 아니라 <strong>특정 소유 객체의 수명에 귀속된 서비스</strong>로 풉니다.
+                  엔진이 적절한 시점에 인스턴스를 만들고 <code>Initialize</code>와 <code>Deinitialize</code>를 호출하므로,
+                  많은 경우 별도의 Singleton이나 수동 <code>NewObject</code>가 필요하지 않습니다.
+                </p>
+              </section>
+
+              <section id="lifetime" aria-labelledby="lifetime-title">
+                <h2 id="lifetime-title">Subsystem은 수명 단위의 서비스</h2>
+                <div class="table-wrap" role="region" aria-label="Unreal Subsystem 수명과 용도 비교" tabindex="0">
+                  <table>
+                    <thead>
+                      <tr><th scope="col">타입</th><th scope="col">인스턴스 범위</th><th scope="col">적합한 예</th><th scope="col">주의점</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row"><code>UEngineSubsystem</code></th><td>Engine 인스턴스당 하나</td><td>플랫폼 서비스, 전역 분석 기능</td><td>개별 게임 세션이나 World 상태를 넣지 않음</td></tr>
+                      <tr><th scope="row"><code>UGameInstanceSubsystem</code></th><td>GameInstance당 하나</td><td>저장, 계정, 업적, 세션 퀘스트</td><td>맵 전환 뒤에도 남아야 하는 상태인지 확인</td></tr>
+                      <tr><th scope="row"><code>UWorldSubsystem</code></th><td>World마다 하나</td><td>스폰, 월드 이벤트, 낮과 밤</td><td>PIE와 서버 환경에는 World가 여러 개일 수 있음</td></tr>
+                      <tr><th scope="row"><code>ULocalPlayerSubsystem</code></th><td>LocalPlayer마다 하나</td><td>플레이어별 UI, 입력 설정</td><td>로컬 멀티플레이에서는 여러 인스턴스가 존재</td></tr>
+                      <tr><th scope="row"><code>UEditorSubsystem</code></th><td>Editor 수명 동안 하나</td><td>에디터 도구와 자동화</td><td>런타임 게임 시스템과 분리</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="post-callout">
+                  <p>Subsystem 선택 질문은 “전역에서 쓸까?”가 아니라 “이 상태는 Engine, GameInstance, World, LocalPlayer 중 누구와 함께 태어나고 사라져야 하는가?”입니다.</p>
+                </div>
+                <p>
+                  따라서 Subsystem은 전역 Singleton과 정확히 같지 않습니다. <code>UWorldSubsystem</code>은 World마다,
+                  <code>ULocalPlayerSubsystem</code>은 로컬 플레이어마다 생깁니다. PIE에서 여러 World를 실행하거나 로컬 플레이어가 둘이라면
+                  같은 클래스의 Subsystem 인스턴스도 여러 개입니다.
+                </p>
+              </section>
+
+              <section id="implementation" aria-labelledby="implementation-title">
+                <h2 id="implementation-title">Subsystem 구현과 의존성</h2>
+                <pre><code>UCLASS()
+class MYGAME_API UQuestSubsystem : public UGameInstanceSubsystem
+{
+    GENERATED_BODY()
+
+public:
+    virtual void Initialize(FSubsystemCollectionBase&amp; Collection) override;
+    virtual void Deinitialize() override;
+
+    void StartQuest(int32 QuestId);
+};
+
+void UQuestSubsystem::Initialize(FSubsystemCollectionBase&amp; Collection)
+{
+    Super::Initialize(Collection);
+    UE_LOG(LogTemp, Log, TEXT("Quest subsystem initialized"));
+}
+
+void UQuestSubsystem::Deinitialize()
+{
+    UE_LOG(LogTemp, Log, TEXT("Quest subsystem deinitialized"));
+    Super::Deinitialize();
+}</code></pre>
+                <p>사용하는 쪽은 소유 객체를 통해 Subsystem을 조회합니다. 조회 결과가 없을 수 있는 문맥이라면 null 검사도 포함합니다.</p>
+                <pre><code>if (UGameInstance* GameInstance = GetGameInstance())
+{
+    if (UQuestSubsystem* QuestSystem =
+            GameInstance-&gt;GetSubsystem&lt;UQuestSubsystem&gt;())
+    {
+        QuestSystem-&gt;StartQuest(1001);
+    }
+}</code></pre>
+                <p>
+                  다른 Subsystem이 먼저 준비되어야 한다면 초기화 순서를 우연에 맡기지 않습니다.
+                  <code>Initialize</code>에서 <code>Collection.InitializeDependency&lt;UOtherSubsystem&gt;()</code>를 사용하면 의존성을 명시할 수 있습니다.
+                  반대로 단순한 편의 함수 묶음, 수명이 짧은 Actor 로직, 데이터 자체를 Subsystem으로 만들면 책임과 수명 경계가 다시 흐려집니다.
+                </p>
+              </section>
+
+              <section id="tick" aria-labelledby="tick-title">
+                <h2 id="tick-title">Tick은 정말 필요할 때만</h2>
+                <p>
+                  World와 함께 살면서 프레임 업데이트가 필요한 시스템은 <code>UTickableWorldSubsystem</code>을 사용할 수 있습니다.
+                  그러나 “Subsystem이니 계속 검사한다”는 설계는 프레임마다 불필요한 순회와 숨은 실행 비용을 만듭니다.
+                  퀘스트 진행은 적 처치, 아이템 획득 같은 이벤트를 구독하고 상태가 바뀔 때만 갱신하는 편이 대개 명확합니다.
+                </p>
+                <ul>
+                  <li>연속적인 공간 계산이나 시간 기반 시뮬레이션처럼 매 프레임 값이 변하면 Tick을 검토합니다.</li>
+                  <li>게임플레이 사건에만 반응하면 델리게이트, 메시지 또는 명시적인 함수 호출을 우선합니다.</li>
+                  <li>Tick을 쓴다면 활성 조건, 처리 빈도, 순회하는 데이터 양을 함께 측정합니다.</li>
+                </ul>
+              </section>
+
+              <section id="object-pointers" aria-labelledby="object-pointers-title">
+                <h2 id="object-pointers-title">TObjectPtr와 GC의 관계</h2>
+                <pre><code>UPROPERTY()
+TObjectPtr&lt;UQuest&gt; ActiveQuest;</code></pre>
+                <p>
+                  <code>TObjectPtr&lt;T&gt;</code>는 <code>std::shared_ptr</code>처럼 참조 횟수로 객체를 소유하는 스마트 포인터가 아닙니다.
+                  GC가 관리하는 UObject를 가리키도록 만든 Unreal의 객체 포인터 래퍼이며, 에디터 빌드의 접근 추적과 향후 포인터 표현 변경을 위한 기반도 제공합니다.
+                  일반 포인터처럼 <code>-&gt;</code>와 bool 검사를 사용할 수 있고, raw pointer가 필요하면 <code>Get()</code>으로 꺼냅니다.
+                </p>
+                <p>
+                  중요한 구분은 <strong><code>TObjectPtr</code>라는 타입만 쓴다고 대상이 자동으로 살아남는 것은 아니라는 점</strong>입니다.
+                  UObject/USTRUCT의 장기 보관 멤버라면 보통 <code>UPROPERTY</code>로 리플렉션 시스템에 등록해야 GC가 강한 참조로 추적합니다.
+                  커스텀 비리플렉션 참조를 보관해야 한다면 <code>AddReferencedObjects</code> 같은 별도 참조 보고 방식이 필요할 수 있습니다.
+                </p>
+                <pre><code>// 장기 보관하는 멤버 참조
+UPROPERTY()
+TObjectPtr&lt;AEnemy&gt; TargetEnemy;
+
+// 함수 안에서 잠깐 사용하는 참조
+void Attack()
+{
+    AEnemy* Enemy = TargetEnemy.Get();
+    if (IsValid(Enemy))
+    {
+        Enemy-&gt;TakeDamage(/* ... */);
+    }
+}</code></pre>
+                <p>
+                  로컬 변수와 함수 인자처럼 GC 수집 구간을 넘어 보관하지 않는 참조는 raw pointer가 자연스럽습니다.
+                  다만 raw pointer는 소유권이나 유효성을 보장하지 않으므로, 객체가 제거될 수 있는 경계를 넘는다면 참조 종류를 다시 선택해야 합니다.
+                </p>
+              </section>
+
+              <section id="pointer-choice" aria-labelledby="pointer-choice-title">
+                <h2 id="pointer-choice-title">강한·약한·소프트 참조 선택</h2>
+                <div class="table-wrap" role="region" aria-label="Unreal UObject 포인터 종류 비교" tabindex="0">
+                  <table>
+                    <thead>
+                      <tr><th scope="col">타입</th><th scope="col">대상을 살려 두는가</th><th scope="col">주요 용도</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row"><code>TObjectPtr&lt;T&gt;</code></th><td><code>UPROPERTY</code> 등으로 추적되면 강한 참조</td><td>소유 객체가 장기간 보관하는 UObject 멤버</td></tr>
+                      <tr><th scope="row"><code>TWeakObjectPtr&lt;T&gt;</code></th><td>아니요</td><td>대상이 사라져도 되는 런타임 관찰 참조</td></tr>
+                      <tr><th scope="row"><code>TSoftObjectPtr&lt;T&gt;</code></th><td>로드 전에는 경로만 보관</td><td>필요할 때 비동기 또는 지연 로드할 에셋</td></tr>
+                      <tr><th scope="row"><code>TStrongObjectPtr&lt;T&gt;</code></th><td>예</td><td><code>UPROPERTY</code>를 둘 수 없는 범위에서 명시적으로 UObject 유지</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  캐릭터가 자신의 컴포넌트를 보관한다면 강한 프로퍼티 참조가 자연스럽습니다. 반면 현재 조준 중인 Enemy가 먼저 파괴될 수 있다면
+                  <code>TWeakObjectPtr</code>가 의도를 더 잘 드러냅니다. 대형 무기 Mesh를 사용하기 전까지 로드하고 싶지 않다면
+                  <code>TSoftObjectPtr</code>로 에셋 의존성과 메모리 상주 시점을 분리할 수 있습니다.
+                </p>
+              </section>
+
+              <section id="containers" aria-labelledby="containers-title">
+                <h2 id="containers-title">TArray·TSet·TMap 선택 기준</h2>
+                <div class="table-wrap" role="region" aria-label="Unreal 컨테이너 선택 기준" tabindex="0">
+                  <table>
+                    <thead>
+                      <tr><th scope="col">컨테이너</th><th scope="col">핵심 관계</th><th scope="col">게임 코드 예</th><th scope="col">유의점</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row"><code>TArray&lt;T&gt;</code></th><td>순서 있는 연속 배열</td><td>인벤토리 슬롯, 웨이포인트</td><td>중간 삽입·삭제 시 요소 이동 가능</td></tr>
+                      <tr><th scope="row"><code>TSet&lt;T&gt;</code></th><td>유일한 값의 집합</td><td>발견 지역, 해금 업적</td><td>반복 순서를 의미 있는 순서로 가정하지 않음</td></tr>
+                      <tr><th scope="row"><code>TMap&lt;K, V&gt;</code></th><td>유일한 Key와 Value의 대응</td><td>Item ID → ItemData</td><td><code>Find</code> 결과 포인터는 변경 후 무효화될 수 있음</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  <code>TArray</code>는 “몇 번째인가”가 의미 있을 때, <code>TSet</code>은 값의 유일성과 존재 여부가 핵심일 때,
+                  <code>TMap</code>은 Key로 데이터를 찾을 때 선택합니다. <code>TSet</code>과 <code>TMap</code>은 해시 기반이라 일반적인 탐색·추가·삭제가 평균적으로 상수 시간에 가깝지만,
+                  해시 충돌과 재할당이 있으므로 무조건 <code>O(1)</code>이라고 단정하거나 반복 순서에 의존해서는 안 됩니다.
+                </p>
+                <pre><code>TArray&lt;FItem&gt; Inventory;
+TSet&lt;FName&gt; UnlockedAchievements;
+TMap&lt;int32, FItemData&gt; ItemDatabase;
+
+if (const FItemData* Item = ItemDatabase.Find(1001))
+{
+    UE_LOG(LogTemp, Log, TEXT("Found item: %s"), *Item-&gt;DisplayName.ToString());
+}</code></pre>
+                <p>
+                  <code>TMap::Find</code>는 Value의 포인터를 반환하므로 null 검사가 필요합니다. 이 포인터를 오래 저장한 채 Map에 요소를 추가하거나 제거하면
+                  재할당으로 무효화될 수 있으므로, 조회한 범위 안에서 바로 사용하는 편이 안전합니다.
+                </p>
+              </section>
+
+              <section id="custom-key" aria-labelledby="custom-key-title">
+                <h2 id="custom-key-title">사용자 정의 Key의 조건</h2>
+                <p>
+                  사용자 정의 타입을 <code>TSet</code>의 요소나 <code>TMap</code>의 Key로 쓰려면 동등성 비교와 해시 함수가 필요합니다.
+                  <code>operator==</code>가 두 값을 같다고 판단한다면 <code>GetTypeHash</code>도 반드시 같은 해시를 반환해야 합니다.
+                </p>
+                <pre><code>USTRUCT()
+struct FItemKey
+{
+    GENERATED_BODY()
+
+    int32 ItemId = 0;
+    int32 Level = 0;
+
+    bool operator==(const FItemKey&amp; Other) const
+    {
+        return ItemId == Other.ItemId &amp;&amp; Level == Other.Level;
+    }
+};
+
+uint32 GetTypeHash(const FItemKey&amp; Key)
+{
+    return HashCombine(GetTypeHash(Key.ItemId), GetTypeHash(Key.Level));
+}</code></pre>
+                <p>
+                  비교에는 넣지 않은 필드를 해시에만 포함하거나, 실행 중 Key 값을 바꾸면 컨테이너가 올바른 버킷에서 항목을 찾지 못할 수 있습니다.
+                  Key는 컨테이너에 들어간 동안 사실상 불변 값으로 다루는 것이 좋습니다.
+                </p>
+              </section>
+
+              <section id="quest-design" aria-labelledby="quest-design-title">
+                <h2 id="quest-design-title">Quest 시스템으로 연결하기</h2>
+                <pre><code>UCLASS()
+class MYGAME_API UQuestSubsystem : public UGameInstanceSubsystem
+{
+    GENERATED_BODY()
+
+public:
+    UQuest* FindQuest(int32 QuestId) const;
+    bool IsCompleted(int32 QuestId) const;
+
+private:
+    UPROPERTY()
+    TMap&lt;int32, TObjectPtr&lt;UQuest&gt;&gt; Quests;
+
+    UPROPERTY()
+    TSet&lt;int32&gt; CompletedQuestIds;
+};
+
+UQuest* UQuestSubsystem::FindQuest(int32 QuestId) const
+{
+    if (const TObjectPtr&lt;UQuest&gt;* Quest = Quests.Find(QuestId))
+    {
+        return Quest-&gt;Get();
+    }
+
+    return nullptr;
+}
+
+bool UQuestSubsystem::IsCompleted(int32 QuestId) const
+{
+    return CompletedQuestIds.Contains(QuestId);
+}</code></pre>
+                <p>이 선언에는 각 도구의 역할이 분명하게 드러납니다.</p>
+                <ul class="principle-list" aria-label="Quest 시스템 구성 요소의 책임">
+                  <li><h3><code>UGameInstanceSubsystem</code></h3><p>맵이 바뀌어도 이어지는 게임 세션 단위의 Quest 서비스 수명을 정의합니다.</p></li>
+                  <li><h3><code>TMap&lt;int32, TObjectPtr&lt;UQuest&gt;&gt;</code></h3><p>Quest ID로 객체를 찾는 관계와, Subsystem이 보관하는 강한 UObject 참조를 표현합니다.</p></li>
+                  <li><h3><code>TSet&lt;int32&gt;</code></h3><p>완료 ID가 중복되지 않으며 존재 여부 확인이 중요하다는 규칙을 표현합니다.</p></li>
+                </ul>
+                <p>
+                  다만 퀘스트 정의가 변하지 않는 에셋 데이터라면 모든 정의를 런타임 UObject로 복제하기보다 <code>UDataAsset</code>이나 DataTable에 두고,
+                  Subsystem에는 진행 상태만 보관하는 설계도 검토할 수 있습니다. 또한 GameInstance 수명은 실행 중 맵 전환을 넘을 뿐,
+                  프로그램을 종료한 뒤까지 데이터를 보존하지 않습니다. 영구 진행도는 SaveGame 등 별도의 저장 계층이 필요합니다.
+                </p>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>Subsystem은 접근 편의를 위한 전역 객체가 아니라 Engine, GameInstance, World, LocalPlayer 같은 소유자의 수명에 붙는 서비스입니다.</li>
+                  <li><code>TObjectPtr</code>는 참조 카운팅 스마트 포인터가 아니며, 멤버 강한 참조는 보통 <code>UPROPERTY</code>와 함께 선언해 GC가 추적하게 합니다.</li>
+                  <li>대상을 살려 둘 필요가 없으면 <code>TWeakObjectPtr</code>, 에셋을 나중에 로드하려면 <code>TSoftObjectPtr</code>를 검토합니다.</li>
+                  <li><code>TArray</code>는 순서, <code>TSet</code>은 유일성, <code>TMap</code>은 Key와 Value의 관계를 코드에 표현합니다.</li>
+                  <li>좋은 설계는 타입을 많이 쓰는 것이 아니라, 시스템 수명·참조 강도·데이터 관계를 실제 요구사항과 일치시키는 데서 시작합니다.</li>
+                </ul>
+              </section>
+
+              <section id="references" aria-labelledby="references-title">
+                <h2 id="references-title">참고 자료</h2>
+                <ul>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/programming-subsystems-in-unreal-engine">Epic Games, Programming Subsystems</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/Engine/Subsystems/UWorldSubsystem">Epic Games, UWorldSubsystem API</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/Engine/Subsystems/UTickableWorldSubsystem">Epic Games, UTickableWorldSubsystem API</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/object-pointers-in-unreal-engine">Epic Games, Object Pointers</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/array-containers-in-unreal-engine">Epic Games, TArray</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/set-containers-in-unreal-engine">Epic Games, TSet</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/map-containers-in-unreal-engine">Epic Games, TMap</a></li>
+                </ul>
+              </section>
+
+              <section class="post-comments" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <p>질문이나 보완할 내용이 있다면 GitHub 계정으로 의견을 남겨주세요.</p>
+                <script src="https://giscus.app/client.js" data-repo="StaySober01/StaySober01.github.io" data-repo-id="R_kgDOTQFJZA" data-category="Comments" data-category-id="DIC_kwDOTQFJZM4DA3to" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="preferred_color_scheme" data-lang="ko" data-loading="lazy" crossorigin="anonymous" async></script>
+              </section>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
