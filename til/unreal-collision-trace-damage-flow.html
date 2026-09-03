@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Unreal Engine의 Collision Channel과 Response, Single·Multi Trace의 차이, FHitResult에서 ApplyPointDamage와 TakeDamage로 이어지는 공격 판정 흐름을 정리한 TIL입니다.">
+    <title>Unreal Collision에서 Trace와 Damage까지 | StaySober01</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href="../index.html#top" aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="index.html">TIL &amp; Blog</a></li>
+            <li><a href="../index.html#about">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <article class="post">
+        <div class="container">
+          <header class="post-header">
+            <p class="eyebrow">TIL</p>
+            <h1>Unreal Collision에서 Trace와 Damage까지</h1>
+            <p class="post-meta">TIL · 게임 엔진 · 2026.09.03</p>
+            <p class="post-lead">
+              총알이 적에게 맞지 않을 때 Trace 함수만 고쳐서는 해결되지 않을 수 있습니다.
+              충돌 가능 여부를 정하는 Collision 설정부터 Trace가 <code>FHitResult</code>를 만드는 규칙,
+              명중 정보를 Damage 시스템으로 넘기는 과정까지 하나의 흐름으로 연결해 정리합니다.
+            </p>
+          </header>
+
+          <div class="post-layout">
+            <aside class="post-toc" aria-labelledby="toc-title">
+              <h2 id="toc-title">목차</h2>
+              <ol>
+                <li><a href="#collision-rules">Collision 규칙의 세 축</a></li>
+                <li><a href="#responses">Block·Overlap·Ignore</a></li>
+                <li><a href="#geometry">Simple과 Complex Collision</a></li>
+                <li><a href="#trace-choice">Trace 선택 기준</a></li>
+                <li><a href="#single-multi">Single과 Multi의 함정</a></li>
+                <li><a href="#trace-api">Kismet과 UWorld API</a></li>
+                <li><a href="#damage-flow">Trace에서 Damage로</a></li>
+                <li><a href="#damage-semantics">Damage의 책임과 데이터</a></li>
+                <li><a href="#design">변경하기 쉬운 구조</a></li>
+                <li><a href="#debugging">디버깅 체크리스트</a></li>
+                <li><a href="#summary">정리</a></li>
+                <li><a href="#references">참고 자료</a></li>
+              </ol>
+            </aside>
+
+            <div class="post-content">
+              <section id="collision-rules" aria-labelledby="collision-rules-title">
+                <h2 id="collision-rules-title">Collision 규칙의 세 축</h2>
+                <p>
+                  Unreal의 충돌 판정은 화면에 보이는 메시가 아니라 Primitive Component의 Collision Geometry와 설정을 사용합니다.
+                  설정을 읽을 때는 대상의 정체성, 검사의 목적, 재사용할 규칙 묶음을 구분하면 이해하기 쉽습니다.
+                </p>
+                <ul class="principle-list" aria-label="Collision 설정의 세 축">
+                  <li><h3>Object Type</h3><p>“나는 무엇인가?”를 나타냅니다. 벽은 <code>WorldStatic</code>, 움직이는 물체는 <code>WorldDynamic</code>, 캐릭터는 보통 <code>Pawn</code>으로 분류합니다.</p></li>
+                  <li><h3>Trace Channel</h3><p>“무슨 목적으로 검사하는가?”를 나타냅니다. 기본 채널인 <code>Visibility</code>, <code>Camera</code>와 프로젝트 전용 <code>Weapon</code>, <code>Interaction</code> 등을 사용할 수 있습니다.</p></li>
+                  <li><h3>Collision Preset</h3><p>Collision Enabled, Object Type, 채널별 Response를 이름 있는 설정으로 묶어 여러 컴포넌트에서 재사용합니다.</p></li>
+                </ul>
+                <div class="post-callout">
+                  <p>Object Type은 대상의 분류이고 Trace Channel은 질문의 종류입니다. 총기 판정을 <code>Visibility</code>에 얹기보다 전용 채널을 두면 시야 판정과 무기 판정을 독립적으로 바꿀 수 있습니다.</p>
+                </div>
+              </section>
+
+              <section id="responses" aria-labelledby="responses-title">
+                <h2 id="responses-title">Block·Overlap·Ignore와 이벤트 조건</h2>
+                <p>두 물체의 Object Response는 양쪽 설정을 함께 비교하며, 서로 다른 경우 더 약한 상호작용이 결과가 됩니다.</p>
+                <div class="table-wrap" role="region" aria-label="Collision Response 조합 결과" tabindex="0">
+                  <table>
+                    <thead><tr><th scope="col">A</th><th scope="col">B</th><th scope="col">결과</th></tr></thead>
+                    <tbody>
+                      <tr><th scope="row">Block</th><td>Block</td><td>Block</td></tr>
+                      <tr><th scope="row">Block</th><td>Overlap</td><td>Overlap</td></tr>
+                      <tr><th scope="row">Block</th><td>Ignore</td><td>Ignore</td></tr>
+                      <tr><th scope="row">Overlap</th><td>Overlap</td><td>Overlap</td></tr>
+                      <tr><th scope="row">Overlap</th><td>Ignore</td><td>Ignore</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  그러나 Response가 Overlap이라고 해서 <code>BeginOverlap</code> 이벤트가 자동으로 발생하지는 않습니다.
+                  두 컴포넌트 모두 <code>Generate Overlap Events</code>를 활성화해야 합니다. 물리 충돌의 Hit 알림도 실제 Block 여부와 별도의 이벤트 생성 설정을 확인해야 합니다.
+                </p>
+                <p><code>Collision Enabled</code>는 Response보다 앞단의 조건입니다. <code>Query Only</code>는 Raycast·Sweep·Overlap 같은 공간 질의만, <code>Physics Only</code>는 물리 시뮬레이션만 허용하며, <code>Query and Physics</code>는 둘 다 허용합니다. 따라서 Trace 대상은 최소한 Query가 활성화되어 있어야 합니다.</p>
+              </section>
+
+              <section id="geometry" aria-labelledby="geometry-title">
+                <h2 id="geometry-title">Simple과 Complex Collision</h2>
+                <p>
+                  Simple Collision은 Box, Sphere, Capsule, Convex Hull 같은 단순한 형태를 사용해 계산량을 줄입니다.
+                  캐릭터 이동과 일반 물리에는 보통 Simple이 적합합니다. Complex Collision은 렌더 메시의 삼각형을 사용하므로 정확한 표면 위치와 Face 정보를 얻는 데 유리하지만 비용이 더 큽니다.
+                </p>
+                <p>
+                  Trace의 <code>bTraceComplex</code>는 어떤 충돌 표현을 조회할지 선택합니다. 총알의 정밀한 표면 판정은 Complex가 필요할 수 있지만,
+                  AI 시야나 지면 확인은 Simple로 충분한지 먼저 검토합니다. 실제 결과는 Static Mesh 에셋의 Collision Complexity 설정에도 영향을 받습니다.
+                </p>
+              </section>
+
+              <section id="trace-choice" aria-labelledby="trace-choice-title">
+                <h2 id="trace-choice-title">Trace는 목적·모양·결과 수로 선택한다</h2>
+                <p>Trace는 시작점과 끝점 사이의 충돌 정보를 묻는 공간 질의입니다. 함수 이름부터 고르기보다 아래 세 질문으로 요구사항을 좁힙니다.</p>
+                <div class="table-wrap" role="region" aria-label="Trace 선택 기준" tabindex="0">
+                  <table>
+                    <thead><tr><th scope="col">질문</th><th scope="col">선택지</th><th scope="col">예시</th></tr></thead>
+                    <tbody>
+                      <tr><th scope="row">무엇을 찾는가?</th><td>By Channel / For Objects / By Profile</td><td>무기 채널, Pawn 집합, 상호작용 프로필</td></tr>
+                      <tr><th scope="row">어떤 모양인가?</th><td>Line / Sphere / Box / Capsule / Overlap</td><td>총알, 근접 공격 범위, 지면 검사</td></tr>
+                      <tr><th scope="row">얼마나 필요한가?</th><td>Test / Single / Multi</td><td>존재 여부, 첫 명중, 여러 접촉 결과</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  By Channel은 대상이 해당 Trace Channel에 설정한 Response를 읽습니다. For Objects는 지정한 Object Type에 속한 대상을 찾습니다.
+                  이 차이 때문에 “Multi는 항상 첫 Block에서 멈춘다”라고 일반화하면 안 됩니다. 그 동작은 Multi Trace by Channel의 핵심 규칙이고,
+                  Multi Trace For Objects는 조건에 맞는 Object Type들을 끝점까지 수집하는 데 적합합니다.
+                </p>
+              </section>
+
+              <section id="single-multi" aria-labelledby="single-multi-title">
+                <h2 id="single-multi-title">Single과 Multi Trace의 함정</h2>
+                <p>
+                  Single Trace by Channel은 첫 Blocking Hit 하나를 반환합니다. Ignore와 Overlap 대상은 그 결과가 아니며 Block 대상이 명중 결과가 됩니다.
+                  Multi Trace by Channel은 첫 Block 이전의 Overlap 결과들을 배열에 담고, 첫 Blocking Hit까지 추가한 뒤 종료합니다.
+                </p>
+                <pre><code>const bool bHasBlockingHit = GetWorld()-&gt;LineTraceMultiByChannel(
+    HitResults,
+    Start,
+    End,
+    ECC_GameTraceChannel1,
+    QueryParams
+);
+
+// false여도 Overlap 결과가 배열에 있을 수 있다.
+for (const FHitResult&amp; Hit : HitResults)
+{
+    if (Hit.bBlockingHit)
+    {
+        // 첫 Block: Channel 기반 Multi Trace의 마지막 결과
+    }
+}</code></pre>
+                <div class="post-callout">
+                  <p><code>LineTraceMultiByChannel</code>의 반환값은 배열이 비어 있는지가 아니라 Blocking Hit이 있었는지를 뜻합니다. Overlap만 수집되면 배열에 원소가 있어도 <code>false</code>일 수 있습니다.</p>
+                </div>
+              </section>
+
+              <section id="trace-api" aria-labelledby="trace-api-title">
+                <h2 id="trace-api-title">Kismet과 UWorld API</h2>
+                <p>
+                  <code>UKismetSystemLibrary</code>의 Trace 함수는 무시할 Actor, 디버그 표시 시간, Trace 색상 같은 인자가 노출되어 학습과 시각적 검증에 편리합니다.
+                  <code>UWorld</code>의 <code>LineTraceSingleByChannel</code> 같은 API는 <code>FCollisionQueryParams</code>,
+                  <code>FCollisionResponseParams</code>, <code>FCollisionObjectQueryParams</code>로 질의를 세밀하게 구성할 때 적합합니다.
+                </p>
+                <p>
+                  성능 차이를 추측해 API를 교체하기보다 호출 횟수, Trace 길이와 Shape 크기, Complex 사용 여부, 검사 대상 범위를 먼저 줄이고 Unreal Insights로 측정해야 합니다.
+                  비동기 Trace는 비용을 없애는 기능이 아니라 요청과 결과 처리 시점을 분리하는 방식이므로, 같은 실행 흐름의 바로 다음 줄에서 결과가 필요한 공격 판정에는 그대로 대체할 수 없습니다.
+                </p>
+              </section>
+
+              <section id="damage-flow" aria-labelledby="damage-flow-title">
+                <h2 id="damage-flow-title">FHitResult를 Damage 흐름으로 연결하기</h2>
+                <pre><code>Trace
+→ FHitResult
+→ ApplyDamage / ApplyPointDamage / ApplyRadialDamage
+→ 피격 Actor의 TakeDamage
+→ HP 감소와 상태 효과 처리</code></pre>
+                <p>
+                  일반 수치만 전달하면 <code>ApplyDamage</code>, 명중 위치와 방향이 중요한 Hitscan 공격은 <code>ApplyPointDamage</code>, 범위 공격은 <code>ApplyRadialDamage</code> 계열이 어울립니다.
+                  Point Damage는 이미 얻은 <code>FHitResult</code>를 넘길 수 있어 BoneName, ImpactPoint, 피격 Component를 후속 계산에 활용할 수 있습니다.
+                </p>
+                <pre><code>if (Hit.GetActor())
+{
+    const FVector ShotDirection = (End - Start).GetSafeNormal();
+
+    UGameplayStatics::ApplyPointDamage(
+        Hit.GetActor(),
+        BaseDamage,
+        ShotDirection,
+        Hit,
+        GetController(),
+        WeaponActor,
+        UBulletDamageType::StaticClass()
+    );
+}</code></pre>
+                <p>
+                  Damage 적용 함수는 권한이 있는 쪽에서 호출해야 합니다. 멀티플레이에서는 클라이언트의 Trace 결과만 신뢰하지 말고 서버가 판정을 검증하고 체력처럼 권위 있는 게임 상태를 변경하는 구조가 필요합니다.
+                </p>
+              </section>
+
+              <section id="damage-semantics" aria-labelledby="damage-semantics-title">
+                <h2 id="damage-semantics-title">Damage의 책임과 데이터</h2>
+                <p><code>EventInstigator</code>와 <code>DamageCauser</code>는 서로 다른 책임을 기록합니다. 플레이어가 던진 폭발물이 적을 쓰러뜨렸다면 Instigator는 플레이어의 Controller이고 Causer는 폭발물 Actor입니다. 이 구분은 킬 크레딧, AI 어그로, 전투 로그에 사용됩니다.</p>
+                <p>
+                  <code>UDamageType</code>은 “이번 공격의 데미지가 얼마인가?”보다 화염·독·환경 피해처럼 데미지의 종류와 공통 반응을 표현합니다.
+                  클래스 기본 객체를 설정처럼 참조하므로 남은 화상 시간, 치명타 여부, 독 스택처럼 공격마다 달라지는 가변 상태를 인스턴스 멤버처럼 저장하면 안 됩니다.
+                  그런 값은 별도 공격 데이터 구조체나 상태 효과 컴포넌트에 전달하고 보관합니다.
+                </p>
+                <p>
+                  피격 Actor는 <code>TakeDamage</code>를 오버라이드해 최종 피해량, 방어, 상태 효과를 처리할 수 있습니다.
+                  <code>Super::TakeDamage</code>의 반환값과 엔진의 Damage 이벤트 전달 흐름을 유지한 뒤 프로젝트 규칙을 적용하고, 실제로 적용한 Damage를 반환하는 형태로 계약을 일관되게 만드는 편이 좋습니다.
+                </p>
+              </section>
+
+              <section id="design" aria-labelledby="design-title">
+                <h2 id="design-title">변경하기 쉬운 공격 판정 구조</h2>
+                <p>학습 단계에서는 한 함수에 실행 흐름을 펼쳐 보는 것이 유용하지만, 실제 프로젝트에서는 변경 이유가 다른 책임을 분리해야 합니다.</p>
+                <ul>
+                  <li>Weapon 또는 공격 판정 컴포넌트가 Trace의 시작점, 범위, Channel과 무시 대상을 구성합니다.</li>
+                  <li>Damage 정책이 기본 피해량, 치명타, 거리 감쇠와 DamageType을 결정합니다.</li>
+                  <li>피격 Actor나 Attribute 컴포넌트가 방어와 HP 변경, 상태 효과 적용을 소유합니다.</li>
+                  <li>Collision Preset과 프로젝트 전용 Channel에 규칙을 모아 설정 변경이 여러 클래스에 흩어지지 않게 합니다.</li>
+                </ul>
+                <p>다만 책임 분리는 클래스 수를 늘리는 일이 목적이 아닙니다. Trace, Damage, AI 감지, 상태 효과가 서로 다른 이유와 주기로 변경되기 시작할 때 경계를 만드는 것이 기준입니다.</p>
+              </section>
+
+              <section id="debugging" aria-labelledby="debugging-title">
+                <h2 id="debugging-title">Collision이 이상할 때 확인할 순서</h2>
+                <ol>
+                  <li><strong>Collision Enabled:</strong> Trace라면 대상이 Query를 지원하는가?</li>
+                  <li><strong>Collision Geometry:</strong> Simple Collision이 존재하며 메시의 실제 형태와 맞는가?</li>
+                  <li><strong>Object Type:</strong> 대상이 의도한 분류로 설정되어 있는가?</li>
+                  <li><strong>Response:</strong> 사용한 Trace Channel 또는 Object Type에 Block·Overlap·Ignore 중 무엇으로 응답하는가?</li>
+                  <li><strong>Query 종류:</strong> By Channel과 For Objects, Single과 Multi 중 요구사항에 맞는 함수를 사용했는가?</li>
+                  <li><strong>Query Params:</strong> 자기 자신이나 대상 Actor를 실수로 Ignore 목록에 넣지 않았는가?</li>
+                  <li><strong>Simple/Complex:</strong> <code>bTraceComplex</code>와 에셋의 Collision Complexity 설정이 맞는가?</li>
+                  <li><strong>시각화:</strong> 시작점, 끝점, 방향과 실제 Hit 위치를 디버그 드로우로 확인했는가?</li>
+                </ol>
+              </section>
+
+              <section id="summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">정리</h2>
+                <ul>
+                  <li>Object Type은 대상의 정체성, Trace Channel은 검사의 목적, Preset은 재사용할 충돌 규칙 묶음입니다.</li>
+                  <li>Response와 이벤트 발생은 별개이며 Trace 대상은 Query가 활성화되어 있어야 합니다.</li>
+                  <li>Multi Trace by Channel은 Overlap들을 수집한 뒤 첫 Block에서 끝나지만, Multi Trace For Objects는 같은 규칙으로 일반화하면 안 됩니다.</li>
+                  <li>Multi Trace by Channel의 <code>bool</code> 반환값은 Blocking Hit 존재 여부입니다.</li>
+                  <li>Hitscan 공격은 <code>FHitResult → ApplyPointDamage → TakeDamage</code> 흐름으로 명중 맥락을 전달할 수 있습니다.</li>
+                  <li><code>UDamageType</code>에는 공통 종류를, 공격마다 달라지는 런타임 상태는 별도 데이터에 둡니다.</li>
+                </ul>
+              </section>
+
+              <section id="references" aria-labelledby="references-title">
+                <h2 id="references-title">참고 자료</h2>
+                <ul>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/collision-in-unreal-engine---overview">Epic Games, Collision Overview</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/collision-response-reference-in-unreal-engine">Epic Games, Collision Response Reference</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/unreal-engine/traces-in-unreal-engine---overview?lang=en-US">Epic Games, Traces Overview</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/BlueprintAPI/Collision/MultiLineTraceByChannel">Epic Games, Multi Line Trace By Channel</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/unreal-engine/API/Runtime/Engine/UDamageType?lang=en-US">Epic Games, UDamageType API</a></li>
+                  <li><a href="https://dev.epicgames.com/documentation/unreal-engine/API/Runtime/Engine/UGameplayStatics?lang=en-US">Epic Games, UGameplayStatics API</a></li>
+                </ul>
+              </section>
+
+              <section class="post-comments" aria-labelledby="comments-title">
+                <h2 id="comments-title">댓글</h2>
+                <p>질문이나 보완할 내용이 있다면 GitHub 계정으로 의견을 남겨주세요.</p>
+                <script src="https://giscus.app/client.js" data-repo="StaySober01/StaySober01.github.io" data-repo-id="R_kgDOTQFJZA" data-category="Comments" data-category-id="DIC_kwDOTQFJZM4DA3to" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="preferred_color_scheme" data-lang="ko" data-loading="lazy" crossorigin="anonymous" async></script>
+              </section>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 StaySober01</p>
+        <a href="https://github.com/StaySober01">GitHub</a>
+      </div>
+    </footer>
+    <script src="../code-highlight.js"></script>
+    <script src="../theme.js"></script>
+  </body>
+</html>
