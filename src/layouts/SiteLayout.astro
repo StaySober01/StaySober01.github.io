@@ -1,0 +1,33 @@
+---
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import type { Page } from '../lib/pages';
+interface Props { page: Page; }
+const { page } = Astro.props;
+const prefix = '../'.repeat(page.path.split('/').length - 1);
+---
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={page.description} />
+    <title>{page.title}</title>
+    <script is:inline>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark';
+      } catch {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    </script>
+    <link rel="stylesheet" href={`${prefix}styles.css`} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+    <SiteHeader pagePath={page.path} />
+    <main id="main-content"><slot /></main>
+    <SiteFooter />
+    {page.highlight && <script is:inline src={`${prefix}code-highlight.js`}></script>}
+    <script is:inline src={`${prefix}theme.js`}></script>
+  </body>
+</html>

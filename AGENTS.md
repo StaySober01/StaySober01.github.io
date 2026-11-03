@@ -21,16 +21,16 @@
 
 변경할 때:
 
-- 현재는 프레임워크 없는 HTML/CSS 정적 사이트를 유지한다.
-- 콘텐츠를 시맨틱 HTML로 작성하고 CSS는 `styles.css`에 둔다.
+- Astro + React 기반 정적 생성을 유지한다. React는 상호작용이 필요한 영역에만 사용한다.
+- 콘텐츠는 `src/content/pages/`의 시맨틱 HTML로 작성하고 CSS는 `public/styles.css`에 둔다.
 - 모바일 우선, 키보드 접근성, 가독성, 빠른 첫 로드를 우선한다.
 - 의존성이나 빌드 도구는 명확한 필요와 합의 없이 추가하지 않는다.
 - 프로젝트 사례에는 가능하면 문제, 역할, 기술 스택, 핵심 구현, 트러블슈팅, 결과, 배운 점을 포함한다.
 
 ## Architecture Direction
 
-- 현재: 저장소 루트의 `index.html`과 `styles.css`를 GitHub Pages가 직접 제공한다.
-- 콘텐츠나 반복 레이아웃 관리가 어려워질 때 Astro 또는 Vite 도입을 검토한다.
+- 현재: Astro가 공통 레이아웃과 본문으로 `dist/`를 생성하고 GitHub Actions가 Pages에 배포한다.
+- 기존 `.html` 주소와 목차 ID, giscus `pathname` 매핑을 보존한다. 클라이언트 라우터는 사용하지 않는다.
 - 프레임워크 전환 시 `docs/04-tech-architecture.md`, `docs/06-deployment.md`, `docs/08-decision-log.md`를 함께 갱신한다.
 
 ## Verification
@@ -39,7 +39,7 @@
 
 - HTML/CSS 링크와 문서 내 경로를 확인한다.
 - 로컬 정적 서버 또는 브라우저에서 주요 섹션과 반응형 레이아웃을 확인한다.
-- `npm` 기반 구성이 생긴 뒤에는 제공되는 `npm run build`, `npm run lint`, `npm run check`를 실행한다.
+- `npm run check`, `npm run build`, `npm run verify`를 실행한다. 초기 이전 검증에는 `npm run verify:migration`도 사용한다.
 - 실행할 수 없거나 아직 존재하지 않는 검증 명령은 결과 보고에 명시한다.
 
 ## Documentation

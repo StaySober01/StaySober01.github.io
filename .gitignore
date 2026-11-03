@@ -3,3 +3,7 @@
 private-notes.md
 codex-chat-log.md
 drafts/private/
+node_modules/
+dist/
+.astro/
+.qa/
