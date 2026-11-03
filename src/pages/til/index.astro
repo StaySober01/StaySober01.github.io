@@ -1,0 +1,7 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import PageBody from '../../components/PageBody.astro';
+import { pages } from '../../lib/pages';
+const page = pages.find(page => page.path === 'til/index.html')!;
+---
+<SiteLayout page={page}><PageBody page={page} /></SiteLayout>

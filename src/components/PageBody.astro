@@ -1,0 +1,34 @@
+---
+import { parseFragment } from 'parse5';
+import PostList from './PostList';
+import type { PostCard } from './PostList';
+import type { Page } from '../lib/pages';
+interface Props { page: Page; }
+const { page } = Astro.props;
+let before = page.body;
+let after = '';
+let posts: PostCard[] = [];
+let categories: string[] = [];
+if (page.path === 'til/index.html') {
+  // Parse only at build time. Preserve the reviewed HTML, card order and category order.
+  const tree = parseFragment(page.body, { sourceCodeLocationInfo: true });
+  const nodes: any[] = [];
+  const visit = (node: any) => { nodes.push(node); node.childNodes?.forEach(visit); };
+  visit(tree);
+  const attr = (node: any, name: string) => node.attrs?.find((a: any) => a.name === name)?.value;
+  const filter = nodes.find(n => attr(n, 'data-category-filter') !== undefined);
+  const list = nodes.find(n => attr(n, 'class') === 'post-list');
+  if (!filter?.sourceCodeLocation || !list?.sourceCodeLocation) throw new Error('Missing TIL list or filter');
+  before = page.body.slice(0, filter.sourceCodeLocation.startOffset);
+  after = page.body.slice(list.sourceCodeLocation.endOffset);
+  posts = nodes.filter(n => attr(n, 'data-post-category') !== undefined).map(node => ({
+    category: attr(node, 'data-post-category'),
+    html: page.body.slice(node.sourceCodeLocation.startTag.endOffset, node.sourceCodeLocation.endTag.startOffset),
+  }));
+  categories = nodes.filter(n => attr(n, 'data-category') !== undefined)
+    .map(n => attr(n, 'data-category')).filter(value => value !== 'all');
+}
+---
+<Fragment set:html={before} />
+{page.path === 'til/index.html' && <PostList posts={posts} categories={categories} client:load />}
+<Fragment set:html={after} />

@@ -1,6 +1,6 @@
 # 사이트 맵
 
-## 현재 구조
+## 공개 URL 구조 (대표 글 예시)
 
 ```text
 /
@@ -57,3 +57,5 @@ TIL / 블로그 글은 `/til/{post-slug}.html` 하위 페이지로 제공한다.
 ```
 
 URL은 영문 소문자와 하이픈을 사용하고, 기존 공개 URL은 가능한 한 유지한다.
+
+전체 페이지 목록의 기준은 `src/content/pages.json`이다. Astro의 `build.format: 'preserve'`와 별도 index 라우트로 `/index.html`, `/til/index.html`, `/til/{slug}.html`, `/projects/{slug}.html`에 실제 파일을 생성한다. `/`와 `/til/`도 정적 호스트의 디렉터리 index로 열린다.

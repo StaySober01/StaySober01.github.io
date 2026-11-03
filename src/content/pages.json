@@ -1,0 +1,242 @@
+[
+  {
+    "path": "index.html",
+    "title": "StaySober01 | Game Developer Portfolio",
+    "description": "게임 개발자 StaySober01의 프로젝트와 기술 학습 기록을 소개하는 포트폴리오 블로그입니다.",
+    "highlight": false
+  },
+  {
+    "path": "til/a-star-pathfinding-cpp.html",
+    "title": "A* 알고리즘: 휴리스틱 경로 탐색과 C++ 구현 | StaySober01",
+    "description": "A* 알고리즘의 f=g+h 구조와 휴리스틱의 허용성·일관성, 다익스트라와의 차이부터 격자 기반 C++ 최단 경로 구현과 경로 복원까지 정리합니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/binary-search-and-greedy.html",
+    "title": "이분 탐색과 탐욕법: 경계를 찾고 선택을 증명하는 법 | StaySober01",
+    "description": "이분 탐색의 구간 불변식과 경계 탐색, 파라메트릭 서치, 탐욕법의 성립 조건과 교환 논증을 공유기 설치 예제와 C++ 코드로 자세히 정리합니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/branch-prediction.html",
+    "title": "분기 예측으로 이해하는 CPU 파이프라인 최적화 | StaySober01",
+    "description": "CPU 분기 예측의 목적, 파이프라인과 예측 실패 비용, 정적·동적 분기 예측 방식, 코드 작성 시 고려할 점을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/ch2-text-rpg-system-integration.html",
+    "title": "분리된 시스템을 하나의 게임으로 연결하기 | StaySober01",
+    "description": "C++17 콘솔 RPG에서 GameManager를 중심으로 전투, UI, 인벤토리, 레시피, 상점을 연결하며 배운 시스템 통합과 객체지향 설계의 트레이드오프를 정리합니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/cpu-architecture-instruction-execution.html",
+    "title": "CPU 구조와 명령어 실행 흐름 | StaySober01",
+    "description": "CPU의 코어, 제어 장치, 레지스터, 실행 유닛과 캐시부터 파이프라인, 비순차 실행, MMU와 캐시 일관성까지 명령어 실행 흐름을 중심으로 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/dfs-bfs-graph-traversal.html",
+    "title": "DFS와 BFS: 그래프 탐색 방법과 선택 기준 | StaySober01",
+    "description": "DFS와 BFS의 탐색 방식, 스택·재귀·큐 구현, 최단 거리 조건, 2차원 맵 탐색, 복잡도와 선택 기준을 C++ 예제로 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/dijkstra-shortest-path-cpp.html",
+    "title": "다익스트라 알고리즘: 최단 거리와 C++ 구현 | StaySober01",
+    "description": "다익스트라 알고리즘의 완화, 그리디 선택이 성립하는 이유, 음수 간선의 한계와 오래된 우선순위 큐 항목 처리부터 C++ 구현과 경로 복원까지 정리합니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/dynamic-programming.html",
+    "title": "동적 계획법으로 중복 계산 줄이기 | StaySober01",
+    "description": "동적 계획법의 최적 부분 구조, 중복 부분 문제, Top-Down과 Bottom-Up 방식, 계단 오르기 예제를 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/garbage-collection-csharp-unreal.html",
+    "title": "C#과 언리얼로 이해하는 가비지 컬렉션 | StaySober01",
+    "description": "가비지 컬렉션의 도달 가능성 판단부터 C# 세대별 GC와 IDisposable, 언리얼 UObject의 UPROPERTY, Outer, 강한·약한·소프트 참조를 비교해 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/implement-dual-priority-queue-cpp.html",
+    "title": "C++로 이중 우선순위 큐 구현하기 | StaySober01",
+    "description": "직접 구현한 최소 힙과 최대 힙을 값별 유효 개수와 지연 삭제로 동기화해 C++ 이중 우선순위 큐를 만드는 과정을 정리한 힙 구현 3부작의 마지막 글입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/implement-max-heap-cpp.html",
+    "title": "C++로 최대 힙 직접 구현하기 | StaySober01",
+    "description": "C++ vector로 최대 힙을 직접 구현하고 최소 힙과 비교하며 업힙·다운힙에서 뒤집어야 하는 비교 조건과 연산 복잡도를 정리한 힙 구현 3부작의 두 번째 글입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/implement-min-heap-cpp.html",
+    "title": "C++로 최소 힙 직접 구현하기 | StaySober01",
+    "description": "C++ vector로 최소 힙을 직접 구현하며 완전 이진 트리의 배열 표현, 업힙과 다운힙, push·pop·top의 동작과 복잡도를 정리한 힙 구현 3부작의 첫 글입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/index.html",
+    "title": "TIL & Technical Blog | StaySober01",
+    "description": "StaySober01의 TIL과 기술 블로그 글을 모아 보는 목록 페이지입니다.",
+    "highlight": false
+  },
+  {
+    "path": "til/locality-of-reference.html",
+    "title": "메모리 참조 지역성으로 이해하는 캐시 효율 | StaySober01",
+    "description": "메모리 참조 지역성의 의미와 시간·공간·순차 지역성, 캐시 라인, 행 우선 배열 접근, 가상 메모리 성능과의 관계를 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/multithreading-vs-multiprocessing.html",
+    "title": "멀티프로세스와 멀티스레드: 메모리 공유부터 동기화까지 | StaySober01",
+    "description": "프로세스와 스레드의 메모리 구조, IPC, 문맥 교환, 데이터 레이스와 교착 상태, 동시성과 병렬성, 게임 개발에서의 활용 기준을 비교한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/pipeline-hazard-interrupt-dma.html",
+    "title": "파이프라인 Hazard, Interrupt, DMA: CPU와 I/O가 멈추지 않는 법 | StaySober01",
+    "description": "CPU 파이프라인의 데이터·제어·구조적 해저드와 인터럽트, DMA의 동작 원리를 게임 리소스 스트리밍 흐름으로 연결해 설명합니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/process-cpu-scheduling-context-switch.html",
+    "title": "프로세스와 CPU 실행 구조: 스케줄링부터 문맥 교환까지 | StaySober01",
+    "description": "프로그램이 프로세스가 되어 CPU에서 실행되는 흐름을 스레드, PCB와 TCB, 문맥 교환, 스케줄링, IPC를 중심으로 설명합니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/programmers-double-priority-queue-multiset.html",
+    "title": "프로그래머스 이중 우선순위 큐: multiset으로 양 끝 관리하기 | StaySober01",
+    "description": "프로그래머스 이중 우선순위 큐 문제를 C++ multiset으로 해결하며 자료구조 선택, 양 끝 원소 삭제, 반복자와 역방향 반복자의 차이를 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/programmers-farthest-node-bfs.html",
+    "title": "프로그래머스 가장 먼 노드: BFS로 최단 거리 구하기 | StaySober01",
+    "description": "프로그래머스 가장 먼 노드 문제를 가중치 없는 양방향 그래프의 BFS로 해결하고, 최단 거리 기록과 최댓값 집계 과정을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/programmers-immigration-binary-search.html",
+    "title": "프로그래머스 입국심사: 처리 가능한 최소 시간을 찾는 이분 탐색 | StaySober01",
+    "description": "프로그래머스 입국심사 문제를 시간에 대한 결정 문제로 바꾸고, 이분 탐색으로 최소 시간을 찾는 과정과 int 곱셈 오버플로 문제를 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/programmers-integer-triangle-dp.html",
+    "title": "프로그래머스 정수 삼각형: 아래에서 위로 누적하는 DP | StaySober01",
+    "description": "프로그래머스 정수 삼각형 문제를 아래에서 위로 누적하는 동적 계획법으로 해결하고, 점화식과 C++ 구현 과정을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/programmers-lighthouse-tree-dp.html",
+    "title": "프로그래머스 등대: 켜짐과 꺼짐을 나누는 트리 DP | StaySober01",
+    "description": "프로그래머스 등대 문제를 최소 버텍스 커버와 트리 DP로 모델링하고, 켠 상태와 끈 상태의 점화식 및 반복형 C++ 구현을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/programmers-n-expression-dp.html",
+    "title": "프로그래머스 N으로 표현: DP로 가능한 값 쌓기 | StaySober01",
+    "description": "프로그래머스 N으로 표현 문제를 동적 계획법으로 풀기 위해 dp 집합의 의미, 조합 방식, C++ 구현 과정을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/programmers-number-of-rooms-graph.html",
+    "title": "프로그래머스 방의 개수: 새 간선과 대각선 교차 처리 | StaySober01",
+    "description": "프로그래머스 방의 개수 문제를 정점과 간선으로 모델링하고, 새 사이클을 세는 조건과 대각선 교차점을 처리하는 좌표 확대 기법을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/programmers-speed-camera-greedy.html",
+    "title": "프로그래머스 단속카메라: 가장 빠른 진출 지점에 설치하는 탐욕법 | StaySober01",
+    "description": "프로그래머스 단속카메라 문제에서 진출 지점 기준 정렬과 탐욕적 선택의 근거를 세우고, O(N²) 초안을 O(N log N)으로 개선한 과정을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/programmers-target-number-dfs.html",
+    "title": "프로그래머스 타겟 넘버: DFS 분기와 종료 조건 설계 | StaySober01",
+    "description": "프로그래머스 타겟 넘버 문제를 이진 선택 트리와 DFS로 모델링하고, 잘못된 종료 조건과 중복 집계 원인을 고쳐 가는 과정을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/programmers-word-transformation-bfs.html",
+    "title": "프로그래머스 단어 변환: 한 글자 차이 그래프와 BFS | StaySober01",
+    "description": "프로그래머스 단어 변환 문제에서 단어를 그래프의 노드로 모델링하고, 한 글자 차이인 단어를 BFS로 탐색해 최소 변환 횟수를 구하는 과정을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/solid.html",
+    "title": "SOLID 원칙으로 설계 책임 나누기 | StaySober01",
+    "description": "객체지향 설계의 다섯 가지 SOLID 원칙을 책임, 확장, 치환 가능성, 인터페이스, 의존 방향 관점에서 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/time-complexity-big-o-data-structures.html",
+    "title": "시간복잡도, 빅오 표기법, 대표 자료구조 정리 | StaySober01",
+    "description": "시간복잡도와 빅오 표기법의 의미, 그리고 배열, 연결 리스트, 스택, 큐, 해시 테이블, 트리, 그래프, 힙의 특징을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/unreal-collision-trace-damage-flow.html",
+    "title": "Unreal Collision에서 Trace와 Damage까지 | StaySober01",
+    "description": "Unreal Engine의 Collision Channel과 Response, Single·Multi Trace의 차이, FHitResult에서 ApplyPointDamage와 TakeDamage로 이어지는 공격 판정 흐름을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/unreal-exit3-level-streaming-design.html",
+    "title": "Unreal 반복 공간을 레벨 스트리밍으로 초기화하기 | StaySober01",
+    "description": "Unreal Engine 5.6으로 이상현상 판별 게임 Exit 3를 시작하며, 반복 공간의 상태를 개별 복구하는 대신 Gameplay Level을 동적으로 교체하도록 설계한 과정을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/unreal-interface-delegate-refactoring.html",
+    "title": "Unreal 인터페이스와 델리게이트: 요청과 알림 분리하기 | StaySober01",
+    "description": "의미 없는 추상화를 걷어내는 리팩터링 기준부터 Unreal 인터페이스와 델리게이트의 역할, 구현, 수명 관리와 선택 기준까지 정리합니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/unreal-inventory-mvc.html",
+    "title": "Unreal 인벤토리 UI의 데이터와 화면 상태를 MVC로 분리하기 | StaySober01",
+    "description": "Unreal Engine 인벤토리 UI에서 실제 보유 데이터와 화면 상태를 분리하고, MVC와 변경 이벤트로 화면을 갱신한 과정을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/unreal-live-coding-vs-unity-script-reload.html",
+    "title": "Unreal Live Coding과 Unity 코드 리로드 비교 | StaySober01",
+    "description": "Unreal Engine Live Coding의 바이너리 패치와 Object Reinstancing, Unity의 스크립트 컴파일·어셈블리 재로드·Domain Reload를 비교하고 안전한 사용 기준을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/unreal-object-pooling-actor-lifecycle.html",
+    "title": "Unreal 오브젝트 풀링: Actor의 수명과 재사용 상태 구분하기 | StaySober01",
+    "description": "총알 Actor의 반복 생성·파괴 비용을 줄이는 오브젝트 풀링과, Actor 생명주기와 대여·반환 상태를 구분해야 하는 이유를 정리했습니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/unreal-reflection-gc-cdo.html",
+    "title": "Unreal 리플렉션과 GC, CDO의 동작 흐름 | StaySober01",
+    "description": "Unreal Engine의 UBT·UHT·리플렉션·가비지 컬렉션이 연결되는 흐름과 Class Default Object(CDO)의 생성, 기본값 전파, 생성자 작성 시 주의점을 정리한 TIL입니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/unreal-stick-on-network-steam-voice.html",
+    "title": "[Unreal Engine] Stick On 네트워크 개발 기록 | StaySober01",
+    "description": "2인 협동 게임 Stick On에서 연결·준비·서버 권한을 분리해 검증하고, Steam 세션과 Push-to-Talk를 연결하며 배운 점을 정리했습니다.",
+    "highlight": true
+  },
+  {
+    "path": "til/unreal-subsystem-object-pointer-containers.html",
+    "title": "Unreal Subsystem과 UObject 참조, 컨테이너 설계 | StaySober01",
+    "description": "Unreal Engine Subsystem의 수명 선택, TObjectPtr와 UObject GC의 관계, TArray·TSet·TMap의 선택 기준을 Quest 시스템 예제로 연결해 설명합니다.",
+    "highlight": true
+  },
+  {
+    "path": "projects/roguelike-project.html",
+    "title": "Roguelike Project | StaySober01",
+    "description": "Unity와 C#으로 개발 중인 시너지 기반 턴제 로그라이크 포트폴리오 프로젝트 사례입니다.",
+    "highlight": false
+  }
+]

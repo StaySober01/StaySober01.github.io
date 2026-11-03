@@ -1,0 +1,12 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import PageBody from '../components/PageBody.astro';
+import { pages } from '../lib/pages';
+export function getStaticPaths() {
+  return pages.filter(page => !page.path.endsWith('index.html')).map(page => ({
+    params: { path: page.path.replace(/\.html$/, '') }, props: { page },
+  }));
+}
+const { page } = Astro.props;
+---
+<SiteLayout page={page}><PageBody page={page} /></SiteLayout>

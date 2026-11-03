@@ -1,0 +1,699 @@
+{
+  "ref": "7707044fb5e352e54abf4b314116b32f54eb009f",
+  "pages": {
+    "index.html": {
+      "title": "<title[]>\"StaySober01 | Game Developer Portfolio\"</title>",
+      "description": "게임 개발자 StaySober01의 프로젝트와 기술 학습 기록을 소개하는 포트폴리오 블로그입니다.",
+      "main": "54ea7c28069b411410a874e9f7f674768769a960cd72b5c77d5d80a8c9c57631",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [],
+      "comments": []
+    },
+    "projects/roguelike-project.html": {
+      "title": "<title[]>\"Roguelike Project | StaySober01\"</title>",
+      "description": "Unity와 C#으로 개발 중인 시너지 기반 턴제 로그라이크 포트폴리오 프로젝트 사례입니다.",
+      "main": "0a25dd5ab17fa29f468af0dd6942fd295d8f6eebf774b7a7a847ebdb5c63c29e",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [],
+      "comments": []
+    },
+    "til/a-star-pathfinding-cpp.html": {
+      "title": "<title[]>\"A* 알고리즘: 휴리스틱 경로 탐색과 C++ 구현 | StaySober01\"</title>",
+      "description": "A* 알고리즘의 f=g+h 구조와 휴리스틱의 허용성·일관성, 다익스트라와의 차이부터 격자 기반 C++ 최단 경로 구현과 경로 복원까지 정리합니다.",
+      "main": "4db27140d86aa57034536f58cca0d27d5a75b35e456400f3d86e4e152665bcd0",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "6d42523a42812e6b635f03a19705aa558d30bc4fb37685127463d2f4f82097f2",
+        "68e69ddc36430385a08ecd0d9aab735facda42bcf4978c5bdb060feb495f9393",
+        "0f2cd10d23d3b245aa142a2d108137a00a4dc12f2118e8b2c6f0b6a1336f9708",
+        "42b1c215f3856276bfed027927de9c9a9b794bcdd17e8f76c55bd3f691448048",
+        "c64657b3b0836fdc92057ec6eaf797acf72f95fd628351cb3305df80ac319e9b",
+        "9c834430d52fbb66f15d2190fc6ee8fb6813d9c9ae5aa202feccf23f8466250b",
+        "6399d939ba69e0048fb3f5ddc135419b766cb7787a6c3cfc4ac5982705d4d3de",
+        "062faf18002a37f0d9ebe168beccd739eeaed60efbf326ee02d85049c399349e"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/binary-search-and-greedy.html": {
+      "title": "<title[]>\"이분 탐색과 탐욕법: 경계를 찾고 선택을 증명하는 법 | StaySober01\"</title>",
+      "description": "이분 탐색의 구간 불변식과 경계 탐색, 파라메트릭 서치, 탐욕법의 성립 조건과 교환 논증을 공유기 설치 예제와 C++ 코드로 자세히 정리합니다.",
+      "main": "014846177b67cdd7465cf207d9c64ebce665981b4bd12d58b987d150164f5076",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "b2d8bada92932ca4fe4b72fe138f60ccb2821f438a685b568b60378cef37a008",
+        "365b0ddac81e98ae2d081075af132e7338855e2dc935a3220a184f8affd4ba77",
+        "9779dff4bb761418d5586f20d164d186944799b30da0a9a532a052141edde554",
+        "1e6a586f1935a6a4f4e04afcd1929b4d67bd09d4bf6e7afd581a8884c317ca41",
+        "5a76a2d925bd8be86ed5abbb24d8fce18da5987776f003ab8b275e8eb9793224",
+        "b9fb17b94775aef9a16ecca35dcb5786442bd02040354e05504c9fa0345aaa76",
+        "0d7306d62c1d9bba4dfd88bfbc43e9bcf25c6323ad28bc34f1f96e0b8e267838",
+        "21a932e918f67e1c4512ed3e48d782340c3f5b8e8b811cee771167c1eceb1be0",
+        "44b6ab808ed73c61ddd4c3c04ef3a1d027345807b795dada9f521b6d7bc0d2ac"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/branch-prediction.html": {
+      "title": "<title[]>\"분기 예측으로 이해하는 CPU 파이프라인 최적화 | StaySober01\"</title>",
+      "description": "CPU 분기 예측의 목적, 파이프라인과 예측 실패 비용, 정적·동적 분기 예측 방식, 코드 작성 시 고려할 점을 정리한 TIL입니다.",
+      "main": "d9676c69dc92a98c93531d7f0887e75ed2c7fd6a0e864ead5e26bcc5887a1de8",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "fb9e435910c81fa06fd30023a787e6c971c3e34194c3cd402b74e81d2d940957"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/ch2-text-rpg-system-integration.html": {
+      "title": "<title[]>\"분리된 시스템을 하나의 게임으로 연결하기 | StaySober01\"</title>",
+      "description": "C++17 콘솔 RPG에서 GameManager를 중심으로 전투, UI, 인벤토리, 레시피, 상점을 연결하며 배운 시스템 통합과 객체지향 설계의 트레이드오프를 정리합니다.",
+      "main": "1d5f2cb87ca3e9a04cfd094476fa6a41fe1d47bc8b57b12950972b68e6c5f6ed",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "0339e9429d3b18706db08491f5ef79eb87403e25e538359a4dc3b92a5f7a796a",
+        "5185a80d7c1f8086b732286c0494e7a532053301caf314a17ab66582d35468a5",
+        "7c0b79c0f36c27ce26a69c29cb04875f1b43eb92f2c8131d350368ddc9a33dd7",
+        "92351f00c0cbba2d0c39dcad719cf01193a3399944506f350d9f1e82250f4e55",
+        "942685b3710138a5416c93938c720da7e2a11ebc61778835fe1010c6d361ec1f"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/cpu-architecture-instruction-execution.html": {
+      "title": "<title[]>\"CPU 구조와 명령어 실행 흐름 | StaySober01\"</title>",
+      "description": "CPU의 코어, 제어 장치, 레지스터, 실행 유닛과 캐시부터 파이프라인, 비순차 실행, MMU와 캐시 일관성까지 명령어 실행 흐름을 중심으로 정리한 TIL입니다.",
+      "main": "3324c111cc9f70e821bd1a3a61d1f7fc50d00b0ec33f3096ea31da68cc805551",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "b99eb071fdff792190afb84d7a2b9db99928cd1670b22d565c263a9dd52a675a",
+        "f9ff5a9ccda358448f571de7fde093ec6816ee5442b71a269e7b5b4f698d9bc0",
+        "879dae759d9d957f9c1c4b130008a9f225f4084dff75832d6e0a45406b7a2e7b",
+        "c02c17590a701681b99d57d705dee30298693799120724b49cc78a2f7cbd5c9e"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/dfs-bfs-graph-traversal.html": {
+      "title": "<title[]>\"DFS와 BFS: 그래프 탐색 방법과 선택 기준 | StaySober01\"</title>",
+      "description": "DFS와 BFS의 탐색 방식, 스택·재귀·큐 구현, 최단 거리 조건, 2차원 맵 탐색, 복잡도와 선택 기준을 C++ 예제로 정리한 TIL입니다.",
+      "main": "1a9e3174aba7e36cb9112236e7c88725b840d337e72d3aad037d0462be10cff0",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "398a43f825180fe8fb466a90e0c46d8c8c04ca07b198b0452597bb0cb9fb64ed",
+        "ca0ad01822f2e08390905d67fd2ed8f8c5c554e9593e44e8cceff1ea25f1c5c1",
+        "ebeab247e8c1762c29e1e149bce5af338cfe5d0051742a3d7a97390361258cc9",
+        "e0d9ce283ad688f46511f6974346001ad13b5ac588d077b29424b1c25520ff05",
+        "0627ce8fa5047153e20fb3a297ff84e53d762ff4cccf3109d7264d8d539d3b22",
+        "aca7db359e82e1d39275719e94f983c7121ab49a50adaa87348dc47b404795df",
+        "69d350271f116f617263e36d0a399888002894260dc01af8750135e0433251df",
+        "22361bb2fe40d2c270b0c16f83f12846aac34bd21ecfcbd007f67e3237501238"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/dijkstra-shortest-path-cpp.html": {
+      "title": "<title[]>\"다익스트라 알고리즘: 최단 거리와 C++ 구현 | StaySober01\"</title>",
+      "description": "다익스트라 알고리즘의 완화, 그리디 선택이 성립하는 이유, 음수 간선의 한계와 오래된 우선순위 큐 항목 처리부터 C++ 구현과 경로 복원까지 정리합니다.",
+      "main": "dbd5d1c7b35bd2315a7a97a0d978b014e6a72d8bd9716c7d3650bccd9e092895",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "1419107e0124e581251235a8f68c88eab8a1dbd69fb88a596a1525fe95b8b957",
+        "57f725f3a0c2ef16fb55259d3db18a5d60620be70c63b387ef12ad75725fbf05",
+        "308105d9fac2527769cac52f23c1d60926c79d1abf3fde767ca199abadda4888",
+        "3d82d1988d5704b8faf268764f85e7cd7d1aa9db0e66003728c054e05bd42759",
+        "f546100e16b3d57ecfcd448327313bdf43574bd18896002488e2bf1acf077de4",
+        "de8f89c35900c120cffccb4e35b6f6a0a6a6212d7c40eb18c81af8394d5afaaa"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/dynamic-programming.html": {
+      "title": "<title[]>\"동적 계획법으로 중복 계산 줄이기 | StaySober01\"</title>",
+      "description": "동적 계획법의 최적 부분 구조, 중복 부분 문제, Top-Down과 Bottom-Up 방식, 계단 오르기 예제를 정리한 TIL입니다.",
+      "main": "2a029f7102de98dcfb81e6116cbc75b30e7c96061ad840e94250d9b60bffc9ff",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "ae165370eb16bd998b362501b628df6dd46b9937e96f18c9ea8b10655c5400a0",
+        "7c7c5ea40f253a2a1fbc0b5b348d90dfc00a449789ae4e6b75bd66c4a74bbc34",
+        "126a7429c7e99563a2f9f631b0e53c0a07175ea02fe82420ccec4e65385ce993"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/garbage-collection-csharp-unreal.html": {
+      "title": "<title[]>\"C#과 언리얼로 이해하는 가비지 컬렉션 | StaySober01\"</title>",
+      "description": "가비지 컬렉션의 도달 가능성 판단부터 C# 세대별 GC와 IDisposable, 언리얼 UObject의 UPROPERTY, Outer, 강한·약한·소프트 참조를 비교해 정리한 TIL입니다.",
+      "main": "d6c1fe6ab76550fcd9974093f6e136d6b3fcaafff28bf43183337d3483e7263d",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "d5552a8a6ce771435e66990f5c4396d71687731fd5e670cd8b1b7828340cd4e2",
+        "46e40dbc80183764a33f4a71bf2f03dce6929b67eb9d8a0c793ca6eab982a607",
+        "6f6c75c38bf81b0a649e937186d26c4ad80b8e315923e4ba22f9a1096bc46128",
+        "38bdf9a584e93832a20c825d61cb48f52f404261d581be962c56044869531cb6",
+        "cbf913e88a8f9729feb46a3f3748da29f5a82fe8abad81200a2febfc3fca2742",
+        "2e97cd2053266d42b4295f52c7fdde411607c6f5d6f7c4cafc5af80c6758ce85",
+        "8fc6734a0200c326e02f5bb0a84ea0051632b0d5a9e67658f6b7d82c3da8e02b",
+        "1561eece92eaf664645b24a53d81f36e3ce7c56d54ef45c220aeb2163e1a9971",
+        "3381157467341b02544a3e62ce945bfddad8e73c0ac0999de1dd70fc104e7786",
+        "fd31c005588f3ba031aea0154f676dae789eee84c7902adcc42ac7610955f079",
+        "94de7884724d53ae0dbd2155f99657f1a06261ba7027d769135c0a823aaf19e9"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/implement-dual-priority-queue-cpp.html": {
+      "title": "<title[]>\"C++로 이중 우선순위 큐 구현하기 | StaySober01\"</title>",
+      "description": "직접 구현한 최소 힙과 최대 힙을 값별 유효 개수와 지연 삭제로 동기화해 C++ 이중 우선순위 큐를 만드는 과정을 정리한 힙 구현 3부작의 마지막 글입니다.",
+      "main": "931e690f2238bd194c9ba505599305d121a2be423b470b790fc576d5ebad84f4",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "cc8f92538831ef898594feb61f358560744512c640098e7401ba288e70e380e9",
+        "b9fcd18d3c7e05d4a7d990a0ccd1a80966df31b4c5572cba263341100a3c5ea4",
+        "a9962d034a648104377176fe092cdb7d7d9f74909ff96f947aa88d614538c341",
+        "e64de0512e9692ea993710ce912f5ac5be33dc016036af22d82a885aa97ebf19"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/implement-max-heap-cpp.html": {
+      "title": "<title[]>\"C++로 최대 힙 직접 구현하기 | StaySober01\"</title>",
+      "description": "C++ vector로 최대 힙을 직접 구현하고 최소 힙과 비교하며 업힙·다운힙에서 뒤집어야 하는 비교 조건과 연산 복잡도를 정리한 힙 구현 3부작의 두 번째 글입니다.",
+      "main": "e103988d494e1de1f0694aa845d178297bcfe331e85fb9034246179fb67cfa75",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "7c99ec1b5bbe19fc548d5a2923cbaa9f150eb989a37fd6ad15ea677b44b01e43",
+        "ed9feae61f47ec5a001b0edd18792a34fed81f47e08a774d740d7f2d01681f7e",
+        "76d9fba4300b04c317f91a6ba3aba6937134e419d8884d51de193caacb68e86b",
+        "e0102db4b35ed323f46de667a768379c0823a5aecb8d7f44d73d4299f50f900f",
+        "fdac9b3d3c04ab667363095270c20673daa6a4db6f1fd2453dcae3ba3e98c772",
+        "6ad7052e87f74c109698bd96c8db63dde5439ff14ee399cfb1e8b45730d3d02f"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/implement-min-heap-cpp.html": {
+      "title": "<title[]>\"C++로 최소 힙 직접 구현하기 | StaySober01\"</title>",
+      "description": "C++ vector로 최소 힙을 직접 구현하며 완전 이진 트리의 배열 표현, 업힙과 다운힙, push·pop·top의 동작과 복잡도를 정리한 힙 구현 3부작의 첫 글입니다.",
+      "main": "fc48ac96eec77f0c641a36d39a1892a88d7afacfbca396598f14e0f661b4a6b1",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "2ce019a528b0586ec310cdac0326fd7d84be887f5f873f9d220085efbadf254b",
+        "5a230f102b76bcb850c44fe2c07238d4e2efcb12cbc55b7a467744de40d22392",
+        "2cf440e1b655e5afc356592afb1913089e7bf1c5fce9ce3b3a13c819594dabd6",
+        "ceccb1a73451991cb4e68bf3f9b226134994034d1552e045288e818711813ee5",
+        "68cb96504040328e3c229f1e153d97ffa14c63bb9e8bfd1e3715b017890b5143",
+        "2f644b223cf37df754a1ebcac9db5a9f6e26fed33222041d5ebfcab342a4bbc8",
+        "d927d09bddbaad0596a55b8194dffb5fc4f121a979d08bc8c54a97af567055a0",
+        "17b62073616be2fd14f77742caafee16d23c6a946c06f88438fa5c01347a2968",
+        "f2490f69301ee8adc044c229f615cd77ebc1f39b14cc7d5db05fd6da544ffeb8"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/index.html": {
+      "title": "<title[]>\"TIL & Technical Blog | StaySober01\"</title>",
+      "description": "StaySober01의 TIL과 기술 블로그 글을 모아 보는 목록 페이지입니다.",
+      "main": "3ccf75d4c94f9f52390871fd3f4512b4bd854fe65a8bc91a65588e8489739655",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [],
+      "comments": []
+    },
+    "til/locality-of-reference.html": {
+      "title": "<title[]>\"메모리 참조 지역성으로 이해하는 캐시 효율 | StaySober01\"</title>",
+      "description": "메모리 참조 지역성의 의미와 시간·공간·순차 지역성, 캐시 라인, 행 우선 배열 접근, 가상 메모리 성능과의 관계를 정리한 TIL입니다.",
+      "main": "f239220820922416336402467141e6e391daa9e6334da64c3dbf8d7f5276b1d5",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "c42920aa261be9d6dbf19820898093f1e9ffcda2da372c0998a39244a61a893a",
+        "c2007622d6eea819a7a958720f0a8ada6e95e18b6a2d5c8add0eed14cf52acf7",
+        "6136516a01e443513edfe4ac2a511c0e5cf0cbae8af236c4349a5172d4ed564b",
+        "00c2cb48ce269aaed8ce0d74d9f75268dc5b377e094202ee43e22c27a06bfa73"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/multithreading-vs-multiprocessing.html": {
+      "title": "<title[]>\"멀티프로세스와 멀티스레드: 메모리 공유부터 동기화까지 | StaySober01\"</title>",
+      "description": "프로세스와 스레드의 메모리 구조, IPC, 문맥 교환, 데이터 레이스와 교착 상태, 동시성과 병렬성, 게임 개발에서의 활용 기준을 비교한 TIL입니다.",
+      "main": "4590b204922f6fec9fa0fef72ad905a030322abf6386cbc7732578781df58695",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "a2f3212768f7516950451f08722a4fd07af966f264143726eeb6a4e22a744e55",
+        "a4d9b519cb250e80f700f088c5b82c94a48118b5e5325605c4fbd067c1030e05",
+        "f3ff43a4b121d4002394b98003331a8154ac0138d33dd253f4e421e071f68f0c",
+        "c0ec8ade9da8170cad1dfe14039314bda4cd4493bd89ab3198d98f06f1239d1b",
+        "432d800109e22624d94cdf514d3673c8a12ccbd9d9eb3ab181fe1e8affc19652",
+        "47872801a570901fbf66ac5ffbe7201d0099ab30503bfa0d675ac9a2f91ad4bb",
+        "d59f8dbb15953b33e46e0a4c7f81e24543c45eb04b006e683faed45b102e7e41",
+        "3bf3ef3f425e2a52f6363190109b4daa8f5bcb4e457a3af4b9efbab72731a558"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/pipeline-hazard-interrupt-dma.html": {
+      "title": "<title[]>\"파이프라인 Hazard, Interrupt, DMA: CPU와 I/O가 멈추지 않는 법 | StaySober01\"</title>",
+      "description": "CPU 파이프라인의 데이터·제어·구조적 해저드와 인터럽트, DMA의 동작 원리를 게임 리소스 스트리밍 흐름으로 연결해 설명합니다.",
+      "main": "52da21d3dcb92bb1dd05d082c028e1ce3c5c7956e267fa768a7e8ed89bcef05f",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "37212f668687e6e7ea917fc087a86a20fb51fdf5fcfd4c6cd7b39da9b65dfce0",
+        "f1f7ecab4aff8f44a132789c3260041b6c6b57315fce73d41b56809da581d2ad",
+        "b4332d8fcf56d0c325c86cad72a1ff46ca0302724ffaf6ae1ddce22bee75670d",
+        "323449409e9552fb6f3c1fe9496e132bd1b238740a03103da395586e3d68e207",
+        "243ae1a9489322f8fb7ce94db685a23de412162d124fe098ba9921c7f5d27c9f",
+        "044ac84f1d2c7733f2bf8dad167b1d8e440a371b321821fd1bd5ecd15008f96d",
+        "70d32f7f3317eda5fe5705dacd15233fb6b35d0f1ef063829dc39a64815b327f",
+        "70d2348bfde17f49a5f6785e605186b877e4539c6c5911a290be4cb19200a3b7",
+        "331aaa7600c12907e96659c699fcba3a483c72b7b2aed2447b383c4c045ea512"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/process-cpu-scheduling-context-switch.html": {
+      "title": "<title[]>\"프로세스와 CPU 실행 구조: 스케줄링부터 문맥 교환까지 | StaySober01\"</title>",
+      "description": "프로그램이 프로세스가 되어 CPU에서 실행되는 흐름을 스레드, PCB와 TCB, 문맥 교환, 스케줄링, IPC를 중심으로 설명합니다.",
+      "main": "33d35a9f0b81a2c3fd771a78bee2e0597dfc54d45d82ce80eb7b9c0652b7ecba",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "141182256270ff2a44ecd88a9da06c02d2e93ebbd47b975a81613138a04333b9",
+        "2ac1677adf8d37a4839c337ba2608b82db230084a201e52aeb28e2c2454d4667",
+        "4f8844052642b994bd8a7ec82b9aafc36112f5525e3ee69a17c499d31b9c1623",
+        "9d5ce591ff3d515c7c3b834bfb1b587782fd959fc2c66dd1eb4710a91d033567"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/programmers-double-priority-queue-multiset.html": {
+      "title": "<title[]>\"프로그래머스 이중 우선순위 큐: multiset으로 양 끝 관리하기 | StaySober01\"</title>",
+      "description": "프로그래머스 이중 우선순위 큐 문제를 C++ multiset으로 해결하며 자료구조 선택, 양 끝 원소 삭제, 반복자와 역방향 반복자의 차이를 정리한 TIL입니다.",
+      "main": "ec70f22ba67eaec5e32693e7832646183a820494999e44a662f2696bb627e5aa",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "ff57112fb773860a08060ed4d2a06d5d4cd07d4f510142fde059080b1f8d7c60",
+        "23031ff78946740588dffd63cb60532cda37445ec7ed1746326356e76ce2541b",
+        "7fe475e7bd664bdeb1d0013fb8e8efd745a798a87f93a497b2ab9a409cbae108",
+        "3b1255f36937081dcbf2f33a294efff432e0bd2489d4bb8010fa6c566108c9f7",
+        "2be8e14428b09eb182c9cc76622e38c2b6e44b9e1c41c6d0f15cf87e50a2287f",
+        "80f24a1e8a9e645a2852041759b22013df15201e9927975b6149e64883e052bc",
+        "56570d47e4db6b0a3a9c668de55ab229454f7489bd0815065fd6eaef9fdd942a"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/programmers-farthest-node-bfs.html": {
+      "title": "<title[]>\"프로그래머스 가장 먼 노드: BFS로 최단 거리 구하기 | StaySober01\"</title>",
+      "description": "프로그래머스 가장 먼 노드 문제를 가중치 없는 양방향 그래프의 BFS로 해결하고, 최단 거리 기록과 최댓값 집계 과정을 정리한 TIL입니다.",
+      "main": "724bc16ccc74dd1b1011471829e2b5b2841f939cda6966b401809ec0a67b2ac2",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "fa384a5221a0c1142b9f8ab5326e0ea4c291d97b1c8c65fd6193aeedf2628daf",
+        "b6f2fad68b8f4da637ed3de6171dfbb6ff156e534e7793f24509e99b594326d9",
+        "def57d7abba02d62c258819d820e1d1695eb9ccac15af07d9af2f554431945ca",
+        "4134703189ad657255fe29f191f55bae54815de81cf38c5cbb84a70d2d13d323",
+        "53165ea977c1fbff71a2be7c5dda372634170ebf375eed6567bfa044056e406c",
+        "6a4cfecce39f7820984e21974c6779d91cdad23039bbe046f2b61ea29dd64968",
+        "0155ceda351941f62c243413f515a8b8cb3e4f849ae9a776c6e016c770e8ffb8",
+        "4dc632380525494ac5e5a5c0ca2ae17c656f0cc2bf31bbf40c764b4fd625a684"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/programmers-immigration-binary-search.html": {
+      "title": "<title[]>\"프로그래머스 입국심사: 처리 가능한 최소 시간을 찾는 이분 탐색 | StaySober01\"</title>",
+      "description": "프로그래머스 입국심사 문제를 시간에 대한 결정 문제로 바꾸고, 이분 탐색으로 최소 시간을 찾는 과정과 int 곱셈 오버플로 문제를 정리한 TIL입니다.",
+      "main": "7eda902b01672e350cadb2b0784116d391dc3527608a10457f9f302ca40b32c9",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "2c1121df8bc3e0b4783646ba8637f1db92dc84ead8ea0b75187abd1b54a295dd",
+        "228e557481821c3dfd4ed068c8af93896859f170697f68d18246c50ac5c909fd",
+        "2804f533cca01edf705cfdbd99637705dc606abbd22524bb181f5a78bc5ae185",
+        "5637165f4f8f979211ffe6a6170920098d1746d3e1dae6863a2439a4201777e0",
+        "c9960a522be6cd0a742ba20ff438c216366ace6df965a9bf369b93417ab4bff2",
+        "fe2d4397463c4033a21f85cbbdceba0b270abcc7e6e4e57e6340067ca4548c7a",
+        "8963c1db50b06f41109b9324ccbad5c273d7e637610bc2ecb3a114a9544b6b7b",
+        "ea75bc92b84f5a43621f766947a5abc548c1a66fa53cd8340127054de8f4b9a8"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/programmers-integer-triangle-dp.html": {
+      "title": "<title[]>\"프로그래머스 정수 삼각형: 아래에서 위로 누적하는 DP | StaySober01\"</title>",
+      "description": "프로그래머스 정수 삼각형 문제를 아래에서 위로 누적하는 동적 계획법으로 해결하고, 점화식과 C++ 구현 과정을 정리한 TIL입니다.",
+      "main": "2f352cf93ae1ec8c7e5683f09638f1f5e1dbb8273cff76607bd000fa128a49c7",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "9c2bc3bf6c821f15bca9bd53a009599a7a8d6908e574113c3f8f347e3d778c9e",
+        "0864ac20e28689f106b50a26897ffb99f25e3287c48c79f52d05abdb99c052cf",
+        "3365ebaf5ad9681101b49ceaad14cff250b7294163cd7be65b807129f407e08c",
+        "d27b7739d8cf8b19206d27d8266bffdeaf6ee4efab94dedea1681c04099bc740",
+        "a7846a2d2cfd0827ed8352347bc262ad46788b59dab15cfc78dbfe9cb92ba2f2",
+        "1c558f5de637c906ac757fe69a0a01a6c5dcab2cbd67a6d34f3b22c7f22c63d6",
+        "df3af2aa45ca5511f3b3db8c576771d81b8bce4b2071db8f4a0d1d445a679765",
+        "c75f3e02a89268df1f4b9c7156a0b026c93e70a236b14ee146d48731f10fee14"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/programmers-lighthouse-tree-dp.html": {
+      "title": "<title[]>\"프로그래머스 등대: 켜짐과 꺼짐을 나누는 트리 DP | StaySober01\"</title>",
+      "description": "프로그래머스 등대 문제를 최소 버텍스 커버와 트리 DP로 모델링하고, 켠 상태와 끈 상태의 점화식 및 반복형 C++ 구현을 정리한 TIL입니다.",
+      "main": "2488449bec005105505b4f834efd35987b4d9f82b2ced38e1b0b961ba4f50b26",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "0e21cb328e7c753fd09450b686c8cf9b211d36a502ad5fcdced20d7aa7d20666",
+        "508edf58af5be8e5470c3570a24002c45066be4d9350fd19304176eba7d73cee",
+        "0f141e9688b1bae90071303b4984710136dac0a414dd50bac80061942010cb72",
+        "f30f12c15bfd0e93bf52bbc092ec3ef685d5a7b0615f8ff5f49251f6e4999396",
+        "d623e9b869a77d16f37baac3452f6e5f7c9cc652ff46cab26b72f8a963b6d62b",
+        "6806c5200cb0c69f445d20b6c9b00f80db89ff282795c537220effbf21e8a3a5",
+        "176d9b7230e334e6211c4be5c70c45af661fe996f9bb9d4920bf9a0b636245bf",
+        "0ba0a1fdb338283906455db3a1d9279dabf8ff87b04e32a08a15ccc3a2e1e714",
+        "09580a2e34072aac26e2c4df7bdc61a49d223c4d475438af2c7d03e2a6f161fc"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/programmers-n-expression-dp.html": {
+      "title": "<title[]>\"프로그래머스 N으로 표현: DP로 가능한 값 쌓기 | StaySober01\"</title>",
+      "description": "프로그래머스 N으로 표현 문제를 동적 계획법으로 풀기 위해 dp 집합의 의미, 조합 방식, C++ 구현 과정을 정리한 TIL입니다.",
+      "main": "d2b0345f9597572389f18f497f80c6d5e64b9bed23ac99bd00296ba26b7354b5",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "7f4c66f76bcc8a3d7de2f8718aa910ca3fd0de786b5f7ee21bc9b7131f1b2a0f",
+        "7d442e5bae123851ce1c908f3038e30e028a0d6d03cd59c69120b7b830a88f6f",
+        "8999a28ed21bd5b82fd03259b47fbb942a26eab384de1801f1f82c26c033d2fb",
+        "f55e5ed21d943304e2749da9335ac670f81b64f7ed2ce1119d0780ffa9172dc1",
+        "ab440143ca602ed7cac077ac340b285399278c23b04791843c614e7774114d26",
+        "d9c2cc0a6a3ea067d914021756976d30a16d9c16b45f6747e4127efaa17a2cdb"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/programmers-number-of-rooms-graph.html": {
+      "title": "<title[]>\"프로그래머스 방의 개수: 새 간선과 대각선 교차 처리 | StaySober01\"</title>",
+      "description": "프로그래머스 방의 개수 문제를 정점과 간선으로 모델링하고, 새 사이클을 세는 조건과 대각선 교차점을 처리하는 좌표 확대 기법을 정리한 TIL입니다.",
+      "main": "37bdb5c79879628ecbd417ae2ec58c47d88ca5e558642dc00d1e1c6a05587782",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "71574b9bbdd5233ef49bf617b6ed4f237df3ccf751fb025f04a5e68521efe8ec",
+        "07a06d6dec902a01f462d139c6972b6dd30b4e225a61e944ab5b2edf6311c301",
+        "378f2ccfaf965c995e9307f5c426a5fac575de278f02832a18150d3f9b72c835",
+        "4ef8d61d6c8b385011e61c880daec462e1c80e50ffe8048dde7a33c4bef71eba",
+        "4ad4383ff6d8c4b17356001f6cbdd550bcbdc3e2adcd3009827b8cd9a4025336",
+        "b1820e434b6fe1f8822c9e83d576a2bfa529c71aba8f65779b9dff187d0cc34a",
+        "16b7290cfeec6e106dfccdabca3dd67e9402c5b3ca1c6bf794278ee3dd7629d2"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/programmers-speed-camera-greedy.html": {
+      "title": "<title[]>\"프로그래머스 단속카메라: 가장 빠른 진출 지점에 설치하는 탐욕법 | StaySober01\"</title>",
+      "description": "프로그래머스 단속카메라 문제에서 진출 지점 기준 정렬과 탐욕적 선택의 근거를 세우고, O(N²) 초안을 O(N log N)으로 개선한 과정을 정리한 TIL입니다.",
+      "main": "0fe332aa433f89f28df0933dfd596dc76e1c3e68d84f772edacb3d2caa86f602",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "a1c9ce37e74735c2a362f72c673dd72fb8e35ee020c325d54fb98480db2ca7bf",
+        "7f09cdd57bcd435b28f2efdb46ee0c0465e42cbd5b8600c393df9281ed1da57f",
+        "cfb7f17cdd155e1934f8413f195862d848a5242a2cabaa6b1454a19b5c669da2",
+        "8b35599532b89fe625006a54b76a743f24f7c3888a2e115ece17bee28da442d9",
+        "479eaead9ba73b03ddb321ae87df7e90d1ddb4d495973942b8e6b61bf2bb0603",
+        "7f4b61767677356fead4195fd3e5364d57169b6c1677099ceeddfcf8394042bb"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/programmers-target-number-dfs.html": {
+      "title": "<title[]>\"프로그래머스 타겟 넘버: DFS 분기와 종료 조건 설계 | StaySober01\"</title>",
+      "description": "프로그래머스 타겟 넘버 문제를 이진 선택 트리와 DFS로 모델링하고, 잘못된 종료 조건과 중복 집계 원인을 고쳐 가는 과정을 정리한 TIL입니다.",
+      "main": "929ee4df55ba4de678004b8c59798477e90c07cdb3380bbae733f88e47e66d99",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "2170bd5fd9429eb1c32a71edabb76d87027d60c45ba0c9e4a6226220e1da44f1",
+        "e4e6d3baee995494608c057f9782bb609c3ef247896517f2dd35a06c84ddd90a",
+        "21eb80d16584c64b82b71fecc9fbcb19922e5accb3c72a4e0a933960ddfe5cff",
+        "a199c38aaea2b8d71245246d926a8c1e9c456d8c8d78a9e16c5962b3a1ebc6a3",
+        "cc5a1f15320ffaf24dd6ac64e7f0984cbb918e34db705fb15ae8c3a395be6590",
+        "d798c8ee91829476fb216ee6e5cf52ebb768115ed77370c40395c12f290e865a",
+        "2288423035133b2480d67bcc5c07e167890e68a040d46e164c42486d2ed22785",
+        "e5482fc0a02a6bec6b7a7dd9fc57009ffb9d1f6d26b30de00e700ed96fac5af8",
+        "4b117827056745fe4497383d18fdcb2a329dc662fdf59ad1e64d9106fb858bcc"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/programmers-word-transformation-bfs.html": {
+      "title": "<title[]>\"프로그래머스 단어 변환: 한 글자 차이 그래프와 BFS | StaySober01\"</title>",
+      "description": "프로그래머스 단어 변환 문제에서 단어를 그래프의 노드로 모델링하고, 한 글자 차이인 단어를 BFS로 탐색해 최소 변환 횟수를 구하는 과정을 정리한 TIL입니다.",
+      "main": "3aec545afaabe82f8a36eafd5caccf60733baeaeb3a7d86517b709833de61e9e",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "767644e901286af906daedb25b90ef1e0bce8e38696054485a274579d07dc52f",
+        "e6c39c2d1168bded21e19e3f591970d4a30e252fd5c9ecb26d64769fece0aa47",
+        "203d9b054aeb24315b51ed520619f0efd6ec8dde52a966c9502971d0200320dd",
+        "3cf200f2aa35e30bb404d1b69987bf0135f8de5b42adc68949248f7d74981091",
+        "dab7c79184069a3705dddb5fe5f58c3cb5b06451ded265a2f57bdd3db9b06f21",
+        "5214b81d44fa27e62fcfecf397ae913005074e66d6323ec9fb4cb55c7d8cfe5a",
+        "bff1e9f457b093457231773a6737614e6689da1230adca4b54096a7c9852b6d9"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/solid.html": {
+      "title": "<title[]>\"SOLID 원칙으로 설계 책임 나누기 | StaySober01\"</title>",
+      "description": "객체지향 설계의 다섯 가지 SOLID 원칙을 책임, 확장, 치환 가능성, 인터페이스, 의존 방향 관점에서 정리한 TIL입니다.",
+      "main": "58b3b72ad51171defc22ffff0f3e6dc9b7fb64204a3d6ff9e64621c60c10b6e6",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/time-complexity-big-o-data-structures.html": {
+      "title": "<title[]>\"시간복잡도, 빅오 표기법, 대표 자료구조 정리 | StaySober01\"</title>",
+      "description": "시간복잡도와 빅오 표기법의 의미, 그리고 배열, 연결 리스트, 스택, 큐, 해시 테이블, 트리, 그래프, 힙의 특징을 정리한 TIL입니다.",
+      "main": "03074143a81e6912a732f09bbc269ff32069c939c3017475c018d493d5665665",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/unreal-collision-trace-damage-flow.html": {
+      "title": "<title[]>\"Unreal Collision에서 Trace와 Damage까지 | StaySober01\"</title>",
+      "description": "Unreal Engine의 Collision Channel과 Response, Single·Multi Trace의 차이, FHitResult에서 ApplyPointDamage와 TakeDamage로 이어지는 공격 판정 흐름을 정리한 TIL입니다.",
+      "main": "ff3071beeeacc04447b072758e94a71f249888d595bbbf570f2dd91bf73b568f",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "0a0c7b9b451e8a3814bdb01723758674eb3ad505bb1dba0f44b284b055a3d594",
+        "4e5c6dd38658e5ba0a5d0ac773619883eebe599a9084ad29515be59ca2a5fd7d",
+        "772719680af771f70319b9cb71d7a577d9ef2e487dc456660e60d6479bfd335d"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/unreal-exit3-level-streaming-design.html": {
+      "title": "<title[]>\"Unreal 반복 공간을 레벨 스트리밍으로 초기화하기 | StaySober01\"</title>",
+      "description": "Unreal Engine 5.6으로 이상현상 판별 게임 Exit 3를 시작하며, 반복 공간의 상태를 개별 복구하는 대신 Gameplay Level을 동적으로 교체하도록 설계한 과정을 정리한 TIL입니다.",
+      "main": "d60f85bd69df8247f421ac6b095a6fa480e3535a6442368d1e60b88df32e221b",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "2ebd190b6cae699d446cbd63216468158044d437673fb708950059fdff4d008d",
+        "a6e7ea01eb5e2282212b3c47706963b5e8fb64f29c1f82d2656ffffb5c0b9f77",
+        "a807cecf6248bfc42542d2094cf3e591304e50cd240b5921575bb09701601e39",
+        "875b40c89af1b4ce3af618ba113f10cf767b7ffbb02701d0a7c42ece8bbde6d7"
+      ],
+      "comments": []
+    },
+    "til/unreal-interface-delegate-refactoring.html": {
+      "title": "<title[]>\"Unreal 인터페이스와 델리게이트: 요청과 알림 분리하기 | StaySober01\"</title>",
+      "description": "의미 없는 추상화를 걷어내는 리팩터링 기준부터 Unreal 인터페이스와 델리게이트의 역할, 구현, 수명 관리와 선택 기준까지 정리합니다.",
+      "main": "1bef9a38823843db8c9831096fdfd73f49597bf99509fa0d3465f65b04609a65",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "c298fd2ece6055ea0221a516d8a63166935397113ca98c02797a83c5a12e6623",
+        "7c0624284cc3fd7bfcf775edff3c251e53ecd2309d79f8f03a4b51767558a4f6",
+        "b5541ed7f779e5ad75e5e53f940829ef6e9bc92c7a243f5e0424e07caaf4e899",
+        "42940b609c40a0c3ec173a30a79d0950c01e5a2eeb64118940b89dcb108f0a1d",
+        "c9c07840be4f1c8dd2089d5d86eda93d035a74c2f261cfb06c3369a79c0fca3a",
+        "b72db3fac9d7483ea69b9c57f0d256ac3113aa67ce0bd825f0c474e3f2404f71",
+        "2b74c898dd2ec6813cea684a9a88f1eceac4c46cdcae9a3e5155e56042c0186e",
+        "11d0a17b398917f5062136e6106986525b12b769895f7f137e44c39c11015547"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/unreal-inventory-mvc.html": {
+      "title": "<title[]>\"Unreal 인벤토리 UI의 데이터와 화면 상태를 MVC로 분리하기 | StaySober01\"</title>",
+      "description": "Unreal Engine 인벤토리 UI에서 실제 보유 데이터와 화면 상태를 분리하고, MVC와 변경 이벤트로 화면을 갱신한 과정을 정리한 TIL입니다.",
+      "main": "3f669c31d7314b693b883a45fef27db582ff00b280b120d67d0de519e7582aa4",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "977838b30f2f06ba74fd0b52dcd279d18cdfc2f1fb82171d5aea5963ce4dc4ba",
+        "3b1f08c9556c848bf0563b780b439a1abeeada43e179723fe0ffa72807316457",
+        "0f84fe0536ef7c8ee6b5d5febd9621d02a420c91d5ab87c592d8b7ebef027f3a",
+        "cc12874254ac6a650cc2da04fa9aa809a971a04c16b839d8eb803b781455126f",
+        "072d6f52fa95059e10e08a98da4030b1ded972f1201790dbc220be89659a4b8d",
+        "69435cf14a7fcdfe5e7f87c104c7e685b98f57f3fcd04f4ca4634a50d922121b",
+        "7060700ee1fc8e7f6cfc6f0c3a9cfc75214c5dde3b8084ee8928f3bb988eedbf",
+        "f782ba5926740432be10f3b89a1b1863dde1992f423161675dfe8e318860794f",
+        "bb0b00ccae7a4f120f6e0f2be68a01e2620528dd352f0cb9a4e5b1e043b18486"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/unreal-live-coding-vs-unity-script-reload.html": {
+      "title": "<title[]>\"Unreal Live Coding과 Unity 코드 리로드 비교 | StaySober01\"</title>",
+      "description": "Unreal Engine Live Coding의 바이너리 패치와 Object Reinstancing, Unity의 스크립트 컴파일·어셈블리 재로드·Domain Reload를 비교하고 안전한 사용 기준을 정리한 TIL입니다.",
+      "main": "36fca1a82847479e818d741c6b79a00cc85bd7b956448e100c0182bce685cc16",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "fb3c10cbf10c2c392da87a2f08e4c651498adbd646539e5c47d7ca4d6855baf8",
+        "76451289abfa0339c69ea1560d6774b671921ac780e8ced73e08b687963612c2",
+        "7821b0b1b0a2169a5827efbae13764303d8ed4a7278a8311297f8bcdded951da"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/unreal-object-pooling-actor-lifecycle.html": {
+      "title": "<title[]>\"Unreal 오브젝트 풀링: Actor의 수명과 재사용 상태 구분하기 | StaySober01\"</title>",
+      "description": "총알 Actor의 반복 생성·파괴 비용을 줄이는 오브젝트 풀링과, Actor 생명주기와 대여·반환 상태를 구분해야 하는 이유를 정리했습니다.",
+      "main": "7455466ecdef4362e209bd0d8fb419d198d7d40685235c27575322bb55e1ebbd",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "8e78711167f680911368dde6c96339db0b1f648d2ebd36ec5d85d3bc2addb4ef"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/unreal-reflection-gc-cdo.html": {
+      "title": "<title[]>\"Unreal 리플렉션과 GC, CDO의 동작 흐름 | StaySober01\"</title>",
+      "description": "Unreal Engine의 UBT·UHT·리플렉션·가비지 컬렉션이 연결되는 흐름과 Class Default Object(CDO)의 생성, 기본값 전파, 생성자 작성 시 주의점을 정리한 TIL입니다.",
+      "main": "461be0c13186639f5c9cce3b9f25f8f5a586ac989a11b00ced66d27b6efbd230",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "034b498605a2620e4d9520a92fbcd14ed00ac6a10d97f2ab8a151d8f57573769",
+        "fe7a153cf30ed9f24b626ad4d7fbd2759e436e7212509255c0c039219b565f77",
+        "07f028de0277ba5de168ac4e554a2d4bf66d48e088e2ed1b5397609d69b82d8e",
+        "221fb772533c5eeac10aa461771844f3d31546ade9b23512ee24929f4e5a7d1e"
+      ],
+      "comments": []
+    },
+    "til/unreal-stick-on-network-steam-voice.html": {
+      "title": "<title[]>\"[Unreal Engine] Stick On 네트워크 개발 기록 | StaySober01\"</title>",
+      "description": "2인 협동 게임 Stick On에서 연결·준비·서버 권한을 분리해 검증하고, Steam 세션과 Push-to-Talk를 연결하며 배운 점을 정리했습니다.",
+      "main": "deb6ee7d18a63b3462976993c96980b074626505bc723329c4d4c8328343dfa1",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "cd755f753ca7022d954e6279d0ede221fc47e98c1d3a5e9629727ba7e70eab70",
+        "171eb22be47f0c7306e2fabfc3dd4bc8e12b8b8f3f47cfe8adca5e3b78350c01",
+        "ab85d4420f626f4d30ecd488cc9f2863b89a7c589ab3f31b2db46602fcb1188a",
+        "77d6e1d55c0950696ff02899b5321fff12845ef5149925bb9b9993a6fec6c7b7",
+        "5a0ed24ee13ab74d289dd75585ea997f2b8279f24bbe0438bba13379ba55dd74",
+        "cb68d9caca8291b951cb5a618fb1b2cfad8c0212ea0d3b8751842fb881018a7e",
+        "b3e1c8163a33300bceaacb77b6c3d29d6ec017d57da0001befcac055220f9bc0"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    },
+    "til/unreal-subsystem-object-pointer-containers.html": {
+      "title": "<title[]>\"Unreal Subsystem과 UObject 참조, 컨테이너 설계 | StaySober01\"</title>",
+      "description": "Unreal Engine Subsystem의 수명 선택, TObjectPtr와 UObject GC의 관계, TArray·TSet·TMap의 선택 기준을 Quest 시스템 예제로 연결해 설명합니다.",
+      "main": "807a92e3144b1258a8daeff12e2f217a1777b182a1acfc9cf1d524f6a11fe3e4",
+      "header": "c739f67245ec2b6d9d9529ae7fb0192a5c2b1cdeb35ca93ab5fcb23891df1373",
+      "footer": "cf400a7875a28ca513ef6f9fe6615f5211526cf61d8fa9a5dd0bce7bb4498bed",
+      "code": [
+        "607406d82f449f5d100bfb184df2e78d8f8d6fe404f846f1905179d0763c659e",
+        "178276220e511994a6c5418fd687b15770abdeb2d60fef33abbc845180f6075c",
+        "6a7b0908bbff582883d5af7f0e0b0006cfe7d972dce33cfcc64d99cacbcbb223",
+        "0558e4926bbdc0722462874092ad45ab3fb0142590e33ff68ced20f5151f2528",
+        "68063c7a2899782881ea5067aee00de781914887e6f9f9b5e060c29403bdda4f",
+        "dcfdd6d6a59e34bbccf528db906f6006517b87ad929ebbf6be08bcde52d66d1f",
+        "6218abf009045a6aec6cf38351fc275a97cd0fda1666e3f1dd05ed2ab69d1d95",
+        "a3c7a0757d078ff3cc0d60f8f6b3750740902eee9a8f50df3438786d657e5bba"
+      ],
+      "comments": [
+        "<script[[\"async\",\"\"],[\"crossorigin\",\"anonymous\"],[\"data-category\",\"Comments\"],[\"data-category-id\",\"DIC_kwDOTQFJZM4DA3to\"],[\"data-emit-metadata\",\"0\"],[\"data-input-position\",\"bottom\"],[\"data-lang\",\"ko\"],[\"data-loading\",\"lazy\"],[\"data-mapping\",\"pathname\"],[\"data-reactions-enabled\",\"1\"],[\"data-repo\",\"StaySober01/StaySober01.github.io\"],[\"data-repo-id\",\"R_kgDOTQFJZA\"],[\"data-strict\",\"0\"],[\"data-theme\",\"preferred_color_scheme\"],[\"src\",\"https://giscus.app/client.js\"]]></script>"
+      ]
+    }
+  },
+  "assets": {
+    "assets/profile.jpg": "3454eea6d4681ad7836cc1557d098a87e6b94022a3f6f7a053cbf382c6c5b6cb",
+    "code-highlight.js": "b1f58c8ace63b6234356ccf79da959b27e8fa887714c2ac7d6ad288251e23532",
+    "outputs/cpu-structure-for-beginners.pptx": "c827b64a93337d0cd921a33b799640932fe62cacdc146d8146df8f8c7541e25f",
+    "outputs/cpu-structure-for-beginners.pptx.inspect.ndjson": "562e1c7e3bfa1989384459fd3650c4d347d7956f20ffd74a4937f4cc2401445c",
+    "styles.css": "e240fb3e90831a2ad17dd88a75414bd974ab955f07dd4919c186d98e99f260d0",
+    "theme.js": "739df51a042914e8844936471d64b76adeeee584295ccb0a7a3a7d1b1db8b8f3"
+  }
+}

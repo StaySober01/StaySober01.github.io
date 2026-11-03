@@ -1,0 +1,29 @@
+---
+interface Props { pagePath: string; }
+const { pagePath } = Astro.props;
+const prefix = '../'.repeat(pagePath.split('/').length - 1);
+const home = pagePath === 'index.html' ? '' : prefix + 'index.html';
+---
+<header class="site-header">
+      <div class="container header-inner">
+        <a class="site-name" href={`${home}#top`} aria-label="홈으로 이동">Home</a>
+        <nav aria-label="주요 메뉴">
+          <ul class="nav-list">
+            <li>
+              <button class="theme-toggle" type="button" aria-label="화이트 모드로 전환" aria-pressed="false">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.4 15.5A8.5 8.5 0 0 1 8.5 3.6a8.5 8.5 0 1 0 11.9 11.9Z"></path>
+                </svg>
+              </button>
+            </li>
+            <li><a href={`${home}#projects`}>Projects</a></li>
+            <li><a href={`${prefix}til/index.html`}>TIL &amp; Blog</a></li>
+            <li><a href={`${home}#about`}>About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
